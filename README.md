@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🚗 Jet & Keys ✈️
 
@@ -40,8 +40,8 @@ A full-stack, production-ready platform for booking luxury cars and private jets
 
 | App | Description | Port | Framework |
 |-----|-------------|------|-----------|
-| **`car-rental-nigeria`** | Customer-facing website | `3000` | Next.js 15 + React 19 |
-| **`admin`** | Admin dashboard & CMS | `3001` | Next.js 13 + React 18 |
+| **car-rental-nigeria** | Customer-facing website | 3000 | Next.js 15 + React 19 |
+| **admin** | Admin dashboard and CMS | 3001 | Next.js 13 + React 18 |
 
 Both applications share a **Supabase (PostgreSQL)** backend with Row Level Security (RLS), image storage, and real-time capabilities.
 
@@ -73,7 +73,7 @@ Both applications share a **Supabase (PostgreSQL)** backend with Row Level Secur
 
 ## ✨ Features
 
-### 🌐 Customer Website (`car-rental-nigeria`)
+### 🌐 Customer Website (car-rental-nigeria)
 
 | Feature | Description |
 |---------|-------------|
@@ -92,7 +92,7 @@ Both applications share a **Supabase (PostgreSQL)** backend with Row Level Secur
 | **FAQ Section** | Common questions and answers |
 | **Legal Pages** | Privacy policy, terms of service, refund policy |
 
-### 🛠 Admin Dashboard (`admin`)
+### 🛠 Admin Dashboard (admin)
 
 | Feature | Description |
 |---------|-------------|
@@ -132,9 +132,9 @@ Features are selected via an interactive modal, configured with values, and disp
 | [TypeScript 5](https://typescriptlang.org/) | Type safety |
 | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
 | [Shadcn UI](https://ui.shadcn.com/) + Radix | Accessible UI components |
-| [Framer Motion](https://www.framer.com/motion/) | Animations & transitions |
+| [Framer Motion](https://www.framer.com/motion/) | Animations and transitions |
 | [TanStack React Query](https://tanstack.com/query) | Server state management |
-| [React Hook Form](https://react-hook-form.com/) + Zod | Form handling & validation |
+| [React Hook Form](https://react-hook-form.com/) + Zod | Form handling and validation |
 | [Supabase JS](https://supabase.com/docs/reference/javascript) | Database client |
 | [Lucide React](https://lucide.dev/) | Icon library |
 | [date-fns](https://date-fns.org/) | Date utilities |
@@ -148,7 +148,7 @@ Features are selected via an interactive modal, configured with values, and disp
 | [TypeScript 5](https://typescriptlang.org/) | Type safety |
 | [Tailwind CSS 3](https://tailwindcss.com/) | Utility-first styling |
 | [Shadcn UI](https://ui.shadcn.com/) | UI components |
-| [Supabase JS](https://supabase.com/docs/reference/javascript) | Database & auth client |
+| [Supabase JS](https://supabase.com/docs/reference/javascript) | Database and auth client |
 | [Lucide React](https://lucide.dev/) | Icon library |
 
 ---
@@ -156,8 +156,8 @@ Features are selected via an interactive modal, configured with values, and disp
 ## 📁 Project Structure
 
 ```
-Jet&keys/
-├── car-rental-nigeria/          # 🌐 Customer-facing website
+Jet-keys/
+├── car-rental-nigeria/          # Customer-facing website
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── page.tsx              # Homepage
@@ -190,7 +190,7 @@ Jet&keys/
 │   │   │   └── utils.ts              # Utility functions
 │   │   └── types/
 │   │       └── database.ts           # TypeScript types
-│   ├── assets/                       # Static assets & images
+│   ├── assets/                       # Static assets and images
 │   ├── designinspo/                  # Design reference images
 │   ├── public/                       # Public assets
 │   ├── scripts/                      # Utility scripts
@@ -200,7 +200,7 @@ Jet&keys/
 │   ├── tsconfig.json
 │   └── ...config files
 │
-├── admin/                            # 🛠 Admin dashboard
+├── admin/                            # Admin dashboard
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── page.tsx              # Dashboard home
@@ -232,12 +232,12 @@ Jet&keys/
 │   ├── tsconfig.json
 │   └── ...config files
 │
-├── Visualchanges/                    # UI screenshots & references
+├── Visualchanges/                    # UI screenshots and references
 ├── FEATURE_SYSTEM_GUIDE.md           # Car feature system docs
 ├── QUICK_FEATURE_ACCESS.md           # Quick-start guide
 ├── package.json                      # Root dependencies
 ├── .gitignore
-└── README.md                         # ← You are here
+└── README.md
 ```
 
 ---
@@ -250,17 +250,17 @@ The platform uses **Supabase (PostgreSQL)** with the following tables:
 
 | Table | Description | Key Fields |
 |-------|-------------|------------|
-| `cars` | Car inventory | name, brand, model, year, pricing (daily/weekly/monthly), fuel type, transmission, features (JSONB), images (JSONB), location, status |
-| `jets` | Jet inventory | name, manufacturer, model, capacity, range, max speed, pricing (hourly/daily), features, images |
-| `users` | User accounts | email, name, phone, role (admin/user), is_active |
-| `bookings` | Rental bookings | user_id, car_id/jet_id, booking_type, dates, locations, amount, status, payment_status, customer details |
+| cars | Car inventory | name, brand, model, year, pricing (daily/weekly/monthly), fuel type, transmission, features (JSONB), images (JSONB), location, status |
+| jets | Jet inventory | name, manufacturer, model, capacity, range, max speed, pricing (hourly/daily), features, images |
+| users | User accounts | email, name, phone, role (admin/user), is_active |
+| bookings | Rental bookings | user_id, car_id/jet_id, booking_type, dates, locations, amount, status, payment_status, customer details |
 
 ### Configuration Tables
 
 | Table | Description |
 |-------|-------------|
-| `website_settings` | Dynamic site content (key-value with type enforcement) |
-| `checkout_settings` | VAT %, service/insurance/delivery fees, currency, payment methods |
+| website_settings | Dynamic site content (key-value with type enforcement) |
+| checkout_settings | VAT percentage, service/insurance/delivery fees, currency, payment methods |
 
 ### Security
 
@@ -272,12 +272,13 @@ The platform uses **Supabase (PostgreSQL)** with the following tables:
 ### Indexes
 
 Optimized indexes on frequently queried columns:
-- Cars: `brand`, `location`, `status`, `is_available`
-- Jets: `manufacturer`, `location`, `status`, `is_available`
-- Bookings: `user_id`, `car_id`, `jet_id`, `status`, `payment_status`, `pickup_date`
-- Users: `email`, `role`
 
-> 💡 The full SQL schema is available in [`car-rental-nigeria/database-schema.sql`](car-rental-nigeria/database-schema.sql)
+- **Cars:** brand, location, status, is_available
+- **Jets:** manufacturer, location, status, is_available
+- **Bookings:** user_id, car_id, jet_id, status, payment_status, pickup_date
+- **Users:** email, role
+
+> 💡 The full SQL schema is available in [car-rental-nigeria/database-schema.sql](car-rental-nigeria/database-schema.sql)
 
 ---
 
@@ -300,14 +301,14 @@ cd Jet-keys
 
 1. Create a new project on [Supabase](https://supabase.com/dashboard)
 2. Go to the **SQL Editor**
-3. Run the contents of [`car-rental-nigeria/database-schema.sql`](car-rental-nigeria/database-schema.sql)
+3. Run the contents of [car-rental-nigeria/database-schema.sql](car-rental-nigeria/database-schema.sql)
 4. This creates all tables, indexes, RLS policies, triggers, and seed data
 
-### 3. Install & Run the Customer Website
+### 3. Install and Run the Customer Website
 
 ```bash
 cd car-rental-nigeria
-yarn install          # or npm install
+yarn install
 ```
 
 Create a `.env.local` file:
@@ -321,15 +322,16 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 Start the dev server:
 
 ```bash
-yarn dev              # or npm run dev
-# → http://localhost:3000
+yarn dev
 ```
 
-### 4. Install & Run the Admin Dashboard
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 4. Install and Run the Admin Dashboard
 
 ```bash
 cd admin
-yarn install          # or npm install --legacy-peer-deps
+yarn install
 ```
 
 Create a `.env.local` file:
@@ -342,28 +344,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 Start the dev server:
 
 ```bash
-yarn dev              # or npm run dev
-# → http://localhost:3001
+yarn dev
 ```
+
+Open [http://localhost:3001](http://localhost:3001) in your browser.
 
 ---
 
 ## 🔐 Environment Variables
 
-### Customer Website (`car-rental-nigeria/.env.local`)
+### Customer Website (car-rental-nigeria/.env.local)
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | ✅ |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous API key | ✅ |
-| `NEXT_PUBLIC_APP_URL` | Application URL (e.g., `http://localhost:3000`) | ✅ |
+| NEXT_PUBLIC_SUPABASE_URL | Your Supabase project URL | Yes |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Your Supabase anonymous API key | Yes |
+| NEXT_PUBLIC_APP_URL | Application URL | Yes |
 
-### Admin Dashboard (`admin/.env.local`)
+### Admin Dashboard (admin/.env.local)
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | ✅ |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous API key | ✅ |
+| NEXT_PUBLIC_SUPABASE_URL | Your Supabase project URL | Yes |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Your Supabase anonymous API key | Yes |
 
 ---
 
@@ -374,12 +377,14 @@ yarn dev              # or npm run dev
 Deploy each app as a separate Vercel project:
 
 **Customer Website:**
+
 1. Import the repo on [Vercel](https://vercel.com)
 2. Set **Root Directory** to `car-rental-nigeria`
 3. Add the environment variables
 4. Deploy
 
 **Admin Dashboard:**
+
 1. Create another Vercel project from the same repo
 2. Set **Root Directory** to `admin`
 3. Add the environment variables
@@ -400,6 +405,7 @@ cd admin && yarn build
 ### Other Platforms
 
 Compatible with any platform supporting Next.js:
+
 - Railway
 - DigitalOcean App Platform
 - AWS Amplify
@@ -409,7 +415,7 @@ Compatible with any platform supporting Next.js:
 
 ## 📸 Screenshots
 
-Design references and visual change logs are available in the [`Visualchanges/`](Visualchanges/) directory.
+Design references and visual change logs are available in the [Visualchanges/](Visualchanges/) directory.
 
 ---
 
@@ -433,8 +439,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 For support, reach out via:
 
-- **Email**: info@jetandkeys.com
-- **Issues**: [Open an issue](https://github.com/iluyobrainy/Jet-keys/issues)
+- **Email:** info@jetandkeys.com
+- **Issues:** [Open an issue](https://github.com/iluyobrainy/Jet-keys/issues)
 
 ---
 
@@ -445,4 +451,3 @@ For support, reach out via:
 **Jet & Keys** — Premium mobility, redefined.
 
 </div>
-]]>
