@@ -1,0 +1,507 @@
+{
+  "section": "Filter Menu",
+  "description": "Modern filter sidebar with preferences, category, fuel type, and price range sections",
+  "layout": {
+    "type": "sidebar-filter",
+    "background": "bg-gray-50",
+    "container": "bg-white rounded-lg shadow-lg",
+    "padding": "p-6",
+    "width": "w-full md:w-80 lg:w-96",
+    "height": "h-full",
+    "overflow": "overflow-y-auto"
+  },
+  "header": {
+    "id": "filter-header",
+    "type": "header-section",
+    "layout": {
+      "type": "flex",
+      "justifyContent": "justify-between",
+      "alignItems": "items-center",
+      "marginBottom": "mb-6"
+    },
+    "title": {
+      "text": "Filter",
+      "styling": {
+        "fontSize": "text-xl",
+        "fontWeight": "font-bold",
+        "color": "text-gray-900"
+      }
+    },
+    "clearButton": {
+      "text": "Clear All Filters",
+      "styling": {
+        "background": "bg-gray-100",
+        "textColor": "text-gray-900",
+        "border": "border border-gray-300",
+        "padding": "px-4 py-2",
+        "borderRadius": "rounded-lg",
+        "fontWeight": "font-medium",
+        "hoverBackground": "hover:bg-gray-200",
+        "transition": "transition-colors duration-200"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "preferences",
+      "type": "preferences-section",
+      "title": {
+        "text": "Preferences",
+        "styling": {
+          "fontSize": "text-sm",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-3"
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "columns": "grid-cols-2",
+        "gap": "gap-2",
+        "marginBottom": "mb-6"
+      },
+      "options": [
+        {
+          "id": "instant-rent",
+          "text": "Instant Rent",
+          "icon": "zap",
+          "iconColor": "text-yellow-500",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "delivery",
+          "text": "Delivery",
+          "selected": true,
+          "styling": {
+            "background": "bg-blue-600",
+            "textColor": "text-white",
+            "border": "border border-blue-600",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-blue-700",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "pickup-host",
+          "text": "Pickup by Host",
+          "selected": true,
+          "styling": {
+            "background": "bg-blue-600",
+            "textColor": "text-white",
+            "border": "border border-blue-600",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-blue-700",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "one-way-trip",
+          "text": "One Way Trip",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "unlimited-mileage",
+          "text": "Unlimited Mileage",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        }
+      ]
+    },
+    {
+      "id": "category",
+      "type": "category-section",
+      "title": {
+        "text": "Category",
+        "styling": {
+          "fontSize": "text-sm",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-3"
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "columns": "grid-cols-2",
+        "gap": "gap-2",
+        "marginBottom": "mb-4"
+      },
+      "options": [
+        {
+          "id": "sedan",
+          "text": "Sedan",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "suv",
+          "text": "SUV",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "cabriolet",
+          "text": "Cabriolet",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "hatchback",
+          "text": "Hatchback",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "wagon",
+          "text": "Wagon",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "vans",
+          "text": "Vans",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "off-road",
+          "text": "Off-road",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "pickup",
+          "text": "Pickup",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        }
+      ],
+      "showAllLink": {
+        "text": "Show All",
+        "icon": "chevron-down",
+        "styling": {
+          "color": "text-gray-600",
+          "fontSize": "text-sm",
+          "fontWeight": "font-medium",
+          "marginTop": "mt-2",
+          "display": "flex",
+          "alignItems": "items-center",
+          "gap": "gap-1",
+          "cursor": "cursor-pointer",
+          "hoverColor": "hover:text-gray-900",
+          "transition": "transition-colors duration-200"
+        }
+      }
+    },
+    {
+      "id": "fuel-type",
+      "type": "fuel-type-section",
+      "title": {
+        "text": "Fuel Type",
+        "styling": {
+          "fontSize": "text-sm",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-3"
+        }
+      },
+      "layout": {
+        "type": "flex",
+        "gap": "gap-2",
+        "marginBottom": "mb-6"
+      },
+      "options": [
+        {
+          "id": "gas",
+          "text": "Gas",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        },
+        {
+          "id": "electric",
+          "text": "Electric",
+          "selected": false,
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "hoverBackground": "hover:bg-gray-200",
+            "transition": "transition-colors duration-200"
+          }
+        }
+      ]
+    },
+    {
+      "id": "price-range",
+      "type": "price-range-section",
+      "title": {
+        "text": "Price Range per Day",
+        "styling": {
+          "fontSize": "text-sm",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-3"
+        }
+      },
+      "layout": {
+        "type": "vertical",
+        "gap": "gap-3",
+        "marginBottom": "mb-6"
+      },
+      "inputFields": {
+        "layout": {
+          "type": "flex",
+          "gap": "gap-3"
+        },
+        "minField": {
+          "placeholder": "USD 0",
+          "value": "0",
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "focusBorder": "focus:border-blue-600",
+            "focusRing": "focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+          }
+        },
+        "maxField": {
+          "placeholder": "USD 200",
+          "value": "200",
+          "styling": {
+            "background": "bg-gray-100",
+            "textColor": "text-gray-900",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-2",
+            "borderRadius": "rounded-lg",
+            "fontSize": "text-sm",
+            "focusBorder": "focus:border-blue-600",
+            "focusRing": "focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+          }
+        }
+      },
+      "slider": {
+        "track": {
+          "background": "bg-gray-200",
+          "height": "h-2",
+          "borderRadius": "rounded-full"
+        },
+        "activeRange": {
+          "background": "bg-blue-600",
+          "height": "h-2",
+          "borderRadius": "rounded-full"
+        },
+        "handles": {
+          "background": "bg-white",
+          "border": "border-2 border-blue-600",
+          "size": "w-4 h-4",
+          "borderRadius": "rounded-full",
+          "shadow": "shadow-md",
+          "hoverShadow": "hover:shadow-lg",
+          "transition": "transition-shadow duration-200"
+        }
+      }
+    }
+  ],
+  "styling": {
+    "container": {
+      "background": "bg-white",
+      "fontFamily": "font-sans",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryBackground": "#FFFFFF",
+      "secondaryBackground": "#F3F4F6",
+      "primaryText": "#111827",
+      "secondaryText": "#6B7280",
+      "accentColor": "#2563EB",
+      "borderColor": "#D1D5DB",
+      "hoverBackground": "#E5E7EB"
+    },
+    "typography": {
+      "headings": {
+        "fontFamily": "font-sans",
+        "fontWeight": "font-bold"
+      },
+      "body": {
+        "fontFamily": "font-sans",
+        "fontWeight": "font-medium"
+      }
+    },
+    "spacing": {
+      "sectionGap": "mb-6",
+      "optionGap": "gap-2",
+      "padding": "p-6"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "width": "w-full",
+      "padding": "p-4"
+    },
+    "tablet": {
+      "width": "w-80",
+      "padding": "p-6"
+    },
+    "desktop": {
+      "width": "w-96",
+      "padding": "p-6"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "filterSection": "Filter options",
+      "preferencesSection": "Rental preferences",
+      "categorySection": "Vehicle categories",
+      "fuelTypeSection": "Fuel type options",
+      "priceRangeSection": "Price range selection"
+    },
+    "semanticHtml": "Uses proper button elements, form inputs, and ARIA labels"
+  },
+  "interaction": {
+    "buttonSelection": "Toggle selection state",
+    "priceRangeChange": "Update price range values",
+    "clearAllFilters": "Reset all filter selections",
+    "showAllCategories": "Expand category list",
+    "stateManagement": "useState for filter selections and price range"
+  },
+  "themeAdaptation": {
+    "colors": "Consistent with modern UI design",
+    "typography": "Clean sans-serif font",
+    "spacing": "Consistent spacing system",
+    "interactions": "Smooth transitions and hover effects"
+  }
+}

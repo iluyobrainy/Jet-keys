@@ -1,0 +1,290 @@
+{
+  "section": "Car Specifications and Performances",
+  "description": "A two-column layout showcasing Tesla Model Y specifications with interior image and detailed specs grid",
+  "layout": {
+    "type": "two-column",
+    "mobile": "stacked",
+    "tablet": "stacked",
+    "desktop": "side-by-side"
+  },
+  "leftColumn": {
+    "type": "image",
+    "content": {
+      "image": {
+        "src": "/tesla-interior.jpg",
+        "alt": "Tesla Model Y interior with steering wheel featuring Tesla logo",
+        "aspectRatio": "4:3",
+        "style": "black-and-white",
+        "focus": "steering-wheel"
+      },
+      "description": "Close-up black and white photograph of Tesla Model Y interior focusing on the steering wheel with prominent Tesla logo"
+    }
+  },
+  "rightColumn": {
+    "type": "content",
+    "header": {
+      "title": {
+        "text": "The Car Specifications and Performances",
+        "fontSize": {
+          "mobile": "text-2xl",
+          "tablet": "text-3xl",
+          "desktop": "text-4xl"
+        },
+        "fontWeight": "font-bold",
+        "color": "text-black",
+        "marginBottom": "mb-4"
+      },
+      "subtitle": {
+        "text": "Here are the specifications and performances of Tesla Model Y from Battery to every details.",
+        "fontSize": {
+          "mobile": "text-sm",
+          "tablet": "text-base",
+          "desktop": "text-lg"
+        },
+        "fontWeight": "font-normal",
+        "color": "text-gray-600",
+        "marginBottom": "mb-6"
+      }
+    },
+    "tabs": {
+      "type": "toggle-tabs",
+      "style": "rounded-rectangle",
+      "tabs": [
+        {
+          "id": "performances",
+          "label": "Performances",
+          "active": true,
+          "style": {
+            "background": "bg-black",
+            "textColor": "text-white",
+            "padding": "px-6 py-3"
+          }
+        },
+        {
+          "id": "long-range",
+          "label": "Long Range AWD",
+          "active": false,
+          "style": {
+            "background": "bg-white",
+            "textColor": "text-black",
+            "border": "border border-gray-300",
+            "padding": "px-6 py-3"
+          }
+        }
+      ],
+      "marginBottom": "mb-8"
+    },
+    "specifications": {
+      "type": "grid",
+      "columns": {
+        "mobile": 1,
+        "tablet": 2,
+        "desktop": 2
+      },
+      "gap": "gap-4",
+      "items": [
+        {
+          "id": "battery",
+          "category": "BATTERY",
+          "value": "Long Range",
+          "icon": {
+            "type": "battery",
+            "color": "text-orange-500",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "seating",
+          "category": "SEATING",
+          "value": "Up to 5",
+          "icon": {
+            "type": "person",
+            "color": "text-black",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "acceleration",
+          "category": "ACCELERATION",
+          "value": "3.5 s 0-60 mph",
+          "icon": {
+            "type": "speedometer",
+            "color": "text-orange-500",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "wheels",
+          "category": "WHEELS",
+          "value": "21\"",
+          "icon": {
+            "type": "wheel",
+            "color": "text-black",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "range",
+          "category": "RANGE",
+          "value": "303 miles (EPA est.)",
+          "icon": {
+            "type": "map-pin",
+            "color": "text-orange-500",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "weight",
+          "category": "WEIGHT",
+          "value": "4,398 lbs",
+          "icon": {
+            "type": "scale",
+            "color": "text-black",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "drive",
+          "category": "DRIVE",
+          "value": "Dual Motor All-Wheel Drive",
+          "icon": {
+            "type": "car",
+            "color": "text-orange-500",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        },
+        {
+          "id": "top-speed",
+          "category": "TOP SPEED",
+          "value": "155 mph",
+          "icon": {
+            "type": "speed",
+            "color": "text-black",
+            "size": "w-5 h-5"
+          },
+          "style": {
+            "background": "bg-white",
+            "border": "border border-gray-200",
+            "padding": "p-4",
+            "borderRadius": "rounded-lg"
+          }
+        }
+      ]
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-white",
+      "padding": {
+        "mobile": "py-12 px-4",
+        "tablet": "py-16 px-6",
+        "desktop": "py-24 px-8"
+      },
+      "maxWidth": "max-w-7xl",
+      "margin": "mx-auto"
+    },
+    "grid": {
+      "gap": {
+        "mobile": "gap-8",
+        "tablet": "gap-12",
+        "desktop": "gap-16"
+      },
+      "alignment": "items-center"
+    },
+    "typography": {
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-tight"
+    },
+    "colors": {
+      "primary": "#000000",
+      "secondary": "#6B7280",
+      "accent": "#F97316",
+      "background": "#FFFFFF",
+      "border": "#E5E7EB"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "stacked",
+      "imageOrder": "first",
+      "contentOrder": "second",
+      "textAlignment": "center",
+      "specsGrid": "single-column"
+    },
+    "tablet": {
+      "layout": "stacked",
+      "imageOrder": "first",
+      "contentOrder": "second",
+      "textAlignment": "center",
+      "specsGrid": "two-columns"
+    },
+    "desktop": {
+      "layout": "side-by-side",
+      "imageOrder": "first",
+      "contentOrder": "second",
+      "textAlignment": "left",
+      "specsGrid": "two-columns"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Car Specifications and Performances",
+      "tabs": "Specification categories",
+      "specsGrid": "Vehicle specifications grid"
+    },
+    "focusManagement": "tab-navigation",
+    "screenReader": "descriptive-content"
+  },
+  "seo": {
+    "structuredData": {
+      "@type": "Product",
+      "name": "Tesla Model Y",
+      "description": "Tesla Model Y specifications and performance details",
+      "brand": "Tesla",
+      "model": "Model Y"
+    },
+    "keywords": "Tesla Model Y, car specifications, electric vehicle, performance, battery range, acceleration"
+  }
+}

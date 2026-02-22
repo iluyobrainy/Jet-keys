@@ -1,0 +1,251 @@
+{
+  "section": "Footer",
+  "description": "A dark-themed footer with membership signup, company information, navigation links, and social media icons.",
+  "layout": {
+    "type": "dark-footer",
+    "background": "bg-black",
+    "padding": {
+      "mobile": "py-8 px-4",
+      "tablet": "py-12 px-6",
+      "desktop": "py-16 px-8"
+    },
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto"
+  },
+  "sections": {
+    "membership": {
+      "title": {
+        "text": "Become Our Member",
+        "fontSize": {
+          "mobile": "text-2xl",
+          "tablet": "text-3xl",
+          "desktop": "text-4xl"
+        },
+        "fontWeight": "font-bold",
+        "color": "text-white",
+        "alignment": "text-center",
+        "marginBottom": "mb-8"
+      },
+      "form": {
+        "type": "horizontal-form",
+        "layout": "flex flex-col sm:flex-row gap-4",
+        "fields": [
+          {
+            "id": "name",
+            "type": "input",
+            "placeholder": "Your Name",
+            "icon": "user",
+            "iconPosition": "left",
+            "className": "flex-1"
+          },
+          {
+            "id": "email",
+            "type": "input",
+            "placeholder": "Your Email",
+            "icon": "mail",
+            "iconPosition": "left",
+            "className": "flex-1"
+          }
+        ],
+        "submitButton": {
+          "type": "circular-button",
+          "icon": "arrow-right",
+          "color": "bg-gray-800",
+          "iconColor": "text-white",
+          "size": "w-12 h-12",
+          "className": "self-end"
+        }
+      }
+    },
+    "mainContent": {
+      "layout": "grid",
+      "columns": {
+        "mobile": 1,
+        "tablet": 2,
+        "desktop": 4
+      },
+      "gap": "gap-8",
+      "sections": [
+        {
+          "id": "brand-info",
+          "type": "brand",
+          "logo": {
+            "icon": "settings",
+            "color": "text-orange-500",
+            "size": "w-8 h-8"
+          },
+          "brandName": {
+            "text": "Jet&Keys",
+            "fontSize": "text-2xl",
+            "fontWeight": "font-bold",
+            "color": "text-white",
+            "marginBottom": "mb-4"
+          },
+          "description": {
+            "text": "We provide several future cars such such a sport cars, electric cars, and other cars that suit for your personal or business needs.",
+            "fontSize": "text-sm",
+            "fontWeight": "font-normal",
+            "color": "text-gray-400",
+            "lineHeight": "leading-relaxed"
+          }
+        },
+        {
+          "id": "navigation",
+          "type": "links",
+          "title": {
+            "text": "Navigation",
+            "fontSize": "text-lg",
+            "fontWeight": "font-bold",
+            "color": "text-white",
+            "marginBottom": "mb-4"
+          },
+          "links": [
+            { "text": "Home", "href": "/" },
+            { "text": "About Us", "href": "/about" },
+            { "text": "Features", "href": "/features" },
+            { "text": "FAQ", "href": "/faq" }
+          ]
+        },
+        {
+          "id": "support",
+          "type": "links",
+          "title": {
+            "text": "Support Us",
+            "fontSize": "text-lg",
+            "fontWeight": "font-bold",
+            "color": "text-white",
+            "marginBottom": "mb-4"
+          },
+          "links": [
+            { "text": "Contact Us", "href": "/contact" },
+            { "text": "Support Center", "href": "/support" },
+            { "text": "Security", "href": "/security" },
+            { "text": "Privacy and Policy", "href": "/privacy" }
+          ]
+        },
+        {
+          "id": "partner",
+          "type": "links",
+          "title": {
+            "text": "Partner",
+            "fontSize": "text-lg",
+            "fontWeight": "font-bold",
+            "color": "text-white",
+            "marginBottom": "mb-4"
+          },
+          "links": [
+            { "text": "Our Partners", "href": "/partners" },
+            { "text": "Community", "href": "/community" },
+            { "text": "Customers", "href": "/customers" },
+            { "text": "Investors", "href": "/investors" }
+          ]
+        }
+      ]
+    },
+    "bottom": {
+      "layout": "flex flex-col sm:flex-row justify-between items-center",
+      "padding": "pt-8 border-t border-gray-800",
+      "copyright": {
+        "text": "© 2025 Jet&Keys, All Rights Reserved.",
+        "fontSize": "text-sm",
+        "fontWeight": "font-normal",
+        "color": "text-gray-400"
+      },
+      "socialMedia": {
+        "type": "circular-icons",
+        "layout": "flex gap-4",
+        "icons": [
+          {
+            "platform": "twitter",
+            "icon": "twitter",
+            "color": "text-white",
+            "background": "bg-gray-800",
+            "size": "w-10 h-10",
+            "href": "#"
+          },
+          {
+            "platform": "youtube",
+            "icon": "youtube",
+            "color": "text-white",
+            "background": "bg-gray-800",
+            "size": "w-10 h-10",
+            "href": "#"
+          },
+          {
+            "platform": "facebook",
+            "icon": "facebook",
+            "color": "text-white",
+            "background": "bg-gray-800",
+            "size": "w-10 h-10",
+            "href": "#"
+          }
+        ]
+      }
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-black",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryBackground": "#000000",
+      "primaryText": "#FFFFFF",
+      "secondaryText": "#9CA3AF",
+      "accentColor": "#F59E0B",
+      "borderColor": "#374151",
+      "buttonBackground": "#374151"
+    },
+    "inputFields": {
+      "background": "transparent",
+      "border": "border-b border-gray-600",
+      "textColor": "text-white",
+      "placeholderColor": "text-gray-400",
+      "focusBorder": "border-white"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "membershipForm": "stacked",
+      "mainContent": "single-column",
+      "bottom": "stacked"
+    },
+    "tablet": {
+      "membershipForm": "horizontal",
+      "mainContent": "two-columns",
+      "bottom": "horizontal"
+    },
+    "desktop": {
+      "membershipForm": "horizontal",
+      "mainContent": "four-columns",
+      "bottom": "horizontal"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Website Footer",
+      "membershipForm": "Become a member form",
+      "nameInput": "Enter your name",
+      "emailInput": "Enter your email",
+      "submitButton": "Submit membership form",
+      "socialMedia": "Social media links"
+    },
+    "semanticHtml": "Uses footer, section, form, input, button, a elements appropriately"
+  },
+      "seo": {
+      "structuredData": {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Jet&Keys",
+        "description": "We provide several future cars such as sport cars, electric cars, and other cars that suit for your personal or business needs.",
+        "url": "https://jetandkeys.com",
+        "sameAs": [
+          "https://twitter.com/jetandkeys",
+          "https://youtube.com/jetandkeys",
+          "https://facebook.com/jetandkeys"
+        ]
+      },
+    "keywords": "car rental, electric cars, sport cars, car services, membership, contact, support"
+  }
+}

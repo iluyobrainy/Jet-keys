@@ -1,0 +1,124 @@
+{
+  "pageTitle": "About Us Top Section Design",
+  "description": "Hero section with Tesla car background and white overlay card containing text and airplane background",
+  "layout": {
+    "type": "hero-section",
+    "structure": "background-image + overlay-card",
+    "backgroundImage": "C-Heroimg.png",
+    "overlayCard": {
+      "position": "right-side",
+      "transparency": "semi-transparent-white",
+      "shape": "rounded-rectangle"
+    }
+  },
+  "background": {
+    "image": "C-Heroimg.png",
+    "description": "Dark grey Tesla Model 3/Y on asphalt road with clear blue sky",
+    "position": "cover",
+    "aspectRatio": "landscape"
+  },
+  "overlayCard": {
+    "position": {
+      "placement": "right-side",
+      "covers": "car-side-and-rear",
+      "starts": "front-door-handle-area",
+      "extends": "towards-back"
+    },
+    "styling": {
+      "background": "semi-transparent-white",
+      "borderRadius": "rounded-rectangle",
+      "frostedEffect": true,
+      "allowsBackgroundVisibility": true
+    },
+    "content": {
+      "layout": "centered-text",
+      "textAlignment": "center",
+      "elements": [
+        {
+          "type": "heading",
+          "text": "About Us",
+          "style": "bold-dark-text"
+        },
+        {
+          "type": "body-text",
+          "content": "company-mission-or-introduction",
+          "style": "smaller-body-text"
+        }
+      ]
+    },
+    "backgroundImage": {
+      "image": "Airbus-int.png",
+      "position": "behind-text",
+      "opacity": "very-light",
+      "description": "subtle-airplane-watermark",
+      "effect": "desaturated-background-texture"
+    }
+  },
+  "styling": {
+    "colors": {
+      "primary": "dark-grey-tesla",
+      "overlay": "semi-transparent-white",
+      "text": "dark-colored",
+      "background": "clear-blue-sky"
+    },
+    "typography": {
+      "heading": {
+        "fontWeight": "bold",
+        "color": "dark",
+        "size": "large"
+      },
+      "bodyText": {
+        "fontWeight": "normal",
+        "color": "dark",
+        "size": "smaller"
+      }
+    },
+    "effects": {
+      "frostedGlass": true,
+      "layeredEffect": true,
+      "backgroundVisibility": "faintly-visible"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "overlayCard": "full-width",
+      "textSize": "adjusted-for-mobile"
+    },
+    "tablet": {
+      "overlayCard": "right-positioned",
+      "textSize": "medium"
+    },
+    "desktop": {
+      "overlayCard": "right-positioned",
+      "textSize": "large"
+    }
+  },
+  "implementation": {
+    "components": [
+      "AboutUsHero",
+      "OverlayCard",
+      "BackgroundImage"
+    ],
+    "images": {
+      "background": "/Aboutusui/C-Heroimg.png",
+      "overlayBackground": "/Aboutusui/Airbus-int.png"
+    },
+    "layout": {
+      "container": "full-width-hero",
+      "overlay": "positioned-right",
+      "content": "centered-within-overlay"
+    }
+  },
+  "keyFeatures": {
+    "visualHierarchy": "tesla-car-dominant-background",
+    "informationCard": "semi-transparent-white-overlay",
+    "readability": "high-contrast-text-on-light-background",
+    "branding": "subtle-airplane-reference",
+    "aesthetic": "modern-luxury-professional"
+  }
+}
+
+
+
+
+

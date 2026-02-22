@@ -1,0 +1,184 @@
+{
+  "section": "Brand Section",
+  "description": "A section displaying a collection of car brand logos within a rounded, light gray card, with a prominent title.",
+  "layout": {
+    "type": "card-container",
+    "background": "bg-gray-100",
+    "borderRadius": "rounded-2xl",
+    "padding": {
+      "mobile": "py-8 px-4",
+      "tablet": "py-10 px-6",
+      "desktop": "py-12 px-8"
+    },
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto mt-12 mb-12",
+    "shadow": "shadow-lg"
+  },
+  "header": {
+    "title": {
+      "text": "Brands with body type",
+      "fontSize": {
+        "mobile": "text-2xl",
+        "tablet": "text-3xl",
+        "desktop": "text-4xl"
+      },
+      "fontWeight": "font-bold",
+      "color": "text-black",
+      "alignment": "text-center",
+      "marginBottom": "mb-8"
+    }
+  },
+  "content": {
+    "type": "logo-grid",
+    "logos": [
+      {
+        "name": "BMW",
+        "src": "/logos/bmw.png",
+        "alt": "BMW logo",
+        "width": 80,
+        "height": 80
+      },
+      {
+        "name": "Ford",
+        "src": "/logos/ford.png",
+        "alt": "Ford logo",
+        "width": 100,
+        "height": 50
+      },
+      {
+        "name": "Lexus",
+        "src": "/logos/lexus.png",
+        "alt": "Lexus logo",
+        "width": 100,
+        "height": 50
+      },
+      {
+        "name": "Lamborghini",
+        "src": "/logos/lamborghini.png",
+        "alt": "Lamborghini logo",
+        "width": 70,
+        "height": 70
+      },
+      {
+        "name": "Jaguar",
+        "src": "/logos/jaguar.png",
+        "alt": "Jaguar logo",
+        "width": 120,
+        "height": 50
+      },
+      {
+        "name": "Mercedes-Benz",
+        "src": "/logos/mercedes-benz.png",
+        "alt": "Mercedes-Benz logo",
+        "width": 80,
+        "height": 80
+      }
+    ],
+    "grid": {
+      "columns": {
+        "mobile": 2,
+        "tablet": 3,
+        "desktop": 6
+      },
+      "gap": {
+        "mobile": "gap-6",
+        "tablet": "gap-8",
+        "desktop": "gap-12"
+      },
+      "alignment": "items-center justify-center"
+    },
+    "logoStyling": {
+      "filter": "grayscale hover:grayscale-0",
+      "transition": "transition-all duration-300",
+      "objectFit": "contain"
+    }
+  },
+  "styling": {
+    "typography": {
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-tight"
+    },
+    "colors": {
+      "primaryText": "#000000",
+      "secondaryText": "#6B7280",
+      "cardBackground": "#F3F4F6",
+      "outerBackground": "#FFFFFF"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "logoGrid": "2 columns, logos centered"
+    },
+    "tablet": {
+      "logoGrid": "3 columns, logos centered"
+    },
+    "desktop": {
+      "logoGrid": "6 columns, logos evenly distributed"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Car Brands with Body Type Information",
+      "logo": "Logo of {brand name}"
+    },
+    "screenReader": "descriptive-alt-text-for-logos"
+  },
+  "seo": {
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Car Brands",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Brand",
+            "name": "BMW"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "Brand",
+            "name": "Ford"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "Brand",
+            "name": "Lexus"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "item": {
+            "@type": "Brand",
+            "name": "Lamborghini"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "item": {
+            "@type": "Brand",
+            "name": "Jaguar"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "item": {
+            "@type": "Brand",
+            "name": "Mercedes-Benz"
+          }
+        }
+      ]
+    },
+    "keywords": "car brands, vehicle types, BMW, Ford, Lexus, Lamborghini, Jaguar, Mercedes-Benz, car rental brands"
+  }
+}

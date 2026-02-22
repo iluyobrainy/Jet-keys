@@ -1,0 +1,194 @@
+{
+  "section": "Frequently Asked Questions",
+  "description": "A clean, modern FAQ section with expandable/collapsible accordion items in a white card on light gray background.",
+  "layout": {
+    "type": "card-container",
+    "background": "bg-gray-50",
+    "cardBackground": "bg-white",
+    "borderRadius": "rounded-lg",
+    "padding": {
+      "mobile": "py-8 px-4",
+      "tablet": "py-12 px-6",
+      "desktop": "py-16 px-8"
+    },
+    "maxWidth": "max-w-4xl",
+    "margin": "mx-auto mt-12 mb-12",
+    "shadow": "shadow-lg"
+  },
+  "header": {
+    "title": {
+      "text": "Let me know anything before you try",
+      "fontSize": {
+        "mobile": "text-2xl",
+        "tablet": "text-3xl",
+        "desktop": "text-4xl"
+      },
+      "fontWeight": "font-bold",
+      "color": "text-black",
+      "alignment": "text-left",
+      "marginBottom": "mb-6"
+    },
+    "separator": {
+      "type": "horizontal-line",
+      "color": "border-gray-200",
+      "style": "border-t",
+      "margin": "mb-8"
+    }
+  },
+  "content": {
+    "type": "accordion",
+    "items": [
+      {
+        "id": "car-prices",
+        "question": "How much average of car prices that you sell?",
+        "answer": "You can buy a Tesla for anywhere between $46,990 to $100,000. The Model 3 is the most affordable Tesla, followed by the Model Y.",
+        "isExpanded": true,
+        "icon": "minus"
+      },
+      {
+        "id": "drive-away",
+        "question": "When can I drive away in my new car after I pay it?",
+        "answer": "You can drive away in your new car immediately after completing the payment and documentation process. We ensure a seamless handover experience with all necessary paperwork completed on the spot.",
+        "isExpanded": false,
+        "icon": "plus"
+      },
+      {
+        "id": "financing-options",
+        "question": "How many financing options do you offer?",
+        "answer": "We offer multiple financing options including cash payment, bank transfer, credit card, and installment plans. We also partner with leading financial institutions to provide competitive loan options with flexible terms.",
+        "isExpanded": false,
+        "icon": "plus"
+      },
+      {
+        "id": "down-payment",
+        "question": "What happens if I don't have a down payment?",
+        "answer": "We understand that not everyone has a down payment ready. We offer various options including zero-down payment plans, trade-in opportunities, and flexible payment arrangements to make car ownership accessible to everyone.",
+        "isExpanded": false,
+        "icon": "plus"
+      }
+    ],
+    "accordionItem": {
+      "padding": "py-6",
+      "borderBottom": "border-b border-gray-200",
+      "lastItem": "border-b-0",
+      "elements": {
+        "question": {
+          "fontSize": {
+            "mobile": "text-lg",
+            "tablet": "text-xl",
+            "desktop": "text-xl"
+          },
+          "fontWeight": "font-semibold",
+          "color": "text-black",
+          "alignment": "text-left",
+          "marginBottom": "mb-3"
+        },
+        "answer": {
+          "fontSize": {
+            "mobile": "text-sm",
+            "tablet": "text-base",
+            "desktop": "text-base"
+          },
+          "fontWeight": "font-normal",
+          "color": "text-gray-600",
+          "alignment": "text-left",
+          "lineHeight": "leading-relaxed"
+        },
+        "icon": {
+          "size": "w-6 h-6",
+          "color": "text-black",
+          "position": "absolute right-0 top-6",
+          "borderRadius": "rounded-full",
+          "border": "border border-black"
+        }
+      }
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-gray-50",
+      "cardBackground": "bg-white",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryText": "#000000",
+      "secondaryText": "#6B7280",
+      "background": "#F9FAFB",
+      "cardBackground": "#FFFFFF",
+      "borderColor": "#E5E7EB",
+      "iconColor": "#000000"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "cardPadding": "p-4",
+      "titleSize": "text-2xl",
+      "questionSize": "text-lg",
+      "answerSize": "text-sm"
+    },
+    "tablet": {
+      "cardPadding": "p-6",
+      "titleSize": "text-3xl",
+      "questionSize": "text-xl",
+      "answerSize": "text-base"
+    },
+    "desktop": {
+      "cardPadding": "p-8",
+      "titleSize": "text-4xl",
+      "questionSize": "text-xl",
+      "answerSize": "text-base"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Frequently Asked Questions",
+      "accordion": "FAQ accordion",
+      "expandButton": "Expand answer for {question}",
+      "collapseButton": "Collapse answer for {question}"
+    },
+    "semanticHtml": "Uses section, h2, button, div elements appropriately",
+    "keyboardNavigation": "Supports Tab and Enter/Space for interaction"
+  },
+  "seo": {
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much average of car prices that you sell?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can buy a Tesla for anywhere between $46,990 to $100,000. The Model 3 is the most affordable Tesla, followed by the Model Y."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When can I drive away in my new car after I pay it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can drive away in your new car immediately after completing the payment and documentation process."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many financing options do you offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We offer multiple financing options including cash payment, bank transfer, credit card, and installment plans."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if I don't have a down payment?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We offer various options including zero-down payment plans, trade-in opportunities, and flexible payment arrangements."
+          }
+        }
+      ]
+    },
+    "keywords": "FAQ, frequently asked questions, car rental questions, car prices, financing options, down payment, drive away"
+  }
+}

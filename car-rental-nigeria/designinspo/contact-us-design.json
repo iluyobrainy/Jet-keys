@@ -1,0 +1,200 @@
+{
+  "pageTitle": "Contact Us Page Design",
+  "description": "Clean, modern contact page with form and contact information sections",
+  "layout": {
+    "type": "two-column",
+    "structure": "header + main-content + footer",
+    "mainContent": {
+      "leftColumn": {
+        "width": "wider",
+        "content": "contact-form"
+      },
+      "rightColumn": {
+        "width": "narrower", 
+        "content": "contact-info"
+      }
+    }
+  },
+  "header": {
+    "title": "Contact our team",
+    "subtitle": "Got any questions about the product or scaling on our platform? We're here to help. Chat to our friendly team 24/7 and get onboard in less than 5 minutes.",
+    "alignment": "center",
+    "spacing": "mb-12"
+  },
+  "contactForm": {
+    "title": "Contact Form",
+    "fields": [
+      {
+        "type": "name-fields",
+        "layout": "side-by-side",
+        "fields": [
+          {
+            "label": "First name",
+            "placeholder": "First name",
+            "type": "text",
+            "required": true
+          },
+          {
+            "label": "Last name", 
+            "placeholder": "Last name",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "placeholder": "you@company.com",
+        "type": "email",
+        "required": true,
+        "fullWidth": true
+      },
+      {
+        "type": "phone",
+        "label": "Phone number",
+        "components": [
+          {
+            "type": "dropdown",
+            "value": "US",
+            "icon": "chevron-down"
+          },
+          {
+            "type": "input",
+            "placeholder": "+1 (555) 000-0000"
+          }
+        ],
+        "fullWidth": true
+      },
+      {
+        "type": "message",
+        "label": "Message",
+        "placeholder": "Leave us a message...",
+        "type": "textarea",
+        "rows": 4,
+        "fullWidth": true
+      },
+      {
+        "type": "services",
+        "label": "Services",
+        "layout": "two-column-grid",
+        "options": [
+          "Website design",
+          "UX design", 
+          "User research",
+          "Content creation",
+          "Strategy & consulting",
+          "Other"
+        ]
+      }
+    ],
+    "submitButton": {
+      "text": "Send message",
+      "style": "black-background white-text",
+      "fullWidth": true,
+      "rounded": true
+    }
+  },
+  "contactInfo": {
+    "sections": [
+      {
+        "title": "Chat with us",
+        "description": "Speak to our friendly team via live chat.",
+        "options": [
+          {
+            "icon": "message-circle",
+            "text": "Start a live chat",
+            "action": "chat"
+          },
+          {
+            "icon": "send",
+            "text": "Shoot us an email", 
+            "action": "email"
+          },
+          {
+            "icon": "twitter",
+            "text": "Message us on X",
+            "action": "twitter"
+          }
+        ]
+      },
+      {
+        "title": "Call us",
+        "description": "Call our team Mon-Fri from 8am to 5pm.",
+        "options": [
+          {
+            "icon": "phone",
+            "text": "+1 (555) 000-0000",
+            "action": "call"
+          }
+        ]
+      },
+      {
+        "title": "Visit us",
+        "description": "Chat to us in person at our Melbourne HQ.",
+        "options": [
+          {
+            "icon": "map-pin",
+            "text": "100 Smith Street, Collingwood VIC 3066",
+            "action": "location"
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "colors": {
+      "background": "white",
+      "text": "dark",
+      "borders": "light-gray",
+      "buttons": "black",
+      "buttonText": "white"
+    },
+    "spacing": {
+      "sectionPadding": "py-16",
+      "fieldSpacing": "mb-6",
+      "labelSpacing": "mb-2"
+    },
+    "typography": {
+      "title": "text-4xl font-bold",
+      "subtitle": "text-lg text-gray-600",
+      "sectionTitle": "text-xl font-semibold",
+      "label": "text-sm font-medium"
+    },
+    "form": {
+      "inputStyle": "border border-gray-300 rounded-lg px-4 py-3",
+      "focusStyle": "focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+      "checkboxStyle": "rounded border-gray-300"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "stacked",
+      "formFields": "full-width"
+    },
+    "tablet": {
+      "layout": "two-column",
+      "formFields": "side-by-side-where-appropriate"
+    },
+    "desktop": {
+      "layout": "two-column",
+      "formFields": "optimized-spacing"
+    }
+  },
+  "implementation": {
+    "components": [
+      "ContactForm",
+      "ContactInfo",
+      "FormField",
+      "CheckboxGroup",
+      "PhoneInput"
+    ],
+    "validation": "client-side",
+    "submission": "form-handler"
+  }
+}
+
+
+
+
+

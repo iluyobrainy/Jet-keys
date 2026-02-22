@@ -1,0 +1,270 @@
+{
+  "pageTitle": "Car Info Page Design",
+  "description": "Complete car information page with horizontal image slider and booking sidebar, following the garazi design pattern",
+  "layout": {
+    "type": "full-width-gallery-then-two-column",
+    "topSection": "full-width-car-gallery",
+    "mainContent": "left",
+    "bookingSidebar": "right",
+    "responsive": true
+  },
+  "header": {
+    "logo": "garazi",
+    "navigation": ["How it works", "Become a Partners"],
+    "ctaButton": "Book a Car",
+    "userProfile": {
+      "notifications": "bell icon",
+      "avatar": "circular profile picture",
+      "name": "Suprapto Grey",
+      "dropdown": "chevron down"
+    }
+  },
+  "carGallery": {
+    "layout": "grid-with-focus",
+    "description": "All images are visible in individual grid spaces. The active image is wider than others. When sliding, the current image shrinks and the new one expands to full width.",
+    "imageSize": "variable-width",
+    "aspectRatio": "16:9",
+    "grid": {
+      "activeImage": "wider width, full opacity",
+      "inactiveImages": "narrower width, full opacity",
+      "transition": "smooth width and opacity changes"
+    },
+    "images": [
+      {"src": "/Carinfoui/car-main.jpg", "alt": "Chery Tiggo 4 Pro front-left angle"},
+      {"src": "/Carinfoui/car-interior.jpg", "alt": "Chery Tiggo 4 Pro interior view"},
+      {"src": "/Carinfoui/car-rear.jpg", "alt": "Chery Tiggo 4 Pro rear view"},
+      {"src": "/Carinfoui/car-front.jpg", "alt": "Chery Tiggo 4 Pro front view"}
+    ],
+    "pagination": {
+      "type": "dots",
+      "color": "purple"
+    }
+  },
+  "mainContent": {
+    "carInfo": {
+      "title": "2022 - Chery Tiggo 4 Pro",
+      "provider": "Garasi Cak Su",
+      "distance": "3.1 km from centre",
+      "cancellation": "Free cancellation",
+      "rating": "4.0 (180 reviews)",
+      "actions": ["heart icon", "share icon"]
+    },
+    "features": {
+      "primary": {
+        "layout": "grid",
+        "items": [
+          {"icon": "person", "text": "7 seats"},
+          {"icon": "gear stick", "text": "Manual"},
+          {"icon": "car door", "text": "4 doors"}
+        ]
+      },
+      "secondary": {
+        "layout": "list",
+        "items": [
+          "Cruise control",
+          "Android Auto",
+          "Instant rental",
+          "Manual transmission",
+          "GPS nav system",
+          "Air conditioning"
+        ],
+        "icon": "green checkmark"
+      }
+    },
+    "description": {
+      "title": "Description",
+      "content": "Chery Tiggo 4 Pro is a new unit with great performance, recommended for long trips. No smoking or pets please. Cleaning fee for spills.",
+      "includedFeatures": [
+        "gps navigation system",
+        "air conditioning",
+        "cruise control",
+        "power windows",
+        "apple carplay",
+        "android auto",
+        "aux/mp3 enabled",
+        "bluetooth wireless",
+        "premium sound"
+      ]
+    },
+    "ownerInfo": {
+      "avatar": "circular profile picture",
+      "name": "Rakabuming Hubner",
+      "verified": "blue checkmark",
+      "rating": "4.0 (180 reviews)",
+      "joinDate": "Joined 8 months ago",
+      "status": "Online",
+      "actionButton": "Send Message"
+    },
+    "location": {
+      "title": "Location",
+      "map": "embedded street view",
+      "controls": ["zoom in", "zoom out", "fullscreen"]
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "rating": "4.0 (180 reviews)",
+      "filter": "All reviews dropdown",
+      "reviewItems": [
+        {
+          "name": "Marvin McKinney",
+          "avatar": "profile picture",
+          "rating": "5 stars",
+          "date": "2 days ago",
+          "content": "Garazi made our road trip a breeze with extensive fleet and detailed descriptions."
+        },
+        {
+          "name": "Bessi Rakabuming",
+          "avatar": "profile picture",
+          "rating": "5 stars",
+          "date": "3 days ago",
+          "content": "Garazi is our go-to for business travel and the Car Details page is a game-changer."
+        },
+        {
+          "name": "Kristin Watson",
+          "avatar": "profile picture",
+          "rating": "5 stars",
+          "date": "3 days ago",
+          "content": "Garazi blends technology with a top-notch rental experience and intuitive design."
+        }
+      ],
+      "cta": "See All Reviews"
+    },
+    "nearbyCars": {
+      "title": "Other Cars Nearby",
+      "layout": "horizontal cards",
+      "items": [
+        {
+          "image": "small car image",
+          "title": "2020 - Toyota Innova",
+          "provider": "Bung Handuk",
+          "distance": "2.2 km from centre",
+          "features": ["7 seats", "Manual"],
+          "cancellation": "Free cancellation",
+          "rating": "4.0 (180 reviews)",
+          "price": "USD 380 /day"
+        },
+        {
+          "image": "small car image",
+          "title": "2022 Toyota Land C...",
+          "provider": "Provider name",
+          "distance": "distance from centre",
+          "features": ["features"],
+          "cancellation": "Free cancellation",
+          "rating": "rating",
+          "price": "USD 230/day"
+        }
+      ]
+    }
+  },
+  "bookingSidebar": {
+    "title": "Book Information",
+    "durationNote": "Duration maximum to rent this car is 1 month.",
+    "form": {
+      "pickupLocation": {
+        "icon": "map pin",
+        "placeholder": "Jl. Raya Ponorogo - Trenggalek, Bancan...",
+        "type": "text field"
+      },
+      "pickupDate": {
+        "icon": "calendar",
+        "value": "Sat 4 Jan 2024, 21:00",
+        "type": "date picker"
+      },
+      "returnDate": {
+        "icon": "calendar",
+        "value": "Sat 7 Jan 2024, 21:00",
+        "type": "date picker"
+      }
+    },
+    "pricing": {
+      "deliveryFee": "USD 50.00",
+      "totalPrice": "USD 1,850.00",
+      "duration": "4 days",
+      "highlightColor": "yellow"
+    },
+    "actions": {
+      "primary": "Continue",
+      "secondary": "Report This Car"
+    }
+  },
+  "footer": {
+    "logo": "garazi",
+    "newsletter": {
+      "title": "Subscribe to our newsletter",
+      "input": "Email address",
+      "button": "purple arrow"
+    },
+    "downloadApp": {
+      "googlePlay": "Download on the Google Play",
+      "appStore": "Download on the App Store"
+    },
+    "navigation": {
+      "aboutUs": ["Our Story", "Terms of Services", "Help Center", "Careers", "Blog"],
+      "carOwner": ["How it works", "List your car", "Report", "Terms & Conditions"],
+      "renter": ["How it works", "List your car", "Report", "Terms & Conditions"],
+      "help": ["FAQs", "Contact Us"]
+    },
+    "copyright": "©2024 - garazi by Sans Brothers",
+    "socialMedia": ["Facebook", "Instagram", "LinkedIn"]
+  },
+  "styling": {
+    "colors": {
+      "primary": "#ffffff",
+      "secondary": "#f8f9fa",
+      "text": "#000000",
+      "accent": "#3b82f6",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "purple": "#8b5cf6"
+    },
+    "typography": {
+      "fontFamily": "sans-serif",
+      "headings": "bold",
+      "body": "regular",
+      "small": "light"
+    },
+    "spacing": {
+      "sectionPadding": "py-8",
+      "cardPadding": "p-6",
+      "buttonPadding": "px-6 py-3"
+    },
+    "borders": {
+      "radius": "rounded-lg",
+      "cards": "border border-gray-200"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "single-column",
+      "sidebar": "bottom",
+      "gallery": "horizontal-scroll"
+    },
+    "tablet": {
+      "layout": "two-column",
+      "sidebar": "right",
+      "gallery": "grid"
+    },
+    "desktop": {
+      "layout": "two-column",
+      "sidebar": "right",
+      "gallery": "large-main-small-thumbs"
+    }
+  },
+  "accessibility": {
+    "altText": "descriptive alt text for all images",
+    "ariaLabels": "proper labeling for interactive elements",
+    "keyboardNavigation": "full keyboard support",
+    "contrast": "WCAG AA compliant"
+  },
+  "interactions": {
+    "hover": "smooth transitions",
+    "click": "immediate feedback",
+    "loading": "skeleton states",
+    "animations": "subtle and purposeful"
+  },
+  "themeAdaptation": {
+    "lightMode": "white backgrounds, black text",
+    "darkMode": "dark backgrounds, light text",
+    "highContrast": "enhanced contrast ratios"
+  }
+}

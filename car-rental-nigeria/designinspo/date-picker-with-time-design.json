@@ -1,0 +1,148 @@
+{
+  "component": "DatePickerWithTime",
+  "description": "Enhanced date and time picker with popover functionality for car rental booking system",
+  "design": {
+    "layout": {
+      "type": "popover",
+      "trigger": "button",
+      "content": "calendar_with_time"
+    },
+    "trigger": {
+      "type": "button",
+      "variant": "outline",
+      "height": "h-12",
+      "padding": "pl-10",
+      "icon": {
+        "type": "calendar",
+        "position": "absolute left-3",
+        "size": "h-4 w-4"
+      },
+      "text": {
+        "alignment": "text-left",
+        "font": "font-normal",
+        "placeholder": "Select pick-up date & time"
+      }
+    },
+    "popover": {
+      "alignment": "start",
+      "padding": "p-0",
+      "width": "w-auto"
+    },
+    "calendar": {
+      "type": "card",
+      "border": "border-0",
+      "shadow": "shadow-none",
+      "content": {
+        "type": "relative",
+        "padding": "p-0 md:pr-48"
+      }
+    },
+    "month_year_selectors": {
+      "container": {
+        "layout": "flex justify-between",
+        "margin": "mb-6",
+        "gap": "gap-4"
+      },
+      "month_selector": {
+        "width": "w-[140px]",
+        "height": "h-10",
+        "border": "border border-gray-300",
+        "border_radius": "rounded-lg"
+      },
+      "year_selector": {
+        "width": "w-[100px]",
+        "height": "h-10",
+        "border": "border border-gray-300",
+        "border_radius": "rounded-lg"
+      }
+    },
+    "time_slots": {
+      "container": {
+        "position": "absolute right-0 top-0",
+        "width": "w-48",
+        "height": "max-h-72",
+        "overflow": "overflow-y-auto",
+        "border": "border-l",
+        "padding": "p-6"
+      },
+      "grid": {
+        "type": "grid",
+        "gap": "gap-2"
+      },
+      "button": {
+        "variant": "outline",
+        "width": "w-full",
+        "shadow": "shadow-none"
+      }
+    }
+  },
+  "features": {
+    "date_selection": {
+      "enabled": true,
+      "disabled_dates": "booked_dates",
+      "show_outside_days": false,
+      "modifiers": {
+        "booked": "line-through opacity-100"
+      }
+    },
+    "month_selection": {
+      "enabled": true,
+      "type": "dropdown",
+      "options": "all_12_months",
+      "width": "140px",
+      "border": "gray-300"
+    },
+    "year_selection": {
+      "enabled": true,
+      "type": "dropdown",
+      "range": "current_year_to_plus_9_years",
+      "width": "100px",
+      "border": "gray-300"
+    },
+    "time_selection": {
+      "enabled": true,
+      "intervals": "15_minutes",
+      "range": "6:00_AM_to_10:00_PM",
+      "total_slots": 64
+    },
+    "display": {
+      "format": "date_at_time",
+      "example": "December 25, 2024 at 10:00"
+    }
+  },
+  "states": {
+    "default": {
+      "trigger": "placeholder_text",
+      "popover": "closed"
+    },
+    "open": {
+      "trigger": "selected_value",
+      "popover": "open",
+      "calendar": "visible",
+      "selectors": "visible"
+    },
+    "selected": {
+      "trigger": "formatted_date_time",
+      "popover": "closed"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "calendar": "full_width",
+      "time_slots": "below_calendar",
+      "height": "max_h_72",
+      "selectors": "stacked"
+    },
+    "desktop": {
+      "calendar": "left_side",
+      "time_slots": "right_side",
+      "layout": "side_by_side",
+      "selectors": "side_by_side"
+    }
+  },
+  "accessibility": {
+    "keyboard": "supported",
+    "screen_reader": "supported",
+    "focus_management": "popover_aware"
+  }
+}

@@ -1,0 +1,65 @@
+Okay let's begin building step by step, i have crop different sections of the website i want to build, i will give you the image, you create a design json and guildeline in the json then follow the guildline and build exactly what is in the image. so for the different section you can design,json then for another design2.json till we are done. store all the json file in the folder designinspo i have created it already
+C:\Users\LENOVO\Desktop\Jet&keys\car-rental-nigeria\designinspo
+
+Now we are in the car spec section, 
+
+
+
+start i have uploaded the car spec section
+
+
+
+
+not only the car page make sure every information that is concern with the admin works properly too 
+
+The information that moves between the backend, admin panel to the website, how is that information requested for and is there a better practice than the method we are using now and what is.
+
+
+
+
+Which feature would you like me to implement next?
+Late Return Fee System - Automatic detection and charging
+Rental Rules Validation - Minimum/maximum duration limits
+Business Information Display - Contact details in footer
+Legal Documents - Terms, privacy policy, refund policy
+The booking persistence will work seamlessly with all future features! 🎉
+Now once we cancel, wherre do we see that info in the dashboard, where do we see the reason for canel and where do we see and when the user cancel there should be an option for them to pick which bank they want the money to, the bank name and the Account name. What i am saying is how is funds returned and the dashboard needs to show exactly what the exact amount we need to refund 
+
+do you get?
+
+Which feature would you like me to implement next?
+Late Return Fee System - Automatic detection and charging
+Rental Rules Validation - Minimum/maximum duration limits
+Business Information Display - Contact details in footer
+Legal Documents - Terms, privacy policy, refund policy
+The booking persistence will work seamlessly with all future features! 🎉
+
+
+
+
+I need to ask Samuel how late rental fees will be paid 
+I need to work on the image setting for the car-info page, so the four images can be added separate from the cars page image DONE
+i need to finish the todolist DONE
+Secure the API endpoints and make it security hard to prevent hackers from 
+Secure the database 
+Secure every aspect of the Application to prevent data leakage and unauthorized access and give us control of all the control.
+When you click on the share button a link should be generated for you to copy and share so you can share the car you want to use.
+The favourite icon should help save the car.
+We have to make the email services of the system work
+
+yes use the business logic 
+
+
+In the cancel booking page, the details picked at the end of the booking cancel successful page has to show the refund details picked.
+
+
+
+
+
+
+
+
+supabase credentials 
+NEXT_PUBLIC_SUPABASE_URL=https://dtaspdqcyapnfgcsbtte.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0YXNwZHFjeWFwbmZnY3NidHRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxODYzMTYsImV4cCI6MjA3Mjc2MjMxNn0.fI_8EuIq3caCNIneCS6Rkfr4lgdYKtXE6a5qCz7P4lk
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0YXNwZHFjeWFwbmZnY3NidHRlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzE4NjMxNiwiZXhwIjoyMDcyNzYyMzE2fQ.LP4IkykiPSAovloBz4kbpzFN8y4XKMw0vOSWVQUL5Yc

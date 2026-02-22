@@ -1,0 +1,229 @@
+{
+  "section": "Feature Section",
+  "description": "A dark-themed section showcasing key features of the Tesla Model Y with three feature cards containing images, descriptions, and a call-to-action button",
+  "layout": {
+    "type": "full-width-container",
+    "background": "bg-black",
+    "padding": {
+      "mobile": "py-12 px-4",
+      "tablet": "py-16 px-6", 
+      "desktop": "py-20 px-8"
+    },
+    "borderRadius": "rounded-xl",
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto mt-8"
+  },
+  "header": {
+    "container": {
+      "type": "grid",
+      "columns": {
+        "mobile": 1,
+        "tablet": 1,
+        "desktop": 2
+      },
+      "gap": {
+        "mobile": "gap-4",
+        "tablet": "gap-4",
+        "desktop": "gap-8"
+      },
+      "alignment": "items-center",
+      "marginBottom": "mb-12"
+    },
+    "title": {
+      "text": "Every Features You Might Fall In Love",
+      "fontSize": {
+        "mobile": "text-3xl",
+        "tablet": "text-4xl",
+        "desktop": "text-5xl"
+      },
+      "fontWeight": "font-bold",
+      "color": "text-white",
+      "textAlign": {
+        "mobile": "text-center",
+        "tablet": "text-center",
+        "desktop": "text-left"
+      },
+      "lineHeight": "leading-tight"
+    },
+    "subtitle": {
+      "text": "Here are several features of Tesla Model Y that inform you specifically before you decide anything for this car.",
+      "fontSize": {
+        "mobile": "text-sm",
+        "tablet": "text-base",
+        "desktop": "text-lg"
+      },
+      "fontWeight": "font-normal",
+      "color": "text-gray-300",
+      "textAlign": {
+        "mobile": "text-center",
+        "tablet": "text-center",
+        "desktop": "text-right"
+      },
+      "maxWidth": {
+        "mobile": "max-w-xs",
+        "tablet": "max-w-md",
+        "desktop": "max-w-lg"
+      },
+      "margin": {
+        "mobile": "mx-auto",
+        "tablet": "mx-auto",
+        "desktop": "ml-auto"
+      }
+    }
+  },
+  "featureCards": {
+    "container": {
+      "type": "grid",
+      "columns": {
+        "mobile": 1,
+        "tablet": 2,
+        "desktop": 3
+      },
+      "gap": {
+        "mobile": "gap-6",
+        "tablet": "gap-8",
+        "desktop": "gap-10"
+      },
+      "marginBottom": "mb-12"
+    },
+    "card": {
+      "background": "bg-gray-900",
+      "borderRadius": "rounded-lg",
+      "padding": "p-0",
+      "overflow": "overflow-hidden",
+      "shadow": "shadow-lg",
+      "elements": [
+        {
+          "type": "image",
+          "src": {
+            "card1": "/tesla-model-y-rear.jpg",
+            "card2": "/tesla-model-y-interior.jpg",
+            "card3": "/tesla-model-y-front.jpg"
+          },
+          "alt": {
+            "card1": "Rear view of Tesla Model Y, showcasing its sporty body",
+            "card2": "Interior of Tesla Model Y, focusing on steering wheel and display",
+            "card3": "Front view of Tesla Model Y in motion, elegant black color"
+          },
+          "width": 400,
+          "height": 250,
+          "className": "w-full h-auto object-cover aspect-video grayscale hover:grayscale-0 transition-all duration-300",
+          "priority": false,
+          "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        },
+        {
+          "type": "content-area",
+          "padding": "p-6",
+          "elements": [
+            {
+              "type": "title",
+              "text": {
+                "card1": "Sport & Strong Card Body",
+                "card2": "High-Tech Support System",
+                "card3": "Solid & Elegant Black Color"
+              },
+              "fontSize": "text-xl",
+              "fontWeight": "font-semibold",
+              "color": "text-white",
+              "marginBottom": "mb-2"
+            },
+            {
+              "type": "description",
+              "text": {
+                "card1": "The Model Y is based on the Model 3 sedan platform. It shares an estimated...",
+                "card2": "Tesla Model Y supports high-end technology components from the inside part..",
+                "card3": "Colored with solid material color, Tesla Model Y will gives you elegancy and make.."
+              },
+              "fontSize": "text-sm",
+              "color": "text-gray-400",
+              "marginBottom": "mb-4"
+            },
+            {
+              "type": "link",
+              "text": "Read More",
+              "href": "#",
+              "color": "text-white",
+              "fontWeight": "font-medium",
+              "hoverColor": "text-yellow-400",
+              "underline": "hover:underline"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "callToAction": {
+    "button": {
+      "text": "Learn More",
+      "href": "#",
+      "variant": "outline",
+      "size": "lg",
+      "className": "border-white text-white hover:bg-white hover:text-black rounded-[30px] px-8 py-3 transition-colors duration-200",
+      "textAlign": "center",
+      "margin": "mx-auto"
+    }
+  },
+  "styling": {
+    "fontFamily": "font-poppins",
+    "colors": {
+      "primaryBackground": "#000000",
+      "cardBackground": "#1F2937",
+      "primaryText": "#FFFFFF",
+      "secondaryText": "#D1D5DB",
+      "accentHover": "#FACC15"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "header": {
+        "titleAlignment": "center",
+        "subtitleAlignment": "center"
+      },
+      "featureCards": "stacked-vertical",
+      "buttonWidth": "full"
+    },
+    "tablet": {
+      "header": {
+        "titleAlignment": "center",
+        "subtitleAlignment": "center"
+      },
+      "featureCards": "two-columns",
+      "buttonWidth": "auto"
+    },
+    "desktop": {
+      "header": {
+        "titleAlignment": "left",
+        "subtitleAlignment": "right"
+      },
+      "featureCards": "three-columns",
+      "buttonWidth": "auto"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Tesla Model Y Features",
+      "featureCard1": "Sport and Strong Car Body feature details",
+      "featureCard2": "High-Tech Support System feature details", 
+      "featureCard3": "Solid and Elegant Black Color feature details",
+      "learnMoreButton": "Learn more about Tesla Model Y features"
+    },
+    "semanticHtml": "Uses section, h2, p, img, a, button elements appropriately"
+  },
+  "seo": {
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Tesla Model Y",
+      "description": "Discover the features of the Tesla Model Y, including its sporty body, high-tech system, and elegant black color.",
+      "brand": "Tesla",
+      "model": "Model Y",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://carrentalnigeria.com/features",
+        "priceCurrency": "NGN",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    "keywords": "Tesla Model Y, car features, electric car, sporty car, high-tech car, black car, car rental Nigeria"
+  }
+}

@@ -1,0 +1,625 @@
+{
+  "section": "Car Selection Page",
+  "description": "Main car selection interface with popular vehicles grid and others list, featuring pagination and vehicle cards",
+  "layout": {
+    "type": "two-section-layout",
+    "background": "bg-gray-50",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": "py-8"
+  },
+  "header": {
+    "id": "page-header",
+    "type": "results-header",
+    "content": {
+      "text": "Showing 89 Vehicles available",
+      "position": "top-right",
+      "styling": {
+        "fontSize": "text-sm",
+        "fontWeight": "font-medium",
+        "color": "text-gray-600",
+        "marginBottom": "mb-6"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "popular-vehicles",
+      "type": "popular-vehicles-grid",
+      "title": {
+        "text": "Popular Vehicles",
+        "styling": {
+          "fontSize": "text-xl",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-6"
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "columns": {
+          "mobile": "grid-cols-1",
+          "tablet": "grid-cols-2",
+          "desktop": "grid-cols-2"
+        },
+        "gap": "gap-6",
+        "marginBottom": "mb-8"
+      },
+      "vehicleCards": [
+        {
+          "id": "hyundai-palisade",
+          "type": "popular-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/hyundai-palisade.jpg",
+            "alt": "2022 Hyundai Palisade Facelift",
+            "styling": {
+              "width": "w-full",
+              "height": "h-48",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "overlay": {
+            "position": "absolute bottom-2 left-2",
+            "background": "bg-black bg-opacity-70",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md",
+            "content": [
+              {
+                "type": "feature",
+                "icon": "thumbs-up",
+                "text": "Free cancellation",
+                "color": "text-white"
+              },
+              {
+                "type": "rating",
+                "icon": "star",
+                "text": "5.0 (180 trips)",
+                "color": "text-yellow-400"
+              }
+            ]
+          },
+          "details": {
+            "model": "2022 - Hyundai Palisade Facelift",
+            "location": "Garasi Cak Su",
+            "distance": "1.6 km",
+            "price": "USD 300 / day",
+            "styling": {
+              "model": {
+                "fontSize": "text-lg",
+                "fontWeight": "font-bold",
+                "color": "text-gray-900"
+              },
+              "location": {
+                "fontSize": "text-sm",
+                "color": "text-gray-600"
+              },
+              "distance": {
+                "fontSize": "text-sm",
+                "color": "text-gray-600"
+              },
+              "price": {
+                "fontSize": "text-lg",
+                "fontWeight": "font-bold",
+                "color": "text-gray-900",
+                "textAlign": "text-right"
+              }
+            }
+          }
+        },
+        {
+          "id": "honda-hrv",
+          "type": "popular-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/honda-hrv.jpg",
+            "alt": "2022 Honda HR-V Turbo",
+            "styling": {
+              "width": "w-full",
+              "height": "h-48",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "overlay": {
+            "position": "absolute bottom-2 left-2",
+            "background": "bg-black bg-opacity-70",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md",
+            "content": [
+              {
+                "type": "feature",
+                "icon": "thumbs-up",
+                "text": "Free cancellation",
+                "color": "text-white"
+              },
+              {
+                "type": "rating",
+                "icon": "star",
+                "text": "5.0 (211 trips)",
+                "color": "text-yellow-400"
+              }
+            ]
+          },
+          "details": {
+            "model": "2022 - Honda HR-V Turbo",
+            "location": "Rakabuming Suhu",
+            "distance": "2.2 km",
+            "price": "USD 250 / day",
+            "styling": {
+              "model": {
+                "fontSize": "text-lg",
+                "fontWeight": "font-bold",
+                "color": "text-gray-900"
+              },
+              "location": {
+                "fontSize": "text-sm",
+                "color": "text-gray-600"
+              },
+              "distance": {
+                "fontSize": "text-sm",
+                "color": "text-gray-600"
+              },
+              "price": {
+                "fontSize": "text-lg",
+                "fontWeight": "font-bold",
+                "color": "text-gray-900",
+                "textAlign": "text-right"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "others-section",
+      "type": "others-vehicles-list",
+      "title": {
+        "text": "Others",
+        "styling": {
+          "fontSize": "text-xl",
+          "fontWeight": "font-bold",
+          "color": "text-gray-900",
+          "marginBottom": "mb-6"
+        }
+      },
+      "layout": {
+        "type": "vertical-list",
+        "gap": "gap-4",
+        "marginBottom": "mb-8"
+      },
+      "vehicleCards": [
+        {
+          "id": "toyota-innova",
+          "type": "others-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/toyota-innova.jpg",
+            "alt": "2020 Toyota Innova",
+            "styling": {
+              "width": "w-32",
+              "height": "h-24",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "details": {
+            "model": "2020 - Toyota Innova",
+            "location": "Bung Handuk 2.2 km from centre",
+            "features": [
+              {
+                "icon": "users",
+                "text": "7 seats"
+              },
+              {
+                "icon": "settings",
+                "text": "Manual"
+              }
+            ],
+            "cancellation": {
+              "icon": "thumbs-up",
+              "text": "Free cancellation"
+            },
+            "rating": {
+              "icon": "star",
+              "text": "4.0 (180 reviews)",
+              "color": "text-yellow-400"
+            },
+            "price": {
+              "label": "Basic price from",
+              "amount": "USD 380 / day"
+            },
+            "button": {
+              "text": "Choose this car",
+              "styling": {
+                "background": "bg-blue-500",
+                "textColor": "text-white",
+                "padding": "px-4 py-2",
+                "borderRadius": "rounded-lg",
+                "fontWeight": "font-medium"
+              }
+            }
+          }
+        },
+        {
+          "id": "chery-tiggo",
+          "type": "others-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/chery-tiggo.jpg",
+            "alt": "2022 Chery Tiggo 4 Pro",
+            "styling": {
+              "width": "w-32",
+              "height": "h-24",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "details": {
+            "model": "2022 - Chery Tiggo 4 Pro",
+            "location": "Bung Handuk 2.2 km from centre",
+            "features": [
+              {
+                "icon": "users",
+                "text": "7 seats"
+              },
+              {
+                "icon": "settings",
+                "text": "CVT"
+              }
+            ],
+            "cancellation": {
+              "icon": "thumbs-up",
+              "text": "Free cancellation"
+            },
+            "rating": {
+              "icon": "star",
+              "text": "4.0 (180 reviews)",
+              "color": "text-yellow-400"
+            },
+            "price": {
+              "label": "Basic price from",
+              "amount": "USD 230 / day"
+            },
+            "button": {
+              "text": "Choose this car",
+              "styling": {
+                "background": "bg-blue-500",
+                "textColor": "text-white",
+                "padding": "px-4 py-2",
+                "borderRadius": "rounded-lg",
+                "fontWeight": "font-medium"
+              }
+            }
+          }
+        },
+        {
+          "id": "toyota-fortuner",
+          "type": "others-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/toyota-fortuner.jpg",
+            "alt": "2022 Toyota Fortuner 2.800 cc",
+            "styling": {
+              "width": "w-32",
+              "height": "h-24",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "details": {
+            "model": "2022 - Toyota Fortuner 2.800 cc",
+            "location": "Bung Handuk 2.2 km from centre",
+            "features": [
+              {
+                "icon": "users",
+                "text": "7 seats"
+              },
+              {
+                "icon": "settings",
+                "text": "Manual"
+              }
+            ],
+            "cancellation": {
+              "icon": "thumbs-up",
+              "text": "Free cancellation"
+            },
+            "rating": {
+              "icon": "star",
+              "text": "4.0 (180 reviews)",
+              "color": "text-yellow-400"
+            },
+            "price": {
+              "label": "Basic price from",
+              "amount": "USD 290 / day"
+            },
+            "button": {
+              "text": "Choose this car",
+              "styling": {
+                "background": "bg-blue-500",
+                "textColor": "text-white",
+                "padding": "px-4 py-2",
+                "borderRadius": "rounded-lg",
+                "fontWeight": "font-medium"
+              }
+            }
+          }
+        },
+        {
+          "id": "toyota-landcruiser",
+          "type": "others-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/toyota-landcruiser.jpg",
+            "alt": "2022 Toyota Land Cruiser 300",
+            "styling": {
+              "width": "w-32",
+              "height": "h-24",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "details": {
+            "model": "2022 - Toyota Land Cruiser 300",
+            "location": "Bung Handuk 2.2 km from centre",
+            "features": [
+              {
+                "icon": "users",
+                "text": "7 seats"
+              },
+              {
+                "icon": "settings",
+                "text": "Manual"
+              }
+            ],
+            "cancellation": {
+              "icon": "thumbs-up",
+              "text": "Free cancellation"
+            },
+            "rating": {
+              "icon": "star",
+              "text": "4.0 (180 reviews)",
+              "color": "text-yellow-400"
+            },
+            "price": {
+              "label": "Basic price from",
+              "amount": "USD 380 / day"
+            },
+            "button": {
+              "text": "Choose this car",
+              "styling": {
+                "background": "bg-blue-500",
+                "textColor": "text-white",
+                "padding": "px-4 py-2",
+                "borderRadius": "rounded-lg",
+                "fontWeight": "font-medium"
+              }
+            }
+          }
+        },
+        {
+          "id": "toyota-raize",
+          "type": "others-vehicle-card",
+          "image": {
+            "src": "/Carsectionui/toyota-raize.jpg",
+            "alt": "2021 Toyota Raize",
+            "styling": {
+              "width": "w-32",
+              "height": "h-24",
+              "objectFit": "object-cover",
+              "borderRadius": "rounded-lg"
+            }
+          },
+          "details": {
+            "model": "2021 - Toyota Raize",
+            "location": "Bung Handuk 2.2 km from centre",
+            "features": [
+              {
+                "icon": "users",
+                "text": "7 seats"
+              },
+              {
+                "icon": "settings",
+                "text": "Manual"
+              }
+            ],
+            "cancellation": {
+              "icon": "thumbs-up",
+              "text": "Free cancellation"
+            },
+            "rating": {
+              "icon": "star",
+              "text": "4.0 (180 reviews)",
+              "color": "text-yellow-400"
+            },
+            "price": {
+              "label": "Basic price from",
+              "amount": "USD 140 / day"
+            },
+            "button": {
+              "text": "Choose this car",
+              "styling": {
+                "background": "bg-blue-500",
+                "textColor": "text-white",
+                "padding": "px-4 py-2",
+                "borderRadius": "rounded-lg",
+                "fontWeight": "font-medium"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "id": "pagination-section",
+    "type": "pagination-controls",
+    "layout": {
+      "type": "flex",
+      "justifyContent": "justify-between",
+      "alignItems": "items-center",
+      "padding": "pt-6"
+    },
+    "leftSection": {
+      "type": "results-info",
+      "content": [
+        {
+          "type": "text",
+          "content": "Showing"
+        },
+        {
+          "type": "dropdown",
+          "options": ["5 per page", "10 per page", "20 per page"],
+          "defaultValue": "5 per page",
+          "styling": {
+            "background": "bg-white",
+            "border": "border border-gray-300",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "text",
+          "content": "Total 89 data"
+        }
+      ]
+    },
+    "rightSection": {
+      "type": "pagination-buttons",
+      "buttons": [
+        {
+          "type": "page-button",
+          "number": "1",
+          "active": true,
+          "styling": {
+            "background": "bg-blue-500",
+            "textColor": "text-white",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "page-button",
+          "number": "2",
+          "active": false,
+          "styling": {
+            "background": "bg-gray-200",
+            "textColor": "text-gray-700",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "page-button",
+          "number": "3",
+          "active": false,
+          "styling": {
+            "background": "bg-gray-200",
+            "textColor": "text-gray-700",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "page-button",
+          "number": "4",
+          "active": false,
+          "styling": {
+            "background": "bg-gray-200",
+            "textColor": "text-gray-700",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "navigation-button",
+          "direction": "prev",
+          "icon": "chevron-left",
+          "styling": {
+            "background": "bg-gray-200",
+            "textColor": "text-gray-700",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        },
+        {
+          "type": "navigation-button",
+          "direction": "next",
+          "icon": "chevron-right",
+          "styling": {
+            "background": "bg-gray-200",
+            "textColor": "text-gray-700",
+            "padding": "px-3 py-1",
+            "borderRadius": "rounded-md"
+          }
+        }
+      ]
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-gray-50",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "card": {
+      "background": "bg-white",
+      "shadow": "shadow-md",
+      "borderRadius": "rounded-lg",
+      "padding": "p-4",
+      "hover": "hover:shadow-lg",
+      "transition": "transition-shadow duration-200"
+    },
+    "colors": {
+      "primaryBackground": "#F9FAFB",
+      "cardBackground": "#FFFFFF",
+      "primaryText": "#111827",
+      "secondaryText": "#6B7280",
+      "accentColor": "#3B82F6",
+      "ratingColor": "#F59E0B",
+      "borderColor": "#E5E7EB"
+    },
+    "typography": {
+      "headings": {
+        "fontFamily": "font-poppins",
+        "fontWeight": "font-bold"
+      },
+      "body": {
+        "fontFamily": "font-poppins",
+        "fontWeight": "font-normal"
+      }
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "popularGrid": "grid-cols-1",
+      "othersLayout": "flex-col",
+      "pagination": "flex-col gap-4"
+    },
+    "tablet": {
+      "popularGrid": "grid-cols-2",
+      "othersLayout": "flex-row",
+      "pagination": "flex-row"
+    },
+    "desktop": {
+      "popularGrid": "grid-cols-2",
+      "othersLayout": "flex-row",
+      "pagination": "flex-row"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "popularSection": "Popular vehicles section",
+      "othersSection": "Other vehicles section",
+      "pagination": "Pagination controls",
+      "vehicleCard": "Vehicle information card"
+    },
+    "semanticHtml": "Uses proper heading hierarchy, button elements, and image alt text"
+  },
+  "interaction": {
+    "vehicleSelection": "Click to select vehicle",
+    "pagination": "Navigate between pages",
+    "dropdown": "Change items per page",
+    "stateManagement": "useState for pagination and selection state"
+  },
+  "themeAdaptation": {
+    "colors": "Consistent with Jet&Keys design system",
+    "typography": "Poppins font family",
+    "spacing": "Consistent spacing system",
+    "interactions": "Smooth transitions and hover effects"
+  }
+}

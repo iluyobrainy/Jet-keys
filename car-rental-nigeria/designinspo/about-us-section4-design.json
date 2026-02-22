@@ -1,0 +1,61 @@
+{
+  "section": "About Us Section 4 - Sliding Text Animation",
+  "description": "Endless horizontal sliding text animation with cloud SVG and kiss emoji",
+  "layout": {
+    "container": "w-full overflow-hidden bg-white pt-4 pb-16",
+    "animation_container": "relative flex animate-slide-infinite",
+    "text_element": "flex items-center space-x-8 whitespace-nowrap text-7xl sm:text-8xl lg:text-9xl font-medium text-black"
+  },
+  "components": {
+    "sliding_text": {
+      "text": "BRINGING COMFORT TO YOU",
+      "font_size": "text-7xl sm:text-8xl lg:text-9xl",
+      "font_weight": "font-medium",
+      "color": "text-black",
+      "spacing": "space-x-8"
+    },
+    "cloud_svg": {
+      "position": "between BRINGING and COMFORT",
+      "style": "circular background",
+      "size": "w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24",
+      "background": "bg-gray-100 rounded-full flex items-center justify-center",
+      "svg_size": "w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14"
+    },
+    "kiss_emoji": {
+      "position": "at end of YOU",
+      "size": "text-7xl sm:text-8xl lg:text-9xl"
+    }
+  },
+  "animation": {
+    "type": "endless horizontal slide",
+    "direction": "from both sides",
+    "speed": "medium",
+    "duration": "20s",
+    "keyframes": "@keyframes slide-infinite",
+    "hover_effect": "pause on hover"
+  },
+  "responsive": {
+    "mobile": {
+      "text_size": "text-7xl",
+      "cloud_size": "w-16 h-16",
+      "svg_size": "w-10 h-10"
+    },
+    "tablet": {
+      "text_size": "text-8xl", 
+      "cloud_size": "w-20 h-20",
+      "svg_size": "w-12 h-12"
+    },
+    "desktop": {
+      "text_size": "text-9xl",
+      "cloud_size": "w-24 h-24", 
+      "svg_size": "w-14 h-14"
+    }
+  },
+  "styling": {
+    "background": "bg-white",
+    "padding": "pt-4 pb-16",
+    "overflow": "overflow-hidden",
+    "animation_class": "animate-slide-infinite",
+    "hover_pause": "hover:pause"
+  }
+}

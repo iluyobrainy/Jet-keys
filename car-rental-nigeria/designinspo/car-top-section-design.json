@@ -1,0 +1,182 @@
+{
+  "section": "Car Section Top",
+  "description": "Top section of the car rental page featuring a booking search form with location and date inputs, positioned below the navigation bar",
+  "layout": {
+    "type": "top-section",
+    "position": "below-navigation",
+    "background": "white",
+    "padding": {
+      "mobile": "py-6 px-4",
+      "tablet": "py-8 px-6", 
+      "desktop": "py-10 px-8"
+    },
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto"
+  },
+  "bookingForm": {
+    "type": "search-form",
+    "container": {
+      "background": "bg-white",
+      "shadow": "shadow-lg",
+      "borderRadius": "rounded-2xl",
+      "padding": "p-6 sm:p-8",
+      "border": "border border-gray-200"
+    },
+    "layout": {
+      "type": "horizontal-form",
+      "responsive": {
+        "mobile": "flex-col gap-4",
+        "tablet": "flex-row gap-6",
+        "desktop": "flex-row gap-8"
+      },
+      "alignment": "items-end"
+    },
+    "fields": [
+      {
+        "id": "pickup-location",
+        "type": "location-picker",
+        "label": {
+          "text": "Pickup Location",
+          "fontSize": "text-sm",
+          "fontWeight": "font-medium",
+          "color": "text-gray-700",
+          "marginBottom": "mb-2"
+        },
+        "input": {
+          "type": "location-picker",
+          "placeholder": "Select pickup location",
+          "icon": "map-pin",
+          "iconPosition": "left",
+          "className": "flex-1"
+        }
+      },
+      {
+        "id": "pickup-date",
+        "type": "date-picker",
+        "label": {
+          "text": "Pickup Date",
+          "fontSize": "text-sm",
+          "fontWeight": "font-medium",
+          "color": "text-gray-700",
+          "marginBottom": "mb-2"
+        },
+        "input": {
+          "type": "date-picker-with-time",
+          "placeholder": "Select pickup date & time",
+          "icon": "calendar",
+          "iconPosition": "right",
+          "className": "flex-1"
+        }
+      },
+      {
+        "id": "return-date",
+        "type": "date-picker",
+        "label": {
+          "text": "Return Date",
+          "fontSize": "text-sm",
+          "fontWeight": "font-medium",
+          "color": "text-gray-700",
+          "marginBottom": "mb-2"
+        },
+        "input": {
+          "type": "date-picker-with-time",
+          "placeholder": "Select return date & time",
+          "icon": "calendar",
+          "iconPosition": "right",
+          "className": "flex-1"
+        }
+      },
+      {
+        "id": "search-button",
+        "type": "button",
+        "label": {
+          "text": "",
+          "display": "hidden"
+        },
+        "button": {
+          "text": "Search a Car",
+          "type": "submit",
+          "style": "primary",
+          "background": "bg-black",
+          "textColor": "text-white",
+          "hoverBackground": "hover:bg-yellow-500",
+          "borderRadius": "rounded-[30px]",
+          "padding": "px-8 py-3",
+          "fontWeight": "font-medium",
+          "className": "flex-shrink-0"
+        }
+      }
+    ]
+  },
+  "styling": {
+    "container": {
+      "background": "bg-white",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryBackground": "#FFFFFF",
+      "primaryText": "#000000",
+      "secondaryText": "#374151",
+      "accentColor": "#F59E0B",
+      "borderColor": "#E5E7EB",
+      "buttonBackground": "#000000",
+      "buttonHoverBackground": "#F59E0B"
+    },
+    "inputFields": {
+      "background": "bg-gray-50",
+      "border": "border border-gray-300",
+      "textColor": "text-gray-900",
+      "placeholderColor": "text-gray-500",
+      "focusBorder": "border-black",
+      "focusRing": "focus:ring-2 focus:ring-black focus:ring-offset-2"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "formLayout": "stacked",
+      "fieldSpacing": "gap-4",
+      "buttonWidth": "w-full"
+    },
+    "tablet": {
+      "formLayout": "horizontal",
+      "fieldSpacing": "gap-6",
+      "buttonWidth": "w-auto"
+    },
+    "desktop": {
+      "formLayout": "horizontal",
+      "fieldSpacing": "gap-8",
+      "buttonWidth": "w-auto"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Car rental search form",
+      "pickupLocation": "Select pickup location",
+      "pickupDate": "Select pickup date and time",
+      "returnDate": "Select return date and time",
+      "searchButton": "Search for available cars"
+    },
+    "semanticHtml": "Uses form, fieldset, label, input, button elements appropriately"
+  },
+  "integration": {
+    "components": {
+      "locationPicker": "LocationPicker",
+      "datePickerWithTime": "DatePickerWithTime",
+      "button": "Button"
+    },
+    "stateManagement": {
+      "pickupLocation": "useState",
+      "pickupDate": "useState", 
+      "returnDate": "useState",
+      "formSubmission": "handleSubmit"
+    }
+  },
+  "themeAdaptation": {
+    "logo": "Jet&Keys (Car icon + text)",
+    "navigation": "Transparent with aurora background",
+    "buttonColors": "Black background, yellow hover",
+    "inputStyling": "Gray background, black focus",
+    "typography": "Poppins font family"
+  }
+}

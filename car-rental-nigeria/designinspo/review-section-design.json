@@ -1,0 +1,224 @@
+{
+  "section": "What Our Customers Say",
+  "description": "A dark-themed testimonial section showcasing customer reviews with a grid of testimonial cards.",
+  "layout": {
+    "type": "dark-container",
+    "background": "bg-black",
+    "borderRadius": "rounded-lg",
+    "padding": {
+      "mobile": "py-8 px-4",
+      "tablet": "py-12 px-6",
+      "desktop": "py-16 px-8"
+    },
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto mt-12 mb-12"
+  },
+  "header": {
+    "title": {
+      "text": "What Our Customers Say",
+      "fontSize": {
+        "mobile": "text-2xl",
+        "tablet": "text-3xl",
+        "desktop": "text-4xl"
+      },
+      "fontWeight": "font-bold",
+      "color": "text-white",
+      "alignment": "text-left",
+      "marginBottom": "mb-4"
+    },
+    "subtitle": {
+      "text": "Thank you for your trust in Crypt Land! We are grateful for your feedback and are committed to providing the best [products/services offered]. Read what our clients have to say about their experience with us.",
+      "fontSize": {
+        "mobile": "text-sm",
+        "tablet": "text-base",
+        "desktop": "text-lg"
+      },
+      "fontWeight": "font-normal",
+      "color": "text-gray-300",
+      "alignment": "text-left",
+      "maxWidth": "max-w-4xl",
+      "marginBottom": "mb-12"
+    }
+  },
+  "content": {
+    "type": "testimonial-grid",
+    "grid": {
+      "columns": {
+        "mobile": 1,
+        "tablet": 2,
+        "desktop": 3
+      },
+      "rows": {
+        "mobile": 6,
+        "tablet": 3,
+        "desktop": 2
+      },
+      "gap": {
+        "mobile": "gap-6",
+        "tablet": "gap-8",
+        "desktop": "gap-8"
+      }
+    },
+    "testimonials": [
+      {
+        "id": "kathryn-murphy",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Kathryn Murphy",
+          "avatar": "/avatars/kathryn-murphy.jpg",
+          "rating": 5
+        }
+      },
+      {
+        "id": "darlene-robertson",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Darlene Robertson",
+          "avatar": "/avatars/darlene-robertson.jpg",
+          "rating": 5
+        }
+      },
+      {
+        "id": "guy-hawkins",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Guy Hawkins",
+          "avatar": "/avatars/guy-hawkins.jpg",
+          "rating": 5
+        }
+      },
+      {
+        "id": "jerome-bell",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Jerome Bell",
+          "avatar": "/avatars/jerome-bell.jpg",
+          "rating": 5
+        }
+      },
+      {
+        "id": "eleanor-pena",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Eleanor Pena",
+          "avatar": "/avatars/eleanor-pena.jpg",
+          "rating": 5
+        }
+      },
+      {
+        "id": "robert-fox",
+        "text": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch. They also had an impressive ability to use technologies that the company hasn't used, which have also proved to be easy to use and reliable.",
+        "customer": {
+          "name": "Robert Fox",
+          "avatar": "/avatars/robert-fox.jpg",
+          "rating": 5
+        }
+      }
+    ],
+    "testimonialCard": {
+      "background": "bg-white",
+      "borderRadius": "rounded-lg",
+      "padding": "p-6",
+      "shadow": "shadow-lg",
+      "elements": {
+        "testimonialText": {
+          "fontSize": {
+            "mobile": "text-sm",
+            "tablet": "text-base",
+            "desktop": "text-base"
+          },
+          "fontWeight": "font-normal",
+          "color": "text-gray-800",
+          "alignment": "text-left",
+          "lineHeight": "leading-relaxed",
+          "marginBottom": "mb-4"
+        },
+        "customerInfo": {
+          "layout": "flex",
+          "alignment": "items-center",
+          "avatar": {
+            "size": "w-10 h-10",
+            "borderRadius": "rounded-full",
+            "margin": "mr-3"
+          },
+          "name": {
+            "fontSize": "text-sm",
+            "fontWeight": "font-semibold",
+            "color": "text-gray-900",
+            "marginBottom": "mb-1"
+          },
+          "rating": {
+            "color": "text-yellow-400",
+            "size": "text-sm"
+          }
+        }
+      }
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-black",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryBackground": "#000000",
+      "cardBackground": "#FFFFFF",
+      "primaryText": "#FFFFFF",
+      "secondaryText": "#B0B0B0",
+      "cardText": "#333333",
+      "starColor": "#FFC107"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "headerAlignment": "left",
+      "testimonialGrid": "single-column",
+      "cardPadding": "p-4"
+    },
+    "tablet": {
+      "headerAlignment": "left",
+      "testimonialGrid": "two-columns",
+      "cardPadding": "p-5"
+    },
+    "desktop": {
+      "headerAlignment": "left",
+      "testimonialGrid": "three-columns",
+      "cardPadding": "p-6"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Customer Testimonials",
+      "testimonialCard": "Customer testimonial from {customer name}",
+      "starRating": "5 out of 5 stars rating"
+    },
+    "semanticHtml": "Uses section, h2, p, img, div elements appropriately"
+  },
+  "seo": {
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {
+        "@type": "Service",
+        "name": "Car Rental Services"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Kathryn Murphy"
+          },
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Teamollo delivered the site with in the timeline as they requested. In the end, the client found a 50% increase in traffic with in days since its launch."
+        }
+      ]
+    },
+    "keywords": "customer reviews, testimonials, car rental reviews, customer feedback, 5-star reviews"
+  }
+}

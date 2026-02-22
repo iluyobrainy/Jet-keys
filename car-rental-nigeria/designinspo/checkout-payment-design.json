@@ -1,0 +1,95 @@
+{
+  "checkoutPayment": {
+    "layout": "single-column-card",
+    "description": "Payment summary and confirmation section with booking details and payment button",
+    "structure": {
+      "stepIndicator": {
+        "currentStep": 3,
+        "stepLabel": "Complete",
+        "color": "grey"
+      },
+      "summaryCard": {
+        "title": "Summary",
+        "bookingDetails": {
+          "totalVehicles": "1 Vehicle",
+          "pickupLocation": "Jl. Raya Ponorogo - Trenggalek, Bancangan",
+          "pickupDate": "Mon, 4 Feb 2024 - 10:00",
+          "returnDate": "Thu, 8 Feb 2024 - 10:00"
+        },
+        "priceDetails": {
+          "title": "Price Details",
+          "items": [
+            {
+              "label": "Trip Price",
+              "value": "USD 230/day"
+            },
+            {
+              "label": "Delivery fee",
+              "value": "USD 50"
+            },
+            {
+              "label": "Duration",
+              "value": "4 days"
+            },
+            {
+              "label": "Tax",
+              "value": "USD 0"
+            }
+          ],
+          "total": {
+            "label": "Total",
+            "value": "USD 1,850.00",
+            "icon": "price-tag",
+            "iconColor": "orange"
+          }
+        }
+      },
+      "agreementCard": {
+        "checkbox": {
+          "checked": true,
+          "color": "blue"
+        },
+        "agreementText": "By clicking this, I agree to Garazi",
+        "termsLink": "Terms & Conditions",
+        "privacyLink": "Privacy Policy",
+        "linkColor": "blue"
+      },
+      "paymentButton": {
+        "text": "Pay for My Booking",
+        "backgroundColor": "purple",
+        "textColor": "white",
+        "size": "large",
+        "fullWidth": true
+      }
+    },
+    "styling": {
+      "colors": {
+        "primary": "#6A0DAD",
+        "background": "#F8F8F8",
+        "cardBackground": "#FFFFFF",
+        "textPrimary": "#333333",
+        "textSecondary": "#666666",
+        "textLight": "#999999",
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "border": "#E5E7EB",
+        "link": "#007BFF",
+        "orange": "#F59E0B"
+      },
+      "spacing": {
+        "cardPadding": "24px",
+        "sectionMargin": "24px",
+        "fieldSpacing": "16px"
+      },
+      "shadows": {
+        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+      },
+      "borderRadius": "8px"
+    }
+  }
+}
+
+
+
+
+

@@ -1,0 +1,314 @@
+{
+  "section": "What We Provide",
+  "description": "A section showcasing key offerings with a central car image surrounded by four feature blocks, connected by a dashed red circular line.",
+  "layout": {
+    "type": "card-container",
+    "background": "bg-gray-50",
+    "cardBackground": "bg-white",
+    "borderRadius": "rounded-2xl",
+    "padding": {
+      "mobile": "py-8 px-4",
+      "tablet": "py-12 px-6",
+      "desktop": "py-16 px-8"
+    },
+    "maxWidth": "max-w-7xl",
+    "margin": "mx-auto mt-12 mb-12",
+    "shadow": "shadow-lg"
+  },
+  "header": {
+    "title": {
+      "text": "Providing Reliable Car Rentals",
+      "fontSize": {
+        "mobile": "text-2xl",
+        "tablet": "text-3xl",
+        "desktop": "text-4xl"
+      },
+      "fontWeight": "font-bold",
+      "color": "text-gray-900",
+      "alignment": "text-center",
+      "marginBottom": "mb-2"
+    },
+    "subtitle": {
+      "text": "INTRODUCING TESLA MODEL Y, AN AUTOPILOT CAR THAT ADVANCED SAFETY AND CONVENIENCE FEATURES",
+      "fontSize": {
+        "mobile": "text-sm",
+        "tablet": "text-base",
+        "desktop": "text-lg"
+      },
+      "fontWeight": "font-normal",
+      "color": "text-gray-700",
+      "alignment": "text-center",
+      "maxWidth": "max-w-4xl",
+      "margin": "mx-auto",
+      "marginBottom": "mb-12"
+    }
+  },
+  "content": {
+    "type": "central-layout",
+    "centralImage": {
+      "src": "/gwagon.png",
+      "alt": "G-Wagon SUV vehicle for reliable car rentals",
+      "width": 400,
+      "height": 300,
+      "className": "w-full h-auto object-contain",
+      "priority": true,
+      "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    },
+    "visualEffect": {
+      "type": "dashed-circle",
+      "color": "border-red-500",
+      "style": "border-2 border-dashed",
+      "size": "w-80 h-80",
+      "position": "absolute inset-0 m-auto",
+      "borderRadius": "rounded-full",
+      "dots": {
+        "color": "bg-red-500",
+        "size": "w-2 h-2",
+        "borderRadius": "rounded-full",
+        "positions": [
+          "top-0 left-1/2 transform -translate-x-1/2",
+          "bottom-0 left-1/2 transform -translate-x-1/2",
+          "left-0 top-1/2 transform -translate-y-1/2",
+          "right-0 top-1/2 transform -translate-y-1/2"
+        ]
+      }
+    },
+    "featureBlocks": {
+      "layout": {
+        "type": "grid",
+        "columns": {
+          "mobile": 1,
+          "tablet": 2,
+          "desktop": 4
+        },
+        "gap": {
+          "mobile": "gap-6",
+          "tablet": "gap-8",
+          "desktop": "gap-10"
+        },
+        "position": "around-central-image"
+      },
+      "blocks": [
+        {
+          "id": "cross-country-drive",
+          "position": "top-left",
+          "icon": {
+            "type": "map-pin",
+            "background": "bg-gray-900",
+            "color": "text-white",
+            "size": "w-12 h-12",
+            "iconSize": "w-6 h-6",
+            "borderRadius": "rounded-lg",
+            "margin": "mb-4"
+          },
+          "title": {
+            "text": "CROSS COUNTRY DRIVE",
+            "fontSize": {
+              "mobile": "text-lg",
+              "tablet": "text-xl",
+              "desktop": "text-xl"
+            },
+            "fontWeight": "font-bold",
+            "color": "text-gray-900",
+            "alignment": "text-center",
+            "marginBottom": "mb-2"
+          },
+          "description": {
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "fontSize": {
+              "mobile": "text-sm",
+              "tablet": "text-base",
+              "desktop": "text-base"
+            },
+            "fontWeight": "font-normal",
+            "color": "text-gray-600",
+            "alignment": "text-center"
+          }
+        },
+        {
+          "id": "no-hidden-charges",
+          "position": "bottom-left",
+          "icon": {
+            "type": "shield-check",
+            "background": "bg-gray-900",
+            "color": "text-white",
+            "size": "w-12 h-12",
+            "iconSize": "w-6 h-6",
+            "borderRadius": "rounded-lg",
+            "margin": "mb-4"
+          },
+          "title": {
+            "text": "NO HIDDEN CHARGES",
+            "fontSize": {
+              "mobile": "text-lg",
+              "tablet": "text-xl",
+              "desktop": "text-xl"
+            },
+            "fontWeight": "font-bold",
+            "color": "text-gray-900",
+            "alignment": "text-center",
+            "marginBottom": "mb-2"
+          },
+          "description": {
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "fontSize": {
+              "mobile": "text-sm",
+              "tablet": "text-base",
+              "desktop": "text-base"
+            },
+            "fontWeight": "font-normal",
+            "color": "text-gray-600",
+            "alignment": "text-center"
+          }
+        },
+        {
+          "id": "reserve-anytime",
+          "position": "top-right",
+          "icon": {
+            "type": "clock",
+            "background": "bg-gray-900",
+            "color": "text-white",
+            "size": "w-12 h-12",
+            "iconSize": "w-6 h-6",
+            "borderRadius": "rounded-lg",
+            "margin": "mb-4"
+          },
+          "title": {
+            "text": "RESERVE ANYTIME",
+            "fontSize": {
+              "mobile": "text-lg",
+              "tablet": "text-xl",
+              "desktop": "text-xl"
+            },
+            "fontWeight": "font-bold",
+            "color": "text-gray-900",
+            "alignment": "text-center",
+            "marginBottom": "mb-2"
+          },
+          "description": {
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "fontSize": {
+              "mobile": "text-sm",
+              "tablet": "text-base",
+              "desktop": "text-base"
+            },
+            "fontWeight": "font-normal",
+            "color": "text-gray-600",
+            "alignment": "text-center"
+          }
+        },
+        {
+          "id": "24-7-support",
+          "position": "bottom-right",
+          "icon": {
+            "type": "users",
+            "background": "bg-gray-900",
+            "color": "text-white",
+            "size": "w-12 h-12",
+            "iconSize": "w-6 h-6",
+            "borderRadius": "rounded-lg",
+            "margin": "mb-4"
+          },
+          "title": {
+            "text": "24/7 SUPPORT",
+            "fontSize": {
+              "mobile": "text-lg",
+              "tablet": "text-xl",
+              "desktop": "text-xl"
+            },
+            "fontWeight": "font-bold",
+            "color": "text-gray-900",
+            "alignment": "text-center",
+            "marginBottom": "mb-2"
+          },
+          "description": {
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "fontSize": {
+              "mobile": "text-sm",
+              "tablet": "text-base",
+              "desktop": "text-base"
+            },
+            "fontWeight": "font-normal",
+            "color": "text-gray-600",
+            "alignment": "text-center"
+          }
+        }
+      ]
+    }
+  },
+  "styling": {
+    "container": {
+      "background": "bg-gray-50",
+      "cardBackground": "bg-white",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryText": "#1F2937",
+      "secondaryText": "#6B7280",
+      "iconBackground": "#1F2937",
+      "iconColor": "#FFFFFF",
+      "accentColor": "#EF4444"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "stacked",
+      "centralImage": "full-width",
+      "featureBlocks": "single-column"
+    },
+    "tablet": {
+      "layout": "centered",
+      "centralImage": "medium-size",
+      "featureBlocks": "two-columns"
+    },
+    "desktop": {
+      "layout": "central-with-surrounding",
+      "centralImage": "large-size",
+      "featureBlocks": "four-corners"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "What We Provide - Car Rental Services",
+      "centralImage": "G-Wagon SUV vehicle",
+      "crossCountryDrive": "Cross country drive service details",
+      "noHiddenCharges": "No hidden charges policy details",
+      "reserveAnytime": "Reserve anytime service details",
+      "support24_7": "24/7 support service details"
+    },
+    "semanticHtml": "Uses section, h2, p, img elements appropriately"
+  },
+  "seo": {
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Reliable Car Rentals",
+      "description": "Providing reliable car rentals with cross-country drive, no hidden charges, reserve anytime, and 24/7 support.",
+      "serviceType": "Car Rental",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Cross Country Drive",
+          "description": "Cross country drive service"
+        },
+        {
+          "@type": "Offer",
+          "name": "No Hidden Charges",
+          "description": "Transparent pricing with no hidden charges"
+        },
+        {
+          "@type": "Offer",
+          "name": "Reserve Anytime",
+          "description": "24/7 booking availability"
+        },
+        {
+          "@type": "Offer",
+          "name": "24/7 Support",
+          "description": "Round the clock customer support"
+        }
+      ]
+    },
+    "keywords": "reliable car rentals, cross country drive, no hidden charges, reserve anytime, 24/7 support, car rental services"
+  }
+}

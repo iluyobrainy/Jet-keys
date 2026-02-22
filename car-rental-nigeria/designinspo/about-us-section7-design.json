@@ -1,0 +1,101 @@
+{
+  "section": "About Us Section 7 - Contact Us Cards",
+  "description": "Three clickable contact cards that navigate to the contact page",
+  "layout": {
+    "container": "w-full bg-white py-16",
+    "content_wrapper": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "cards_layout": "grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto"
+  },
+  "components": {
+    "section_title": {
+      "text": "Contact For Clean Your Dream Car",
+      "font_size": "text-4xl sm:text-5xl lg:text-6xl",
+      "font_weight": "font-bold",
+      "color": "text-black",
+      "alignment": "text-center",
+      "margin": "mb-12",
+      "line_break": "two lines",
+      "line_1": "Contact For",
+      "line_2": "Clean Your Dream Car"
+    },
+    "contact_cards": [
+      {
+        "id": 1,
+        "title": "Schedule",
+        "subtitle": "A Call",
+        "background_color": "bg-gray-200",
+        "text_color": "text-black",
+        "icon_color": "text-black",
+        "position": "left"
+      },
+      {
+        "id": 2,
+        "title": "Send A",
+        "subtitle": "Message",
+        "background_color": "bg-gray-200",
+        "text_color": "text-black",
+        "icon_color": "text-black",
+        "position": "middle",
+        "highlighted": true,
+        "decorative_element": "white scribble/signature shape"
+      },
+      {
+        "id": 3,
+        "title": "Schedule",
+        "subtitle": "A Call",
+        "background_color": "bg-gray-200",
+        "text_color": "text-black",
+        "icon_color": "text-black",
+        "position": "right"
+      }
+    ],
+    "card_styling": {
+      "container": "group relative rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-black hover:text-white flex flex-col justify-end",
+      "text": "text-2xl font-medium",
+      "icon": "absolute top-4 right-4 w-5 h-5 group-hover:text-white transition-colors duration-300",
+      "icon_type": "arrow-up-right"
+    },
+    "decorative_elements": {
+      "middle_card": {
+        "scribble_shape": "white decorative element above text",
+        "wavy_line": "decorative line extending from 'Message'"
+      }
+    }
+  },
+  "functionality": {
+    "navigation": {
+      "destination": "/contact",
+      "method": "router.push",
+      "click_handler": "handleCardClick"
+    },
+    "hover_effects": {
+      "scale": "hover:scale-105",
+      "transition": "transition-all duration-300"
+    }
+  },
+  "styling": {
+    "background": "bg-white",
+    "padding": "py-16",
+    "card_rounded": "rounded-lg",
+    "card_padding": "p-6",
+    "hover_scale": "hover:scale-105",
+    "transition": "transition-all duration-300"
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "single column",
+      "title_size": "text-4xl",
+      "card_height": "h-44"
+    },
+    "tablet": {
+      "layout": "three columns",
+      "title_size": "text-5xl",
+      "card_height": "h-50"
+    },
+    "desktop": {
+      "layout": "three columns",
+      "title_size": "text-6xl",
+      "card_height": "h-58"
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "pageTitle": "About Us Section 3 - Car Cleaning Services",
+  "description": "Section showcasing car cleaning services with three car images, service description, and customer testimonials",
+  "layout": {
+    "type": "two-section-layout",
+    "structure": "top-section + bottom-section",
+    "topSection": {
+      "type": "horizontal-layout",
+      "leftSide": "three-car-images",
+      "rightSide": "service-description-and-reviews"
+    },
+    "bottomSection": {
+      "type": "heading-only",
+      "content": "we-protect-your-investment"
+    }
+  },
+  "topSection": {
+    "carImages": {
+      "layout": "horizontal-row",
+      "count": 3,
+      "spacing": "equal-spacing",
+      "images": [
+        {
+          "carModel": "Maruti Suzuki Alto",
+          "badge": "Cleaner",
+          "description": "Dark car being washed with foam, red bucket, yellow sponge, blue brush"
+        },
+        {
+          "carModel": "Hyundai Elite i20", 
+          "badge": "Cleaner",
+          "description": "Dark blue car covered in white foam and water"
+        },
+        {
+          "carModel": "Maruti Suzuki Celerio",
+          "badge": "Cleaner", 
+          "description": "Dark car front hood being hand-washed with yellow glove and foam"
+        }
+      ],
+      "styling": {
+        "borderRadius": "rounded-corners",
+        "textOverlays": {
+          "badge": {
+            "position": "top-left",
+            "style": "white-rounded-badge",
+            "textColor": "black",
+            "text": "Cleaner"
+          },
+          "carModel": {
+            "position": "bottom-left",
+            "style": "large-white-text",
+            "textColor": "white"
+          }
+        }
+      }
+    },
+    "serviceDescription": {
+      "content": "Our professional and reliable car cleaners provide thorough Car Detailing, Interior Deep Cleaning, and Car Polishing. Choose the best service with Sheba.xyz",
+      "styling": {
+        "textColor": "black",
+        "alignment": "left-aligned",
+        "fontSize": "body-text"
+      }
+    },
+    "customerReviews": {
+      "layout": "horizontal",
+      "elements": [
+        {
+          "type": "avatars",
+          "count": 3,
+          "colors": ["purple", "light-blue", "yellow"],
+          "description": "Circular profile pictures with different colored backgrounds"
+        },
+        {
+          "type": "happy-guests-text",
+          "text": "150k happy guests",
+          "layout": "two-lines"
+        },
+        {
+          "type": "star-rating",
+          "stars": 5,
+          "color": "orange",
+          "layout": "horizontal"
+        },
+        {
+          "type": "reviews-count",
+          "text": "18,922 reviews",
+          "color": "black"
+        }
+      ]
+    }
+  },
+  "bottomSection": {
+    "heading": {
+      "text": "We Protect Your Investment",
+      "layout": "two-lines",
+      "line1": "We Protect Your",
+      "line2": "Investment",
+      "styling": {
+        "fontSize": "large-bold",
+        "color": "black",
+        "alignment": "left-aligned",
+        "fontWeight": "bold"
+      }
+    }
+  },
+  "styling": {
+    "colors": {
+      "background": "white",
+      "text": "black",
+      "overlayText": "white",
+      "stars": "orange",
+      "avatarBackgrounds": ["purple", "light-blue", "yellow"]
+    },
+    "typography": {
+      "heading": "large-bold-sans-serif",
+      "bodyText": "standard-sans-serif",
+      "carModel": "large-white-text",
+      "badge": "small-black-text"
+    },
+    "spacing": {
+      "sectionPadding": "py-16",
+      "imageSpacing": "gap-6",
+      "textSpacing": "mb-8"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "carImages": "stacked-vertical",
+      "textLayout": "full-width"
+    },
+    "tablet": {
+      "carImages": "horizontal-row",
+      "textLayout": "side-by-side"
+    },
+    "desktop": {
+      "carImages": "horizontal-row",
+      "textLayout": "optimized-spacing"
+    }
+  },
+  "implementation": {
+    "components": [
+      "CarCleaningSection",
+      "CarImageCard", 
+      "ServiceDescription",
+      "CustomerReviews",
+      "InvestmentHeading"
+    ],
+    "images": {
+      "car1": "/Carsectionui/hyundai-palisade.jpg",
+      "car2": "/Carsectionui/chery-tiggo.jpg", 
+      "car3": "/Carsectionui/hyundai-palisade.jpg"
+    },
+    "layout": {
+      "container": "max-width-container",
+      "grid": "responsive-grid",
+      "spacing": "consistent-padding"
+    }
+  },
+  "keyFeatures": {
+    "carShowcase": "three-cleaning-scenarios",
+    "serviceDescription": "professional-cleaning-services",
+    "socialProof": "customer-testimonials-and-ratings",
+    "brandMessage": "investment-protection-focus",
+    "visualHierarchy": "images-top-text-bottom"
+  }
+}
+
+
+
+
+

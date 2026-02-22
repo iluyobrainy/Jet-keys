@@ -1,0 +1,80 @@
+{
+  "section": "About Us Section 5 - Meet The Team",
+  "description": "Two-column text layout with heading and description, followed by three team member profile images",
+  "layout": {
+    "container": "w-full bg-white pt-4 pb-16",
+    "content_wrapper": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "text_section": "grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12",
+    "image_section": "grid grid-cols-1 sm:grid-cols-3 gap-6"
+  },
+  "components": {
+    "heading": {
+      "text": "MEET THE TEAM",
+      "font_size": "text-4xl sm:text-5xl lg:text-6xl",
+      "font_weight": "font-bold",
+      "color": "text-black",
+      "alignment": "text-left",
+      "line_break": "two lines",
+      "line_1": "MEET THE",
+      "line_2": "TEAM"
+    },
+    "description": {
+      "text": "Expert maintenance to detailing these services ensure your ride stays smooth",
+      "font_size": "text-base sm:text-lg",
+      "font_weight": "font-normal",
+      "color": "text-black",
+      "alignment": "text-right",
+      "vertical_alignment": "items-center"
+    },
+    "team_gallery": {
+      "layout": "three team members side by side",
+      "spacing": "gap-6",
+      "responsive": "grid-cols-1 sm:grid-cols-3",
+      "profile_style": "circular placeholder with initials"
+    },
+    "team_members": [
+      {
+        "name": "John Smith",
+        "role": "Car Specialist",
+        "initials": "JS"
+      },
+      {
+        "name": "Sarah Johnson", 
+        "role": "Service Manager",
+        "initials": "SJ"
+      },
+      {
+        "name": "Mike Davis",
+        "role": "Quality Assurance",
+        "initials": "MD"
+      }
+    ]
+  },
+  "styling": {
+    "background": "bg-white",
+    "padding": "pt-4 pb-16",
+    "text_spacing": "mb-12",
+    "image_rounded": "rounded-lg",
+    "image_overflow": "overflow-hidden"
+  },
+  "responsive": {
+    "mobile": {
+      "text_layout": "stacked",
+      "image_layout": "single column",
+      "heading_size": "text-4xl",
+      "description_size": "text-base"
+    },
+    "tablet": {
+      "text_layout": "stacked", 
+      "image_layout": "three columns",
+      "heading_size": "text-5xl",
+      "description_size": "text-lg"
+    },
+    "desktop": {
+      "text_layout": "two columns",
+      "image_layout": "three columns",
+      "heading_size": "text-6xl",
+      "description_size": "text-lg"
+    }
+  }
+}

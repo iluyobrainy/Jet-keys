@@ -1,0 +1,131 @@
+{
+  "checkoutInfo": {
+    "layout": "two-column-responsive",
+    "description": "Checkout page with personal details form on left and booking summary on right",
+    "structure": {
+      "progressBar": {
+        "position": "top",
+        "steps": [
+          {
+            "number": 1,
+            "label": "Personal Details",
+            "status": "active",
+            "color": "purple"
+          },
+          {
+            "number": 2,
+            "label": "Payment",
+            "status": "pending",
+            "color": "purple"
+          },
+          {
+            "number": 3,
+            "label": "Complete",
+            "status": "pending",
+            "color": "grey"
+          }
+        ]
+      },
+      "mainContent": {
+        "leftColumn": {
+          "title": "Checkout",
+          "bookingHoldAlert": {
+            "type": "warning-banner",
+            "icon": "exclamation",
+            "title": "Your Booking is on Hold",
+            "message": "We hold your booking until Feb 14, 12:00 AM. If your reserve change, we will get back to you.",
+            "backgroundColor": "yellow",
+            "textColor": "dark-grey"
+          },
+          "bookInformation": {
+            "title": "Book Information",
+            "successBanner": {
+              "icon": "checkmark",
+              "message": "Congratulations! We have sent your book details to the vehicle owner.",
+              "backgroundColor": "green",
+              "textColor": "dark-grey"
+            },
+            "userDetails": {
+              "layout": "three-column-grid",
+              "fields": [
+                {
+                  "label": "Full Name",
+                  "value": "Ahmed Bin Ali",
+                  "type": "text"
+                },
+                {
+                  "label": "Email",
+                  "value": "ahmedbinali@gmail.com",
+                  "type": "email"
+                },
+                {
+                  "label": "Phone Number",
+                  "value": "+221402040785",
+                  "type": "phone"
+                }
+              ]
+            }
+          },
+          "paymentDetail": {
+            "title": "Payment Detail",
+            "instruction": "Please fill out the form below. Enter your card account details.",
+            "form": {
+              "cardNumber": {
+                "label": "Card Number",
+                "placeholder": "1243 _ 2133 _ 9832 _ 3200",
+                "icon": "visa",
+                "type": "card-input"
+              },
+              "expireDate": {
+                "label": "Expire Date",
+                "month": "12",
+                "year": "2030",
+                "type": "dropdown-dual"
+              },
+              "cvc": {
+                "label": "CVC/CVV",
+                "value": "453",
+                "type": "text-input"
+              }
+            }
+          },
+          "cancellationPolicy": {
+            "icon": "shield",
+            "title": "Cancelation Policy",
+            "description": "At Garazi, we understand that plans can change unexpectedly. That's why we've crafted our cancellation policy to provide you with flexibility and peace of mind. When you book a car with us, you have the freedom to modify or cancel your reservation without incurring any cancellation fees up to 12 hours/days before your scheduled pick-up time.",
+            "link": "See more details",
+            "linkColor": "blue"
+          }
+        }
+      }
+    },
+    "styling": {
+      "colors": {
+        "primary": "#6A0DAD",
+        "background": "#FFFFFF",
+        "cardBackground": "#FFFFFF",
+        "textPrimary": "#333333",
+        "textSecondary": "#666666",
+        "textLight": "#999999",
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "border": "#E5E7EB",
+        "link": "#007BFF"
+      },
+      "spacing": {
+        "cardPadding": "24px",
+        "sectionMargin": "24px",
+        "fieldSpacing": "16px"
+      },
+      "shadows": {
+        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+      },
+      "borderRadius": "8px"
+    }
+  }
+}
+
+
+
+
+

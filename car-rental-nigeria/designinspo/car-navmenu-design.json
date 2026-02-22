@@ -1,0 +1,238 @@
+{
+  "section": "Car Navigation Menu",
+  "description": "Left sidebar navigation menu for car filtering and categorization in the car rental section",
+  "layout": {
+    "type": "sidebar-navigation",
+    "position": "left-sidebar",
+    "background": "white",
+    "width": {
+      "mobile": "w-full",
+      "tablet": "w-64",
+      "desktop": "w-80"
+    },
+    "padding": "p-6",
+    "border": "border-r border-gray-200",
+    "height": "h-full",
+    "overflow": "overflow-y-auto"
+  },
+  "sections": [
+    {
+      "id": "search-section",
+      "type": "search",
+      "title": {
+        "text": "Search",
+        "fontSize": "text-lg",
+        "fontWeight": "font-semibold",
+        "color": "text-gray-900",
+        "marginBottom": "mb-4"
+      },
+      "searchInput": {
+        "type": "input",
+        "placeholder": "Search cars...",
+        "icon": "search",
+        "iconPosition": "left",
+        "className": "w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-black focus:ring-2 focus:ring-black focus:ring-offset-2"
+      }
+    },
+    {
+      "id": "filter-section",
+      "type": "filters",
+      "title": {
+        "text": "Filters",
+        "fontSize": "text-lg",
+        "fontWeight": "font-semibold",
+        "color": "text-gray-900",
+        "marginBottom": "mb-4"
+      },
+      "filterGroups": [
+        {
+          "id": "price-range",
+          "type": "price-filter",
+          "title": {
+            "text": "Price Range",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "0-10000", "label": "₦0 - ₦10,000", "count": "12" },
+            { "value": "10000-25000", "label": "₦10,000 - ₦25,000", "count": "8" },
+            { "value": "25000-50000", "label": "₦25,000 - ₦50,000", "count": "15" },
+            { "value": "50000+", "label": "₦50,000+", "count": "6" }
+          ]
+        },
+        {
+          "id": "car-type",
+          "type": "car-type-filter",
+          "title": {
+            "text": "Car Type",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "sedan", "label": "Sedan", "count": "20" },
+            { "value": "suv", "label": "SUV", "count": "15" },
+            { "value": "hatchback", "label": "Hatchback", "count": "8" },
+            { "value": "luxury", "label": "Luxury", "count": "12" },
+            { "value": "electric", "label": "Electric", "count": "5" }
+          ]
+        },
+        {
+          "id": "brand",
+          "type": "brand-filter",
+          "title": {
+            "text": "Brand",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "toyota", "label": "Toyota", "count": "12" },
+            { "value": "honda", "label": "Honda", "count": "8" },
+            { "value": "bmw", "label": "BMW", "count": "10" },
+            { "value": "mercedes", "label": "Mercedes", "count": "8" },
+            { "value": "audi", "label": "Audi", "count": "6" },
+            { "value": "lexus", "label": "Lexus", "count": "4" }
+          ]
+        },
+        {
+          "id": "transmission",
+          "type": "transmission-filter",
+          "title": {
+            "text": "Transmission",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "automatic", "label": "Automatic", "count": "35" },
+            { "value": "manual", "label": "Manual", "count": "15" }
+          ]
+        },
+        {
+          "id": "fuel-type",
+          "type": "fuel-filter",
+          "title": {
+            "text": "Fuel Type",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "petrol", "label": "Petrol", "count": "30" },
+            { "value": "diesel", "label": "Diesel", "count": "12" },
+            { "value": "electric", "label": "Electric", "count": "5" },
+            { "value": "hybrid", "label": "Hybrid", "count": "3" }
+          ]
+        },
+        {
+          "id": "seats",
+          "type": "seats-filter",
+          "title": {
+            "text": "Number of Seats",
+            "fontSize": "text-sm",
+            "fontWeight": "font-medium",
+            "color": "text-gray-700",
+            "marginBottom": "mb-2"
+          },
+          "options": [
+            { "value": "2", "label": "2 Seats", "count": "5" },
+            { "value": "4", "label": "4 Seats", "count": "15" },
+            { "value": "5", "label": "5 Seats", "count": "25" },
+            { "value": "7", "label": "7+ Seats", "count": "5" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clear-filters",
+      "type": "action-button",
+      "button": {
+        "text": "Clear All Filters",
+        "style": "outline",
+        "background": "bg-transparent",
+        "textColor": "text-gray-600",
+        "border": "border border-gray-300",
+        "hoverBackground": "hover:bg-gray-50",
+        "borderRadius": "rounded-lg",
+        "padding": "px-4 py-2",
+        "fontWeight": "font-medium",
+        "className": "w-full mt-6"
+      }
+    }
+  ],
+  "styling": {
+    "container": {
+      "background": "bg-white",
+      "fontFamily": "font-poppins",
+      "lineHeight": "leading-normal"
+    },
+    "colors": {
+      "primaryBackground": "#FFFFFF",
+      "primaryText": "#111827",
+      "secondaryText": "#374151",
+      "accentColor": "#F59E0B",
+      "borderColor": "#E5E7EB",
+      "checkboxColor": "#000000",
+      "countColor": "#6B7280"
+    },
+    "filterOptions": {
+      "layout": "flex items-center justify-between",
+      "padding": "py-2",
+      "hoverBackground": "hover:bg-gray-50",
+      "cursor": "cursor-pointer",
+      "transition": "transition-colors duration-200"
+    },
+    "checkbox": {
+      "size": "w-4 h-4",
+      "color": "text-black",
+      "border": "border-gray-300",
+      "focusRing": "focus:ring-2 focus:ring-black focus:ring-offset-2"
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "full-width",
+      "position": "top",
+      "visibility": "collapsible"
+    },
+    "tablet": {
+      "layout": "sidebar",
+      "position": "left",
+      "visibility": "visible"
+    },
+    "desktop": {
+      "layout": "sidebar",
+      "position": "left",
+      "visibility": "visible"
+    }
+  },
+  "accessibility": {
+    "ariaLabels": {
+      "section": "Car filters and search",
+      "searchInput": "Search for cars",
+      "filterGroups": "Filter options",
+      "clearButton": "Clear all filters"
+    },
+    "semanticHtml": "Uses fieldset, legend, input, button, label elements appropriately"
+  },
+  "interaction": {
+    "searchFunctionality": "Real-time search with debouncing",
+    "filterSelection": "Multiple selection with checkboxes",
+    "filterReset": "Clear all selected filters",
+    "stateManagement": "useState for filter selections",
+    "urlParams": "Sync filters with URL parameters"
+  },
+  "themeAdaptation": {
+    "colors": "Black checkboxes and focus rings",
+    "typography": "Poppins font family",
+    "spacing": "Consistent with Jet&Keys design system",
+    "interactions": "Smooth transitions and hover effects"
+  }
+}

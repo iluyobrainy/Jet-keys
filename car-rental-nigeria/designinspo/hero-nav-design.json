@@ -1,0 +1,155 @@
+{
+  "section": "Hero/Navigation",
+  "description": "Modern car rental website hero section with navigation bar and booking form",
+  "layout": {
+    "type": "hero-section",
+    "structure": "header + hero + booking-form",
+    "background": "light-gray",
+    "spacing": "generous"
+  },
+  "navigation": {
+    "position": "fixed-top",
+    "background": "white",
+    "height": "64px",
+    "elements": {
+      "logo": {
+        "position": "left",
+        "icon": "orange-car-wheel",
+        "text": "Jet&Keys",
+        "color": "black",
+        "font-weight": "bold"
+      },
+      "nav-links": {
+        "position": "center",
+        "items": ["Reservations", "Services", "Vehicles", "Location"],
+        "color": "black",
+        "hover-effect": "underline"
+      },
+      "cta-button": {
+        "position": "right",
+        "text": "SCHEDULE DEMO",
+        "style": "outline",
+        "background": "light-gray",
+        "border": "thin-black"
+      }
+    }
+  },
+  "hero-section": {
+    "layout": "two-column",
+    "left-column": {
+      "content": {
+        "headline": {
+          "line1": "LET'S RIDE",
+          "line2": "THE FUTURE.",
+          "color": "black",
+          "font-size": "large-bold",
+          "underline": {
+            "color": "orange",
+            "position": "below-line2"
+          }
+        },
+        "description": {
+          "text": "Introducing Tesla Model Y, an autopilot car that advanced safety and convenience features to assist you with the most burdensome parts of driving.",
+          "color": "black",
+          "font-size": "medium"
+        },
+        "cta-button": {
+          "text": "GET STARTED",
+          "style": "black-rounded",
+          "icon": "orange-circle-left"
+        }
+      }
+    },
+    "right-column": {
+      "content": {
+        "image": {
+          "type": "car-image",
+          "car": "dark-gray-suv",
+          "angle": "left-facing",
+          "features": ["headlights", "grille", "multi-spoke-wheels"]
+        }
+      }
+    }
+  },
+  "booking-form": {
+    "position": "below-hero",
+    "overlap": "slight-bottom",
+    "style": "white-rounded-card",
+    "layout": "horizontal",
+    "fields": [
+      {
+        "type": "pickup-location",
+        "icon": "location-pin",
+        "placeholder": "Search a location"
+      },
+      {
+        "type": "pickup-date",
+        "icon": "calendar",
+        "value": "12/12/2023"
+      },
+      {
+        "type": "dropoff-location",
+        "icon": "location-pin",
+        "placeholder": "Search a location"
+      },
+      {
+        "type": "dropoff-date",
+        "icon": "calendar",
+        "value": "12/12/2023"
+      }
+    ],
+    "submit-button": {
+      "text": "Find a Vehicle →",
+      "style": "black-rounded",
+      "arrow-color": "orange"
+    }
+  },
+  "color-scheme": {
+    "primary": {
+      "white": "#FFFFFF",
+      "light-gray": "#F5F5F5",
+      "black": "#000000"
+    },
+    "accent": {
+      "orange": "#FF6B35"
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#666666"
+    }
+  },
+  "typography": {
+    "font-family": "sans-serif",
+    "headline": {
+      "font-weight": "bold",
+      "font-size": "3rem"
+    },
+    "body": {
+      "font-weight": "normal",
+      "font-size": "1rem"
+    },
+    "button": {
+      "font-weight": "medium",
+      "font-size": "0.875rem"
+    }
+  },
+  "spacing": {
+    "section-padding": "4rem 0",
+    "element-margin": "1rem",
+    "form-padding": "2rem"
+  },
+  "responsive": {
+    "mobile": {
+      "layout": "stacked",
+      "hero-columns": "single-column"
+    },
+    "tablet": {
+      "layout": "two-column",
+      "hero-columns": "two-column"
+    },
+    "desktop": {
+      "layout": "two-column",
+      "hero-columns": "two-column"
+    }
+  }
+}
