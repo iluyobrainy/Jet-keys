@@ -238,7 +238,7 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
           {selectedLocation ? selectedLocation : <span className="text-gray-500">{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0 z-[100]" align="start">
+      <PopoverContent className="w-[calc(100vw-2rem)] max-w-[400px] p-0 z-[100]" align="start">
         <div className="p-3 border-b">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
