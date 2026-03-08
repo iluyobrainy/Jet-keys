@@ -89,7 +89,7 @@ export function CheckoutPaymentSection({ car, booking }: CheckoutPaymentSectionP
   return (
     <div className="space-y-6">
       {/* Step Indicator */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-center space-x-2 rounded-full bg-gray-100 px-4 py-2 sm:justify-start">
         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
           <span className="text-sm font-medium text-gray-600">3</span>
         </div>
@@ -97,7 +97,7 @@ export function CheckoutPaymentSection({ car, booking }: CheckoutPaymentSectionP
       </div>
 
       {/* Summary Card */}
-      <Card>
+      <Card className="rounded-[28px] border border-black/5 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900">
             Summary
@@ -106,28 +106,28 @@ export function CheckoutPaymentSection({ car, booking }: CheckoutPaymentSectionP
         <CardContent className="space-y-4">
           {/* Booking Details */}
           <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Vehicle</span>
-              <span className="text-sm font-medium text-gray-900">
-                {car ? `${car.year} ${car.brand} ${car.model}` : "1 Vehicle"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Pickup Location</span>
-              <span className="text-sm font-medium text-gray-900 text-right max-w-48">
-                {booking ? booking.pickup_location : (car ? car.location : "Not specified")}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Pickup Date</span>
-              <span className="text-sm font-medium text-gray-900">
-                {booking ? formatDate(booking.pickup_date) : "Not specified"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Return Date</span>
-              <span className="text-sm font-medium text-gray-900">
-                {booking ? formatDate(booking.dropoff_date) : "Not specified"}
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-sm text-gray-600">Vehicle</span>
+                <span className="max-w-[55%] text-right text-sm font-medium text-gray-900">
+                  {car ? `${car.year} ${car.brand} ${car.model}` : "1 Vehicle"}
+                </span>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-sm text-gray-600">Pickup Location</span>
+                <span className="max-w-[55%] text-right text-sm font-medium text-gray-900">
+                  {booking ? booking.pickup_location : (car ? car.location : "Not specified")}
+                </span>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-sm text-gray-600">Pickup Date</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {booking ? formatDate(booking.pickup_date) : "Not specified"}
+                </span>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-sm text-gray-600">Return Date</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {booking ? formatDate(booking.dropoff_date) : "Not specified"}
               </span>
             </div>
           </div>
@@ -142,26 +142,26 @@ export function CheckoutPaymentSection({ car, booking }: CheckoutPaymentSectionP
             </CardTitle>
             
             <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Base Price</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {booking ? `NGN ${formatNumber(booking.total_amount - (booking.delivery_fee || 0) - (booking.vat_amount || 0) - (booking.service_fee || 0))}` : (car ? `NGN ${formatNumber(car.price_per_day || 0)}/day` : "NGN 150,000/day")}
-                </span>
-              </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-sm text-gray-600">Base Price</span>
+                  <span className="max-w-[55%] text-right text-sm font-medium text-gray-900">
+                    {booking ? `NGN ${formatNumber(booking.total_amount - (booking.delivery_fee || 0) - (booking.vat_amount || 0) - (booking.service_fee || 0))}` : (car ? `NGN ${formatNumber(car.price_per_day || 0)}/day` : "NGN 150,000/day")}
+                  </span>
+                </div>
               {booking?.delivery_fee && booking.delivery_fee > 0 && (
-                <div className="flex justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <span className="text-sm text-gray-600">Delivery Fee</span>
                   <span className="text-sm font-medium text-gray-900">NGN {formatNumber(booking.delivery_fee)}</span>
                 </div>
               )}
               {booking?.vat_amount && booking.vat_amount > 0 && (
-                <div className="flex justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <span className="text-sm text-gray-600">VAT</span>
                   <span className="text-sm font-medium text-gray-900">NGN {formatNumber(booking.vat_amount)}</span>
                 </div>
               )}
               {booking?.service_fee && booking.service_fee > 0 && (
-                <div className="flex justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <span className="text-sm text-gray-600">Service Fee</span>
                   <span className="text-sm font-medium text-gray-900">NGN {formatNumber(booking.service_fee)}</span>
                 </div>
@@ -186,7 +186,7 @@ export function CheckoutPaymentSection({ car, booking }: CheckoutPaymentSectionP
       </Card>
 
       {/* Agreement Card */}
-      <Card>
+      <Card className="rounded-[28px] border border-black/5 shadow-sm">
         <CardContent className="pt-6">
           <div className="space-y-4">
             {/* Agreement Checkbox */}

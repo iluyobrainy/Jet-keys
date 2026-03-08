@@ -70,20 +70,24 @@ export function DatePicker({ value, onChange, placeholder = "Pick a date", class
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-start text-left font-normal pl-10 h-12",
+            "relative h-auto min-h-14 w-full justify-start rounded-2xl border-slate-200 bg-white/90 px-4 py-3 pl-14 text-left text-sm font-medium text-slate-900 shadow-sm transition-colors hover:bg-white",
             !date && "text-muted-foreground",
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4 absolute left-3" />
-          {date ? format(date, "PPP") : <span className="text-gray-500">{placeholder}</span>}
+          <span className="absolute left-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+            <CalendarIcon className="h-4 w-4" />
+          </span>
+          <span className="block w-full truncate pr-2">
+            {date ? format(date, "PPP") : <span className="text-gray-500">{placeholder}</span>}
+          </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-[calc(100vw-1rem)] max-w-[360px] overflow-hidden rounded-[24px] border border-slate-200 p-0 shadow-2xl" align="start">
         <div className="p-3 border-b">
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2 flex items-center justify-between gap-2">
             <Select value={currentMonth.getMonth().toString()} onValueChange={handleMonthChange}>
-              <SelectTrigger className="w-[120px] h-8">
+              <SelectTrigger className="h-9 w-[130px] rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -96,7 +100,7 @@ export function DatePicker({ value, onChange, placeholder = "Pick a date", class
             </Select>
             
             <Select value={currentMonth.getFullYear().toString()} onValueChange={handleYearChange}>
-              <SelectTrigger className="w-[80px] h-8">
+              <SelectTrigger className="h-9 w-[92px] rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

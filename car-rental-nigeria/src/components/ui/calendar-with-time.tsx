@@ -83,7 +83,7 @@ export function CalendarWithTime({
   return (
     <Card className={className}>
       <CardContent className="relative p-0 md:pr-48">
-        <div className="p-6">
+        <div className="p-4 sm:p-5">
           <Calendar
             mode="single"
             selected={date}
@@ -110,14 +110,14 @@ export function CalendarWithTime({
             captionLayout="dropdown"
           />
         </div>
-        <div className="no-scrollbar inset-y-0 right-0 flex max-h-72 w-full scroll-pb-6 flex-col gap-4 overflow-y-auto border-t p-6 md:absolute md:max-h-none md:w-48 md:border-t-0 md:border-l">
-          <div className="grid gap-2">
+        <div className="no-scrollbar inset-y-0 right-0 flex max-h-72 w-full scroll-pb-6 flex-col gap-4 overflow-y-auto border-t bg-slate-50/80 p-4 md:absolute md:max-h-none md:w-48 md:border-t-0 md:border-l md:bg-transparent">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-1">
             {availableTimeSlots.map((timeSlot) => (
               <Button
                 key={timeSlot.value}
                 variant={selectedTimeSlot === timeSlot.value ? "default" : "outline"}
                 onClick={() => handleTimeChange(timeSlot.value)}
-                className="w-full shadow-none"
+                className="h-10 w-full rounded-xl px-3 text-xs shadow-none md:text-sm"
               >
                 {timeSlot.display}
               </Button>

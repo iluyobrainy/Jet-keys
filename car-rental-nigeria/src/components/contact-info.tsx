@@ -74,7 +74,7 @@ export function ContactInfo() {
   return (
     <div className="space-y-8">
       {contactSections.map((section, index) => (
-        <div key={index} className="bg-white rounded-2xl shadow-lg p-6">
+        <div key={index} className="rounded-[28px] border border-black/5 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             {section.title}
           </h3>
@@ -89,12 +89,16 @@ export function ContactInfo() {
                 <button
                   key={optionIndex}
                   onClick={() => handleAction(option.action, option.text)}
-                  className="flex items-center space-x-3 text-gray-900 hover:text-blue-600 transition-colors duration-200 group"
+                  className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 px-4 py-4 text-left text-gray-900 transition-colors duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
                 >
-                  <IconComponent className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors duration-200" />
-                  <span className="text-sm font-semibold underline underline-offset-4 decoration-1">
-                    {option.text}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-gray-500 transition-colors duration-200 group-hover:bg-blue-100 group-hover:text-blue-600">
+                      <IconComponent className="h-5 w-5" />
+                    </span>
+                    <span className="text-sm font-semibold underline underline-offset-4 decoration-1">
+                      {option.text}
+                    </span>
+                  </div>
                 </button>
               )
             })}

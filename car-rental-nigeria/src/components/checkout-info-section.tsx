@@ -54,7 +54,7 @@ export function CheckoutInfoSection({ car, booking }: CheckoutInfoSectionProps) 
   return (
     <div className="space-y-6">
       {/* Page Title */}
-      <div>
+      <div className="text-center sm:text-left">
         <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
       </div>
 
@@ -78,7 +78,7 @@ export function CheckoutInfoSection({ car, booking }: CheckoutInfoSectionProps) 
       </div>
 
       {/* Book Information */}
-      <Card>
+      <Card className="rounded-[28px] border border-black/5 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900">
             Book Information
@@ -162,7 +162,7 @@ export function CheckoutInfoSection({ car, booking }: CheckoutInfoSectionProps) 
       </Card>
 
       {/* Personal Details */}
-      <Card>
+      <Card className="rounded-[28px] border border-black/5 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900">
             Personal Details
@@ -219,7 +219,7 @@ export function CheckoutInfoSection({ car, booking }: CheckoutInfoSectionProps) 
       </Card>
 
       {/* Cancellation Policy */}
-      <Card>
+      <Card className="rounded-[28px] border border-black/5 shadow-sm">
         <CardContent className="pt-6">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">

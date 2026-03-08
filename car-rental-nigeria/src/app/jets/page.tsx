@@ -27,13 +27,13 @@ export default function JetsPage() {
         <Navigation />
 
         {/* Hero Section */}
-        <section className="pt-16" aria-label="Hero">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+        <section className="pt-10 sm:pt-16" aria-label="Hero">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               {/* Left Column - Content */}
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                 <div>
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl text-black leading-tight">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl text-black leading-tight">
                     <span className="font-normal">PRIVATE JET</span>
                     <br />
                     <span className="font-medium">SERVICES</span>
@@ -46,8 +46,8 @@ export default function JetsPage() {
                 </p>
 
                 {/* Under Construction Badge and Explore Cars Button */}
-                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                  <div className="inline-flex items-center bg-orange-500 text-white px-6 py-3 rounded-full font-semibold">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4">
+                  <div className="inline-flex items-center justify-center bg-orange-500 text-white px-6 py-3 rounded-full font-semibold">
                     <Clock className="w-5 h-5 mr-2" />
                     Under Construction
                   </div>
@@ -55,7 +55,7 @@ export default function JetsPage() {
                   <Button 
                     asChild
                     variant="ghost"
-                    className="bg-black text-white hover:!bg-yellow-500 hover:!text-white h-12 px-6 sm:px-8 rounded-[30px] flex items-center space-x-2 whitespace-nowrap min-w-[160px] sm:min-w-[180px] transition-colors duration-200 group"
+                    className="h-12 w-full rounded-[30px] bg-black px-6 text-white transition-colors duration-200 group hover:!bg-yellow-500 hover:!text-white sm:w-auto sm:min-w-[220px]"
                   >
                     <Link href="/cars">
                       <span>EXPLORE OUR CARS</span>
@@ -72,7 +72,7 @@ export default function JetsPage() {
                   alt="Private jet services coming soon"
                   width={600}
                   height={400}
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-[28px] shadow-[0_20px_60px_rgba(15,23,42,0.18)]"
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
@@ -99,7 +99,7 @@ export default function JetsPage() {
             {/* Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {/* Feature 1 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Plane className="w-8 h-8 text-white" />
                 </div>
@@ -110,7 +110,7 @@ export default function JetsPage() {
               </div>
 
               {/* Feature 2 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
@@ -121,7 +121,7 @@ export default function JetsPage() {
               </div>
 
               {/* Feature 3 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-white" />
                 </div>
@@ -132,7 +132,7 @@ export default function JetsPage() {
               </div>
 
               {/* Feature 4 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-white" />
                 </div>
@@ -143,7 +143,7 @@ export default function JetsPage() {
               </div>
 
               {/* Feature 5 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
@@ -154,7 +154,7 @@ export default function JetsPage() {
               </div>
 
               {/* Feature 6 */}
-              <div className="text-center p-6">
+              <div className="rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-sm">
                 <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Star className="w-8 h-8 text-white" />
                 </div>

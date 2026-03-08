@@ -130,7 +130,7 @@ export default function MyBookingsPage() {
     <AuroraBackground className="min-h-screen">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-8 text-center lg:text-left">
           <div className="inline-block">
@@ -166,9 +166,9 @@ export default function MyBookingsPage() {
         ) : (
           <div className="grid gap-8">
             {bookings.map((booking: any) => (
-              <Card key={booking.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card key={booking.id} className="border-0 bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                 <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
@@ -184,7 +184,7 @@ export default function MyBookingsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-row flex-wrap gap-2 sm:flex-col">
                       <Badge className={`${getStatusColor(booking.status)} px-4 py-2 text-sm font-semibold`}>
                         <span className="flex items-center gap-2">
                           {getStatusIcon(booking.status)}
@@ -305,10 +305,10 @@ export default function MyBookingsPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-3 pt-6 border-t border-gray-200">
+                  <div className="flex flex-col gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:flex-wrap">
                     <Button 
                       variant="outline" 
-                      className="flex-1 sm:flex-none bg-white hover:bg-gray-50 border-gray-300 text-gray-700 hover:text-gray-900 transition-all duration-200"
+                        className="w-full flex-1 bg-white text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900 sm:w-auto sm:flex-none"
                       onClick={() => {
                         setSelectedBooking(booking)
                         setShowDetailsModal(true)
@@ -322,7 +322,7 @@ export default function MyBookingsPage() {
                     {canCancel(booking) && (
                       <Button 
                         variant="destructive" 
-                        className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white transition-all duration-200 transform hover:scale-105"
+                        className="w-full flex-1 bg-red-500 text-white transition-all duration-200 hover:scale-[1.01] hover:bg-red-600 sm:w-auto sm:flex-none"
                         onClick={() => {
                           setSelectedBooking(booking)
                           setShowCancelModal(true)
@@ -472,7 +472,7 @@ export default function MyBookingsPage() {
               
               {/* Sticky Footer */}
               <div className="border-t bg-white p-6 flex-shrink-0">
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <Button 
                     variant="outline" 
                     className="flex-1"
@@ -775,7 +775,7 @@ export default function MyBookingsPage() {
             
             {/* Modal Footer */}
             <div className="border-t bg-white p-6 flex-shrink-0">
-              <div className="flex gap-2 justify-end">
+              <div className="flex flex-col gap-2 justify-end sm:flex-row">
                 <Button
                   variant="outline"
                   onClick={() => {

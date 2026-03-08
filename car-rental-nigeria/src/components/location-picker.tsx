@@ -228,17 +228,21 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-start text-left font-normal pl-10 h-12",
+            "relative h-auto min-h-14 w-full justify-start rounded-2xl border-slate-200 bg-white/90 px-4 py-3 pl-14 text-left text-sm font-medium text-slate-900 shadow-sm transition-colors hover:bg-white",
             !selectedLocation && "text-muted-foreground",
             className
           )}
           id={id}
         >
-          <MapPin className="mr-2 h-4 w-4 absolute left-3" />
-          {selectedLocation ? selectedLocation : <span className="text-gray-500">{placeholder}</span>}
+          <span className="absolute left-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+            <MapPin className="h-4 w-4" />
+          </span>
+          <span className="block w-full truncate pr-2">
+            {selectedLocation ? selectedLocation : <span className="text-gray-500">{placeholder}</span>}
+          </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[calc(100vw-2rem)] max-w-[400px] p-0 z-[100]" align="start">
+      <PopoverContent className="z-[100] w-[calc(100vw-1rem)] max-w-[400px] overflow-hidden rounded-[24px] border border-slate-200 p-0 shadow-2xl" align="start">
         <div className="p-3 border-b">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -260,7 +264,7 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
                 <Button
                   key={index}
                   variant="ghost"
-                  className="w-full justify-start text-left h-auto p-3"
+                  className="h-auto w-full justify-start rounded-2xl px-3 py-3 text-left"
                   onClick={() => handleLocationSelect(location)}
                 >
                   <MapPin className="h-4 w-4 mr-2 text-gray-500" />
@@ -281,7 +285,7 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
                     <Button
                       key={index}
                       variant="ghost"
-                      className="w-full justify-start text-left h-auto p-3"
+                      className="h-auto w-full justify-start rounded-2xl px-3 py-3 text-left"
                       onClick={() => handleLocationSelect(`${location}, ${city}`)}
                     >
                       <MapPin className="h-4 w-4 mr-2 text-gray-500" />

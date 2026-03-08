@@ -48,12 +48,12 @@ export function AboutUsSection7() {
         </h2>
 
         {/* Contact Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
           {contactCards.map((card) => (
             <div
               key={card.id}
               onClick={handleCardClick}
-              className={`group relative ${card.backgroundColor} ${card.textColor} rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-black hover:text-white h-44 sm:h-50 lg:h-58 flex flex-col justify-end`}
+              className={`group relative ${card.backgroundColor} ${card.textColor} flex min-h-40 cursor-pointer flex-col justify-end rounded-[28px] p-6 transition-all duration-300 hover:scale-[1.02] hover:bg-black hover:text-white sm:min-h-52`}
             >
               {/* Card Content */}
               <div className="mt-auto">

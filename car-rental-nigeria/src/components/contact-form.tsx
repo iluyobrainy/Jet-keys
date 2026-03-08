@@ -46,7 +46,7 @@ export function ContactForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
+    <div className="rounded-[28px] border border-black/5 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -101,9 +101,9 @@ export function ContactForm() {
           <Label htmlFor="phone" className="text-sm font-medium text-gray-900">
             Phone number
           </Label>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Select defaultValue="NG">
-              <SelectTrigger className="w-32 border border-gray-300 rounded-lg px-3 py-3">
+              <SelectTrigger className="w-full border border-gray-300 rounded-xl px-3 py-3 sm:w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -325,9 +325,9 @@ export function ContactForm() {
           <Label className="text-sm font-medium text-gray-900">
             Services
           </Label>
-          <div className="flex space-x-6">
+          <div className="flex flex-wrap gap-4">
             {services.map((service) => (
-              <div key={service} className="flex items-center space-x-3">
+              <div key={service} className="flex items-center space-x-3 rounded-full border border-gray-200 px-4 py-2">
                 <Checkbox
                   id={service}
                   checked={formData.services.includes(service)}

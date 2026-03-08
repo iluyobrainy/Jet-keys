@@ -60,29 +60,29 @@ function CheckoutContent() {
       {/* Progress Bar - Centered */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-center space-x-8">
+          <div className="grid grid-cols-3 gap-3 rounded-[24px] bg-gray-50 p-3 sm:flex sm:items-center sm:justify-center sm:space-x-8 sm:bg-transparent sm:p-0">
             {/* Step 1 */}
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
               <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-white">1</span>
               </div>
-              <span className="text-sm font-medium text-black">Personal Details</span>
+              <span className="text-xs font-medium text-black sm:text-sm">Personal Details</span>
             </div>
 
             {/* Step 2 */}
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
               <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-white">2</span>
               </div>
-              <span className="text-sm font-medium text-black">Payment</span>
+              <span className="text-xs font-medium text-black sm:text-sm">Payment</span>
             </div>
 
             {/* Step 3 */}
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-gray-600">3</span>
               </div>
-              <span className="text-sm font-medium text-gray-600">Complete</span>
+              <span className="text-xs font-medium text-gray-600 sm:text-sm">Complete</span>
             </div>
           </div>
         </div>

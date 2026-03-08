@@ -78,16 +78,16 @@ const BookingForm = memo(({
   }
 
   return (
-  <section className="relative -mt-16 sm:-mt-20 pb-6 sm:pb-8" aria-label="Car Rental Booking Form">
+  <section className="relative -mt-12 sm:-mt-20 pb-6 sm:pb-8" aria-label="Car Rental Booking Form">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Card className="shadow-xl border-0">
+      <Card className="overflow-hidden rounded-[28px] border border-white/70 bg-white/85 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl">
         <CardContent className="p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-4 sm:gap-6">
             {/* Mobile/Tablet Layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:hidden">
               {/* Pick-up Location */}
-              <div>
-                <label htmlFor="pickup-location" className="block text-sm font-medium text-gray-700 mb-2">Pick-up Location</label>
+              <div className="space-y-2">
+                <label htmlFor="pickup-location" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Location</label>
                 <LocationPicker
                   value={pickupLocation}
                   onChange={setPickupLocation}
@@ -96,8 +96,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Pick-up Date & Time */}
-              <div>
-                <label htmlFor="pickup-datetime" className="block text-sm font-medium text-gray-700 mb-2">Pick-up Date & Time</label>
+              <div className="space-y-2">
+                <label htmlFor="pickup-datetime" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Date & Time</label>
                 <DatePickerWithTime
                   value={pickupDate}
                   timeValue={pickupTime}
@@ -109,8 +109,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Drop-off Location */}
-              <div>
-                <label htmlFor="dropoff-location" className="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+              <div className="space-y-2">
+                <label htmlFor="dropoff-location" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Location</label>
                 <LocationPicker
                   value={dropoffLocation}
                   onChange={setDropoffLocation}
@@ -119,8 +119,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Drop-off Date & Time */}
-              <div>
-                <label htmlFor="dropoff-datetime" className="block text-sm font-medium text-gray-700 mb-2">Drop-off Date & Time</label>
+              <div className="space-y-2">
+                <label htmlFor="dropoff-datetime" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Date & Time</label>
                 <DatePickerWithTime
                   value={dropoffDate}
                   timeValue={dropoffTime}
@@ -135,8 +135,8 @@ const BookingForm = memo(({
             {/* Desktop Layout */}
             <div className="hidden lg:flex flex-row gap-4 items-end">
               {/* Pick-up Location */}
-              <div className="flex-1">
-                <label htmlFor="pickup-location-desktop" className="block text-sm font-medium text-gray-700 mb-2">Pick-up Location</label>
+              <div className="flex-1 space-y-2">
+                <label htmlFor="pickup-location-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Location</label>
                 <LocationPicker
                   value={pickupLocation}
                   onChange={setPickupLocation}
@@ -145,8 +145,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Pick-up Date & Time */}
-              <div className="flex-1">
-                <label htmlFor="pickup-datetime-desktop" className="block text-sm font-medium text-gray-700 mb-2">Pick-up Date & Time</label>
+              <div className="flex-1 space-y-2">
+                <label htmlFor="pickup-datetime-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Date & Time</label>
                 <DatePickerWithTime
                   value={pickupDate}
                   timeValue={pickupTime}
@@ -158,8 +158,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Drop-off Location */}
-              <div className="flex-1">
-                <label htmlFor="dropoff-location-desktop" className="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+              <div className="flex-1 space-y-2">
+                <label htmlFor="dropoff-location-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Location</label>
                 <LocationPicker
                   value={dropoffLocation}
                   onChange={setDropoffLocation}
@@ -168,8 +168,8 @@ const BookingForm = memo(({
               </div>
 
               {/* Drop-off Date & Time */}
-              <div className="flex-1">
-                <label htmlFor="dropoff-datetime-desktop" className="block text-sm font-medium text-gray-700 mb-2">Drop-off Date & Time</label>
+              <div className="flex-1 space-y-2">
+                <label htmlFor="dropoff-datetime-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Date & Time</label>
                 <DatePickerWithTime
                   value={dropoffDate}
                   timeValue={dropoffTime}
@@ -182,14 +182,14 @@ const BookingForm = memo(({
             </div>
 
             {/* Find Vehicle Button */}
-            <div className="flex justify-center lg:justify-end pt-4">
+            <div className="flex justify-center lg:justify-end pt-2 sm:pt-4">
               <Button 
-                className="bg-black text-white hover:bg-yellow-500 hover:text-white h-12 px-6 sm:px-8 rounded-[30px] flex items-center space-x-2 whitespace-nowrap w-full sm:w-auto min-w-[160px] sm:min-w-[180px] disabled:opacity-100 transition-colors duration-200 group"
+                className="h-14 w-full rounded-2xl bg-black px-6 text-base font-semibold text-white shadow-lg shadow-black/10 transition-all duration-200 group hover:bg-yellow-500 hover:text-white sm:w-auto sm:min-w-[220px]"
                 onClick={handleFindVehicle}
                 aria-label="Find available vehicles for selected dates and locations"
               >
                 <span>Find a Vehicle</span>
-                <ArrowRight className="h-4 w-4 text-yellow-400 group-hover:text-white transition-colors duration-200" aria-hidden="true" />
+                <ArrowRight className="ml-2 h-4 w-4 text-yellow-400 transition-colors duration-200 group-hover:text-white" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -394,4 +394,3 @@ export default function OptimizedHomePage() {
     </>
   )
 }
-
