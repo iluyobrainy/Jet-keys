@@ -114,31 +114,28 @@ export function CarFeaturesDisplay({
     
     if (feature.type === 'boolean') {
       return (
-        <div key={feature.id} className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
-          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
-          <div className="min-w-0">
-            <p className="text-sm font-medium leading-snug text-gray-900 break-words">{feature.label}</p>
-            {feature.value && (
-              <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-green-600">
-                <CheckCircle className="h-3.5 w-3.5" />
-                Available
-              </span>
-            )}
+        <div key={feature.id} className="flex h-full min-w-0 flex-col gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 p-2.5">
+          <div className="flex items-center justify-between">
+            <Icon className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+            {feature.value && <CheckCircle className="h-3.5 w-3.5 text-green-600" />}
           </div>
+          <p className="text-[11px] font-medium leading-snug text-gray-900 break-words">
+            {feature.label}
+          </p>
         </div>
       )
     }
     
     return (
-      <div key={feature.id} className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{feature.label}</p>
-          <p className="text-sm font-medium leading-snug text-gray-900 break-words">
-            {feature.value}
-            {feature.suffix && ` ${feature.suffix}`}
-          </p>
-        </div>
+      <div key={feature.id} className="flex h-full min-w-0 flex-col gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 p-2.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500 break-words">
+          {feature.label}
+        </p>
+        <p className="text-[11px] font-medium leading-snug text-gray-900 break-words">
+          {feature.value}
+          {feature.suffix && ` ${feature.suffix}`}
+        </p>
       </div>
     )
   }
@@ -149,7 +146,7 @@ export function CarFeaturesDisplay({
     return (
       <div className="mb-6">
         <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg">{title}</h3>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
           {featureList.map(renderFeature)}
         </div>
       </div>
