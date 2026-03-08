@@ -50,7 +50,7 @@ export function NavBar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="flex max-w-[calc(100vw-2rem)] items-center gap-1 md:gap-2 overflow-x-auto rounded-full border border-border bg-background/70 px-1 py-1 shadow-lg backdrop-blur-sm pointer-events-auto">
+      <div className="flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full border border-white/20 bg-slate-900/90 px-1 py-1 shadow-xl backdrop-blur-md pointer-events-auto">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -62,8 +62,8 @@ export function NavBar({ items, className }: NavBarProps) {
               prefetch={true}
               className={cn(
                 "relative cursor-pointer rounded-full px-3 lg:px-6 py-2 text-sm font-semibold transition-colors duration-150 whitespace-nowrap",
-                "text-foreground/80 hover:text-primary",
-                isActive && "bg-muted text-primary",
+                "text-slate-200/90 hover:text-white",
+                isActive && "bg-white text-slate-900",
               )}
             >
               <span className="hidden lg:inline">{item.name}</span>
@@ -71,9 +71,9 @@ export function NavBar({ items, className }: NavBarProps) {
                 <Icon size={18} strokeWidth={2.5} />
               </span>
               {isActive && (
-                <div className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10 pointer-events-none transition-all duration-200 ease-out">
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full pointer-events-none">
-                    <div className="absolute w-8 h-4 bg-primary/20 rounded-full blur-sm -top-1 pointer-events-none" />
+                <div className="absolute inset-0 w-full rounded-full -z-10 pointer-events-none transition-all duration-200 ease-out">
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-1 w-8 rounded-t-full bg-amber-400 pointer-events-none">
+                    <div className="absolute -top-1 h-4 w-8 rounded-full bg-amber-300/30 blur-sm pointer-events-none" />
                   </div>
                 </div>
               )}

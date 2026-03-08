@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function ReviewSection() {
     return (
-        <section className="py-4 md:py-8 bg-gray-50" aria-label="Customer Testimonials">
+        <section className="py-10 md:py-12 bg-gray-50" aria-label="Customer Testimonials">
             <div className="mx-auto max-w-6xl space-y-6 px-4 md:space-y-12">
                 <div className="relative z-10 mx-auto max-w-xl space-y-4 text-center md:space-y-8">
                     <h2 className="text-3xl font-medium lg:text-4xl">What Our Customers Say</h2>

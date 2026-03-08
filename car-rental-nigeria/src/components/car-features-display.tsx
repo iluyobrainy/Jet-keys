@@ -114,21 +114,31 @@ export function CarFeaturesDisplay({
     
     if (feature.type === 'boolean') {
       return (
-        <div key={feature.id} className="flex items-center space-x-2">
-          <Icon className="h-5 w-5 text-gray-600" />
-          <span className="text-sm font-medium">{feature.label}</span>
-          {feature.value && <CheckCircle className="h-4 w-4 text-green-500" />}
+        <div key={feature.id} className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
+          <div className="min-w-0">
+            <p className="text-sm font-medium leading-snug text-gray-900 break-words">{feature.label}</p>
+            {feature.value && (
+              <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                <CheckCircle className="h-3.5 w-3.5" />
+                Available
+              </span>
+            )}
+          </div>
         </div>
       )
     }
     
     return (
-      <div key={feature.id} className="flex items-center space-x-2">
-        <Icon className="h-5 w-5 text-gray-600" />
-        <span className="text-sm font-medium">
-          {feature.label}: {feature.value}
-          {feature.suffix && ` ${feature.suffix}`}
-        </span>
+      <div key={feature.id} className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{feature.label}</p>
+          <p className="text-sm font-medium leading-snug text-gray-900 break-words">
+            {feature.value}
+            {feature.suffix && ` ${feature.suffix}`}
+          </p>
+        </div>
       </div>
     )
   }
@@ -138,8 +148,8 @@ export function CarFeaturesDisplay({
     
     return (
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">{title}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg">{title}</h3>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {featureList.map(renderFeature)}
         </div>
       </div>

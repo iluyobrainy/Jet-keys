@@ -465,15 +465,15 @@ export default function CarInfoPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Car Info */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                          <h1 className="text-3xl font-bold text-gray-900 mb-2">{car.year} - {car.brand} {car.model}</h1>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                          <h1 className="mb-2 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">{car.year} - {car.brand} {car.model}</h1>
+                    <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600">
                             <span>{car.location}</span>
                             <span>{car.distance}</span>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
                       <span className="text-blue-600 flex items-center">
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Free cancellation
@@ -484,7 +484,7 @@ export default function CarInfoPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 self-start">
                     <Button
                       variant="outline"
                       size="sm"
@@ -502,7 +502,7 @@ export default function CarInfoPage() {
 
             {/* Features */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Features</h2>
                 <CarFeaturesDisplay features={allFeatures} />
               </CardContent>
@@ -510,7 +510,7 @@ export default function CarInfoPage() {
 
             {/* Description */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Description</h2>
                 <p className="text-gray-700">
                   {car.description || `${car.brand} ${car.model} is a reliable vehicle perfect for your transportation needs.`}
@@ -520,21 +520,21 @@ export default function CarInfoPage() {
 
             {/* Owner Info */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <Image
                     src="/Carinfoui/owner-avatar.jpg"
                     alt="Owner avatar"
                     width={60}
                     height={60}
-                    className="rounded-full"
+                    className="h-14 w-14 rounded-full object-cover"
                   />
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
                       <h3 className="text-lg font-semibold text-gray-900">{car.owner?.name || "Car Owner"}</h3>
                       {car.owner?.verified && <CheckCircle className="h-4 w-4 text-blue-500" />}
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                    <div className="mb-2 flex flex-wrap items-center gap-3 text-sm text-gray-600">
                       <span className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-400 mr-1" />
                           {car.rating} ({car.reviews} reviews)
@@ -543,7 +543,7 @@ export default function CarInfoPage() {
                     </div>
                     <span className="text-sm text-green-600 font-medium">Online</span>
                   </div>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     Send Message
                   </Button>
                 </div>
@@ -552,7 +552,7 @@ export default function CarInfoPage() {
 
             {/* Location */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Location</h2>
                 <div className="relative h-64 bg-gray-200 rounded-lg overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -568,10 +568,10 @@ export default function CarInfoPage() {
 
             {/* Customer Reviews */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center mb-6">
+              <CardContent className="p-4 sm:p-6">
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h2 className="text-xl font-bold text-gray-900">Customer Reviews</h2>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm text-gray-600">4.0 (180 reviews)</span>
                     <Button variant="outline" size="sm">
                       All reviews <ChevronDown className="h-4 w-4 ml-1" />
@@ -580,23 +580,23 @@ export default function CarInfoPage() {
                 </div>
                 <div className="space-y-4">
                   {reviews.map((review, index) => (
-                    <div key={index} className="flex space-x-4">
+                    <div key={index} className="flex items-start gap-3 rounded-xl border border-gray-100 p-3 sm:gap-4 sm:p-4">
                       <Image
                         src={review.avatar}
                         alt={review.name}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 shrink-0 rounded-full object-cover"
                       />
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex flex-wrap items-center gap-2">
                           <h4 className="font-medium text-gray-900">{review.name}</h4>
-                          <div className="flex">
+                          <div className="flex shrink-0">
                             {[...Array(review.rating)].map((_, i) => (
                               <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-500">{review.date}</span>
+                          <span className="text-xs text-gray-500 sm:text-sm">{review.date}</span>
                         </div>
                         <p className="text-gray-700 text-sm">{review.content}</p>
                       </div>
@@ -604,7 +604,7 @@ export default function CarInfoPage() {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <Button variant="outline" className="flex items-center">
+                  <Button variant="outline" className="flex w-full items-center justify-center sm:w-auto">
                     See All Reviews <ArrowRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
@@ -616,33 +616,33 @@ export default function CarInfoPage() {
               <CardContent className="p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Other Cars Nearby</h2>
                 <div className="space-y-4">
-                  {nearbyCars.map((car, index) => (
-                    <div key={index} className="flex space-x-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                      <div className="relative w-20 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                  {nearbyCars.map((nearbyCar, index) => (
+                    <div key={index} className="flex flex-col gap-3 rounded-lg border border-gray-200 p-3 transition-shadow hover:shadow-md sm:flex-row sm:gap-4 sm:p-4">
+                      <div className="relative h-40 w-full overflow-hidden rounded-lg bg-gray-200 sm:h-16 sm:w-20">
                         <Image
-                          src={car.image}
-                          alt={car.title}
+                          src={nearbyCar.image}
+                          alt={nearbyCar.title}
                           fill
                           className="object-cover"
                         />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 mb-1">{car.title}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{car.provider} • {car.distance}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                          <span>{car.features.join(" • ")}</span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="mb-1 font-medium text-gray-900">{nearbyCar.title}</h3>
+                        <p className="mb-2 text-sm text-gray-600">{nearbyCar.provider} - {nearbyCar.distance}</p>
+                        <div className="mb-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                          <span className="rounded-full bg-gray-100 px-2 py-1 text-xs">{nearbyCar.features.join(" - ")}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4 text-sm">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-3 text-sm">
                             <span className="text-blue-600">Free cancellation</span>
                             <span className="flex items-center">
                               <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                              {car.rating} ({car.reviews} reviews)
+                              {nearbyCar.rating} ({nearbyCar.reviews} reviews)
                             </span>
                           </div>
-                          <div className="text-right">
+                          <div className="sm:text-right">
                             <p className="text-xs text-gray-500">Basic price from</p>
-                            <p className="font-semibold text-gray-900">{car.price}</p>
+                            <p className="font-semibold text-gray-900">{nearbyCar.price}</p>
                           </div>
                         </div>
                       </div>
@@ -811,3 +811,4 @@ export default function CarInfoPage() {
     </div>
   )
 }
+

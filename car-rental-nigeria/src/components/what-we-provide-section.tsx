@@ -105,7 +105,7 @@ export function WhatWeProvideSection() {
   ]
 
   return (
-    <section ref={sectionRef} className="bg-gray-50" aria-label="What We Provide - Car Rental Services">
+    <section ref={sectionRef} className="bg-gray-50 py-2 sm:py-4 overflow-hidden" aria-label="What We Provide - Car Rental Services">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-lg py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -205,8 +205,8 @@ export function WhatWeProvideSection() {
             {/* Mobile/Tablet Layout - Stacked Grid */}
             <div className="lg:hidden">
               {/* Central Image with Dashed Circle Effect */}
-              <div className="relative flex justify-center mb-12">
-                <div className="relative">
+              <div className="relative mb-12 flex justify-center">
+                <div className="relative h-[320px] w-[320px] max-w-full">
                   {/* Dashed Circle Effect */}
                   <div className={`absolute inset-0 w-80 h-80 border-2 border-dashed border-red-500 rounded-full m-auto transition-all duration-3000 ease-out ${
                     isVisible ? 'animate-spin' : 'opacity-0'
@@ -219,7 +219,7 @@ export function WhatWeProvideSection() {
                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full"></div>
                   
                   {/* G-Wagon Image */}
-                  <div className={`relative z-10 transition-all duration-1500 ease-out ${
+                  <div className={`absolute inset-0 z-10 flex items-center justify-center transition-all duration-1500 ease-out ${
                     isVisible 
                       ? 'translate-x-0 opacity-100 scale-100' 
                       : 'translate-x-[-150px] opacity-0 scale-95'
@@ -229,7 +229,7 @@ export function WhatWeProvideSection() {
                       alt="G-Wagon SUV vehicle for reliable car rentals"
                       width={300}
                       height={225}
-                      className="w-full h-auto object-contain max-w-sm mx-auto"
+                      className="h-auto w-full max-w-[260px] object-contain"
                       priority
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
