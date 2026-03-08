@@ -11,7 +11,7 @@ interface FeatureBlockProps {
 }
 
 const FeatureBlock = memo(({ icon, title, description }: FeatureBlockProps) => (
-  <div className="text-center p-3 max-w-[200px]">
+  <div className="mx-auto w-full max-w-[220px] p-3 text-center">
     <div className="flex justify-center mb-3">
       <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
         <div className="text-white">
@@ -19,10 +19,10 @@ const FeatureBlock = memo(({ icon, title, description }: FeatureBlockProps) => (
         </div>
       </div>
     </div>
-    <h3 className="text-base font-bold text-gray-900 mb-2">
+    <h3 className="mb-2 text-sm font-bold text-gray-900 sm:text-base">
       {title}
     </h3>
-    <p className="text-xs text-gray-600 leading-relaxed">
+    <p className="text-[11px] leading-relaxed text-gray-600 sm:text-xs">
       {description}
     </p>
   </div>
@@ -238,7 +238,7 @@ export function WhatWeProvideSection() {
               </div>
 
               {/* Feature Blocks Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-2 justify-items-center gap-4 sm:gap-6">
                 {features.map((feature, index) => (
                   <FeatureBlock
                     key={index}

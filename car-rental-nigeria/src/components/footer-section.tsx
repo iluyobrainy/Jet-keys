@@ -60,7 +60,7 @@ export function FooterSection() {
     <footer className="bg-black py-8 sm:py-12 lg:py-16" aria-label="Website Footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Membership Section */}
-        <div className="text-center mb-12">
+        <div className="mb-10 text-left sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-8">
             Become Our Member
           </h2>
@@ -92,7 +92,7 @@ export function FooterSection() {
            
             <Button
               type="submit"
-              className="h-12 w-12 self-center rounded-full bg-gray-800 p-0 text-white hover:bg-gray-700 sm:self-end"
+              className="h-12 w-12 self-start rounded-full bg-gray-800 p-0 text-white hover:bg-gray-700 sm:self-end"
               aria-label="Submit membership form"
             >
               <ArrowRight className="w-5 h-5" />
@@ -101,10 +101,10 @@ export function FooterSection() {
         </div>
 
         {/* Main Content */}
-        <div className="mb-12 grid grid-cols-1 gap-8 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-5">
+        <div className="mb-12 grid grid-cols-2 gap-6 text-left lg:grid-cols-5">
           {/* Brand Info */}
-          <div>
-            <div className="mb-4 flex items-center justify-center sm:justify-start">
+          <div className="col-span-2 lg:col-span-1">
+            <div className="mb-4 flex items-center justify-start">
               <Settings className="w-8 h-8 text-orange-500 mr-2" />
               <span className="text-2xl font-bold text-white">Jet&Keys</span>
             </div>
@@ -176,15 +176,15 @@ export function FooterSection() {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-center space-x-3 sm:justify-start">
+                  <div className="flex items-center space-x-3">
                     <Phone className="h-4 w-4 text-orange-500" />
                     <span className="text-sm text-gray-400">{businessInfo?.contactPhone}</span>
                   </div>
-                  <div className="flex items-center justify-center space-x-3 sm:justify-start">
+                  <div className="flex items-center space-x-3">
                     <Mail className="h-4 w-4 text-orange-500" />
                     <span className="text-sm text-gray-400">{businessInfo?.contactEmail}</span>
                   </div>
-                  <div className="flex items-center justify-center space-x-3 sm:justify-start">
+                  <div className="flex items-center space-x-3">
                     <MapPin className="h-4 w-4 text-orange-500" />
                     <span className="text-sm text-gray-400">{businessInfo?.businessAddress}</span>
                   </div>
@@ -195,8 +195,8 @@ export function FooterSection() {
         </div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col items-center justify-between border-t border-gray-800 pt-8 sm:flex-row">
-          <p className="text-sm text-gray-400 mb-4 sm:mb-0">
+        <div className="flex flex-col items-start gap-4 border-t border-gray-800 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-400">
             © 2025 Jet&Keys, All Rights Reserved.
           </p>
           

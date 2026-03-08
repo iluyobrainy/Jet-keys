@@ -78,7 +78,7 @@ const BookingForm = memo(({
   }
 
   return (
-  <section className="relative -mt-12 sm:-mt-20 pb-6 sm:pb-8" aria-label="Car Rental Booking Form">
+  <section className="relative -mt-4 sm:-mt-16 pb-6 sm:pb-8" aria-label="Car Rental Booking Form">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Card className="overflow-hidden rounded-[28px] border border-white/70 bg-white/85 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl">
         <CardContent className="p-4 sm:p-6 lg:p-8">
