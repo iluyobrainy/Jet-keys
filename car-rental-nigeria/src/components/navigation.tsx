@@ -37,8 +37,8 @@ export function Navigation() {
 
   return (
     <>
-      {/* Main Navigation */}
-      <nav className="sticky top-0 z-40 border-b border-black/10 bg-white/95 shadow-[0_6px_20px_rgba(15,23,42,0.08)] backdrop-blur supports-[backdrop-filter]:bg-white/85">
+      {/* Mobile Navigation */}
+      <nav className="sticky top-0 z-40 border-b border-black/10 bg-white/95 shadow-[0_6px_20px_rgba(15,23,42,0.08)] backdrop-blur supports-[backdrop-filter]:bg-white/85 md:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -46,13 +46,6 @@ export function Navigation() {
               <Car className="h-8 w-8 text-blue-600" />
               <span className="text-lg sm:text-xl font-bold text-gray-900">Jet & Keys</span>
             </Link>
-
-            {/* Desktop CTA */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Button asChild>
-                <Link href="/cars" prefetch={true}>Book Now</Link>
-              </Button>
-            </div>
 
             {/* Mobile Menu */}
             <Sheet>
@@ -108,6 +101,14 @@ export function Navigation() {
           </div>
         </div>
       </nav>
+
+      {/* Desktop Logo (no card wrapper) */}
+      <div className="pointer-events-none fixed left-6 top-5 z-40 hidden md:block">
+        <Link href="/" prefetch={true} className="pointer-events-auto flex items-center space-x-2">
+          <Car className="h-8 w-8 text-blue-600" />
+          <span className="text-lg font-bold text-slate-900">Jet & Keys</span>
+        </Link>
+      </div>
 
       {/* Desktop Tubelight Navigation */}
       <NavBar items={navItems} className="hidden md:block" />
