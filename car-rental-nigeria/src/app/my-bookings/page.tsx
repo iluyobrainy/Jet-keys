@@ -1,124 +1,151 @@
-// app/my-bookings/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Eye,
+  FileText,
+  MapPin,
+  RefreshCw,
+  X,
+} from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { FooterSection } from "@/components/footer-section"
 import { AuroraBackground } from "@/components/ui/aurora-background"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Car, 
-  CreditCard, 
-  X, 
-  CheckCircle,
-  AlertCircle,
-  Eye,
-  RefreshCw,
-  User,
-  Phone,
-  Mail,
-  CalendarDays,
-  Navigation as NavigationIcon,
-  FileText,
-  ChevronRight,
-  Star,
-  Shield,
-  Zap
-} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useBookings, useCancelBooking } from "@/lib/hooks/useApi"
+import { useRealtimeInvalidation } from "@/lib/hooks/useRealtimeInvalidation"
+import { useAuth } from "@/lib/providers/AuthProvider"
 import { formatDate, formatNumber } from "@/lib/formatters"
+import type { Booking } from "@/lib/services/apiService"
+
+const statusTheme: Record<string, string> = {
+  checkout_draft: "bg-slate-100 text-slate-800",
+  payment_pending: "bg-yellow-100 text-yellow-800",
+  paid_awaiting_fulfilment: "bg-blue-100 text-blue-800",
+  active: "bg-green-100 text-green-800",
+  returned: "bg-indigo-100 text-indigo-800",
+  completed: "bg-gray-100 text-gray-800",
+  cancel_requested: "bg-orange-100 text-orange-800",
+  cancelled: "bg-red-100 text-red-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  approved: "bg-blue-100 text-blue-800",
+}
+
+function getStatusIcon(status: string) {
+  switch (status) {
+    case "checkout_draft":
+      return <FileText className="h-4 w-4" />
+    case "payment_pending":
+      return <Clock className="h-4 w-4" />
+    case "paid_awaiting_fulfilment":
+      return <CheckCircle className="h-4 w-4" />
+    case "active":
+      return <RefreshCw className="h-4 w-4" />
+    case "cancel_requested":
+      return <AlertCircle className="h-4 w-4" />
+    case "cancelled":
+      return <X className="h-4 w-4" />
+    default:
+      return <CheckCircle className="h-4 w-4" />
+  }
+}
+
+function canCancelBooking(status: string) {
+  return ["payment_pending", "paid_awaiting_fulfilment", "pending", "approved"].includes(status)
+}
+
+function canRequestRefund(status: string) {
+  return ["active", "returned", "completed"].includes(status)
+}
 
 export default function MyBookingsPage() {
-  const [selectedBooking, setSelectedBooking] = useState<any>(null)
-  const [showCancelModal, setShowCancelModal] = useState(false)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const router = useRouter()
+  const { loading: authLoading, isAuthenticated } = useAuth()
+  const { data: bookings = [], isLoading, refetch } = useBookings("user")
+  const cancelBookingMutation = useCancelBooking()
+  useRealtimeInvalidation("my-bookings-live", ["bookings", "refund_requests"], [["bookings"], ["refundRequests"]])
+
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
+  const [showCancel, setShowCancel] = useState(false)
+  const [showCancellationLoading, setShowCancellationLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const [cancellationReason, setCancellationReason] = useState("")
   const [bankName, setBankName] = useState("")
   const [accountName, setAccountName] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
-  const [showDetailsModal, setShowDetailsModal] = useState(false)
-  
-  // For now, we'll show all bookings (in a real app, this would be user-specific)
-  // Later we'll implement proper user authentication
-  const { data: bookings, isLoading, refetch } = useBookings("all")
-  const cancelBookingMutation = useCancelBooking()
+  const [lastRefundDetails, setLastRefundDetails] = useState<{
+    bankName: string
+    accountName: string
+    accountNumber: string
+  } | null>(null)
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'confirmed': return 'bg-blue-100 text-blue-800'
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'completed': return 'bg-gray-100 text-gray-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/login?next=%2Fmy-bookings")
     }
-  }
+  }, [authLoading, isAuthenticated, router])
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />
-      case 'confirmed': return <CheckCircle className="h-4 w-4" />
-      case 'active': return <Car className="h-4 w-4" />
-      case 'completed': return <CheckCircle className="h-4 w-4" />
-      case 'cancelled': return <X className="h-4 w-4" />
-      default: return <AlertCircle className="h-4 w-4" />
-    }
-  }
-
-  const canCancel = (booking: any) => {
-    return ['pending', 'confirmed'].includes(booking.status)
+  const resetCancellationForm = () => {
+    setCancellationReason("")
+    setBankName("")
+    setAccountName("")
+    setAccountNumber("")
+    setSelectedBooking(null)
+    setShowCancel(false)
   }
 
   const handleCancelBooking = async () => {
     if (!selectedBooking || !cancellationReason.trim() || !bankName.trim() || !accountName.trim() || !accountNumber.trim()) {
-      alert('Please fill in all cancellation details including bank information')
       return
     }
 
     try {
+      setLastRefundDetails({
+        bankName,
+        accountName,
+        accountNumber,
+      })
+
       await cancelBookingMutation.mutateAsync({
         bookingId: selectedBooking.id,
         cancellationData: {
           reason: cancellationReason,
-          bankName: bankName,
-          accountName: accountName,
-          accountNumber: accountNumber
-        }
+          bankName,
+          accountName,
+          accountNumber,
+        },
       })
 
-      // Reset form
-      setCancellationReason("")
-      setBankName("")
-      setAccountName("")
-      setAccountNumber("")
-      setShowCancelModal(false)
-      setSelectedBooking(null)
-      
-      // Refresh bookings
+      setShowCancel(false)
+      setShowCancellationLoading(true)
+      await new Promise((resolve) => window.setTimeout(resolve, 3000))
+      resetCancellationForm()
       refetch()
-      
-      // Show success modal
-      setShowSuccessModal(true)
+      setShowCancellationLoading(false)
+      setShowSuccess(true)
     } catch (error) {
-      console.error('Cancellation error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      alert(`❌ Failed to cancel booking: ${errorMessage}\n\nPlease try again or contact support if the issue persists.`)
+      setShowCancellationLoading(false)
+      alert(error instanceof Error ? error.message : "Failed to submit cancellation request.")
     }
   }
 
-  if (isLoading) {
+  if (authLoading || !isAuthenticated || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2">Loading your bookings...</span>
+        <div className="flex h-[60vh] items-center justify-center">
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-slate-900"></div>
+            Loading your bookings...
           </div>
         </div>
         <FooterSection />
@@ -129,209 +156,114 @@ export default function MyBookingsPage() {
   return (
     <AuroraBackground className="min-h-screen">
       <Navigation />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Header */}
+
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 text-center lg:text-left">
-          <div className="inline-block">
-            <h1 className="text-4xl lg:text-5xl font-bold text-black mb-4">
-              My <span className="text-orange-500">Bookings</span>
-            </h1>
-            <div className="w-24 h-1 bg-orange-500 mx-auto lg:mx-0 mb-4"></div>
-          </div>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto lg:mx-0">
-            Manage your car rental bookings and track your journey with us
+          <h1 className="text-4xl font-bold text-black">
+            My <span className="text-orange-500">Bookings</span>
+          </h1>
+          <p className="mt-3 max-w-2xl text-base text-gray-600">
+            Track paid bookings, active rentals, cancellation requests, and completed trips from one place.
           </p>
         </div>
 
-        {!bookings || bookings.length === 0 ? (
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+        {bookings.length === 0 ? (
+          <Card className="rounded-[30px] border-0 bg-white/85 shadow-xl">
             <CardContent className="py-16 text-center">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Car className="h-10 w-10 text-orange-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Bookings Yet</h3>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Start your journey by exploring our premium car collection and make your first booking.
+              <h2 className="text-2xl font-bold text-slate-950">No bookings yet</h2>
+              <p className="mt-3 text-sm text-slate-600">
+                Your paid bookings will appear here after checkout.
               </p>
-              <Button 
-                onClick={() => window.location.href = '/cars'}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              <Button
+                className="mt-6 rounded-2xl bg-slate-950 text-white hover:bg-slate-800"
+                onClick={() => router.push("/cars")}
               >
-                <Car className="h-5 w-5 mr-2" />
-                Browse Available Cars
+                Browse cars
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-8">
-            {bookings.map((booking: any) => (
-              <Card key={booking.id} className="border-0 bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-                <CardHeader className="pb-4">
+          <div className="space-y-6">
+            {bookings.map((booking: Booking) => (
+              <Card key={booking.id} className="rounded-[30px] border-0 bg-white/88 shadow-xl">
+                <CardHeader className="pb-0">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
-                          <Car className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl font-bold text-gray-900">
-                            {booking.cars?.name || 'Car Booking'}
-                          </CardTitle>
-                          <p className="text-sm text-gray-500 font-mono">
-                            #{booking.id.slice(0, 8).toUpperCase()}
-                          </p>
-                        </div>
-                      </div>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-slate-950">
+                        {booking.cars?.name || `${booking.cars?.brand || "Car"} ${booking.cars?.model || ""}`.trim() || "Car booking"}
+                      </CardTitle>
+                      <p className="mt-2 text-sm font-medium text-slate-500">
+                        {booking.booking_reference || `#${String(booking.id).slice(0, 8).toUpperCase()}`}
+                      </p>
                     </div>
-                    <div className="flex flex-row flex-wrap gap-2 sm:flex-col">
-                      <Badge className={`${getStatusColor(booking.status)} px-4 py-2 text-sm font-semibold`}>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className={`${statusTheme[booking.status] || statusTheme.completed} px-4 py-2 text-sm`}>
                         <span className="flex items-center gap-2">
                           {getStatusIcon(booking.status)}
-                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                          {String(booking.status).replaceAll("_", " ")}
                         </span>
                       </Badge>
-                      {booking.status === 'cancelled' && booking.refund_status && (
-                        <Badge className={`${booking.refund_status === 'processed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} px-3 py-1 text-xs`}>
-                          <span className="flex items-center gap-1">
-                            {booking.refund_status === 'processed' ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                            Refund {booking.refund_status}
-                          </span>
-                        </Badge>
-                      )}
+                      <Badge variant="outline" className="px-4 py-2 text-sm capitalize">
+                        {String(booking.payment_status).replaceAll("_", " ")}
+                      </Badge>
                     </div>
                   </div>
                 </CardHeader>
-                
-                <CardContent className="pt-0">
-                  {/* Booking Details Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    {/* Trip Information */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center gap-2">
-                        <CalendarDays className="h-4 w-4 text-orange-500" />
-                        Trip Details
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Pickup</p>
-                            <p className="font-semibold text-gray-900">{formatDate(booking.pickup_date)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="h-4 w-4 text-green-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Return</p>
-                            <p className="font-semibold text-gray-900">{formatDate(booking.dropoff_date)}</p>
-                          </div>
-                        </div>
-                      </div>
+                <CardContent className="space-y-6 pt-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-[24px] bg-slate-50 p-4">
+                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        <Calendar className="h-4 w-4" />
+                        Dates
+                      </p>
+                      <p className="text-sm font-medium text-slate-900">{formatDate(booking.pickup_date)}</p>
+                      <p className="text-sm text-slate-600">to {formatDate(booking.dropoff_date)}</p>
                     </div>
-
-                    {/* Location Information */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center gap-2">
-                        <NavigationIcon className="h-4 w-4 text-orange-500" />
-                        Locations
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <MapPin className="h-4 w-4 text-purple-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Pickup</p>
-                            <p className="font-semibold text-gray-900">{booking.pickup_location}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                            <MapPin className="h-4 w-4 text-indigo-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Return</p>
-                            <p className="font-semibold text-gray-900">{booking.dropoff_location}</p>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="rounded-[24px] bg-slate-50 p-4">
+                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        <MapPin className="h-4 w-4" />
+                        Route
+                      </p>
+                      <p className="text-sm font-medium text-slate-900">{booking.pickup_location}</p>
+                      <p className="text-sm text-slate-600">to {booking.dropoff_location}</p>
                     </div>
-
-                    {/* Payment Information */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center gap-2">
-                        <span className="text-orange-500 font-bold text-lg">₦</span>
-                        Payment
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <CreditCard className="h-4 w-4 text-emerald-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Total Amount</p>
-                            <p className="font-bold text-lg text-gray-900">₦{formatNumber(booking.total_amount)}</p>
-                          </div>
-                        </div>
-                        {booking.cancellation_fee > 0 && (
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                              <X className="h-4 w-4 text-red-600" />
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500 uppercase tracking-wide">Cancellation Fee</p>
-                              <p className="font-semibold text-red-600">₦{formatNumber(booking.cancellation_fee)}</p>
-                            </div>
-                          </div>
-                        )}
-                        {booking.refund_amount > 0 && (
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                              <RefreshCw className="h-4 w-4 text-green-600" />
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500 uppercase tracking-wide">Refund Amount</p>
-                              <p className="font-semibold text-green-600">₦{formatNumber(booking.refund_amount)}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                    <div className="rounded-[24px] bg-slate-50 p-4">
+                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        <CreditCard className="h-4 w-4" />
+                        Amount
+                      </p>
+                      <p className="text-lg font-bold text-slate-950">NGN {formatNumber(booking.total_amount)}</p>
+                      {booking.refund_status ? (
+                        <p className="text-xs capitalize text-slate-500">Refund {booking.refund_status.replaceAll("_", " ")}</p>
+                      ) : null}
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex flex-col gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:flex-wrap">
-                    <Button 
-                      variant="outline" 
-                        className="w-full flex-1 bg-white text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900 sm:w-auto sm:flex-none"
+                  <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      className="flex-1 rounded-2xl"
                       onClick={() => {
                         setSelectedBooking(booking)
-                        setShowDetailsModal(true)
+                        setShowDetails(true)
                       }}
                     >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                      <ChevronRight className="h-4 w-4 ml-2" />
+                      <Eye className="mr-2 h-4 w-4" />
+                      View details
                     </Button>
-                    
-                    {canCancel(booking) && (
-                      <Button 
-                        variant="destructive" 
-                        className="w-full flex-1 bg-red-500 text-white transition-all duration-200 hover:scale-[1.01] hover:bg-red-600 sm:w-auto sm:flex-none"
+                    {canCancelBooking(booking.status) || canRequestRefund(booking.status) ? (
+                      <Button
+                        variant="destructive"
+                        className="flex-1 rounded-2xl bg-red-500 text-white hover:bg-red-600"
                         onClick={() => {
                           setSelectedBooking(booking)
-                          setShowCancelModal(true)
+                          setShowCancel(true)
                         }}
                       >
-                        <X className="h-4 w-4 mr-2" />
-                        Cancel Booking
+                        <X className="mr-2 h-4 w-4" />
+                        {canCancelBooking(booking.status) ? "Cancel booking" : "Request refund review"}
                       </Button>
-                    )}
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>
@@ -340,468 +272,175 @@ export default function MyBookingsPage() {
         )}
       </div>
 
-      {/* Cancel Booking Modal */}
-      {showCancelModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            console.log('Backdrop clicked')
-            setShowCancelModal(false)
-            setSelectedBooking(null)
-            setCancellationReason("")
-            setBankName("")
-            setAccountName("")
-            setAccountNumber("")
-          }
-        }}>
-          <Card className="w-full max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <CardTitle className="flex items-center justify-between text-red-600">
-                <div className="flex items-center gap-2">
-                  <X className="h-5 w-5" />
-                  Cancel Booking
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    console.log('Close button clicked')
-                    setShowCancelModal(false)
-                    setSelectedBooking(null)
-                    setCancellationReason("")
-                    setBankName("")
-                    setAccountName("")
-                    setAccountNumber("")
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
+      {showDetails && selectedBooking ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[30px]">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Booking details</CardTitle>
+              <Button variant="ghost" size="icon" onClick={() => setShowDetails(false)}>
+                <X className="h-4 w-4" />
+              </Button>
             </CardHeader>
-            <div className="flex flex-col flex-1 overflow-hidden">
-              <CardContent className="space-y-4 overflow-y-auto flex-1 p-6">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 className="font-semibold text-yellow-800 mb-2">Cancellation Policy</h4>
-                <p className="text-sm text-yellow-700">
-                  Cancellation fee: 10% of total amount<br/>
-                  Refund amount: 90% of total amount
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[24px] bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Booking reference</p>
+                  <p className="mt-2 font-semibold text-slate-950">{selectedBooking.booking_reference || selectedBooking.id}</p>
+                </div>
+                <div className="rounded-[24px] bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Customer</p>
+                  <p className="mt-2 font-semibold text-slate-950">{selectedBooking.customer_name}</p>
+                  <p className="text-sm text-slate-600">{selectedBooking.customer_email}</p>
+                  <p className="text-sm text-slate-600">{selectedBooking.customer_phone}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[24px] bg-blue-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-blue-600">Pickup</p>
+                  <p className="mt-2 font-semibold text-slate-950">{selectedBooking.pickup_location}</p>
+                  <p className="text-sm text-slate-600">{formatDate(selectedBooking.pickup_date)}</p>
+                </div>
+                <div className="rounded-[24px] bg-blue-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-blue-600">Return</p>
+                  <p className="mt-2 font-semibold text-slate-950">{selectedBooking.dropoff_location}</p>
+                  <p className="text-sm text-slate-600">{formatDate(selectedBooking.dropoff_date)}</p>
+                </div>
+              </div>
+
+              <div className="rounded-[24px] bg-emerald-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-emerald-600">Payment</p>
+                <p className="mt-2 text-xl font-bold text-slate-950">NGN {formatNumber(selectedBooking.total_amount)}</p>
+                <p className="mt-1 text-sm capitalize text-slate-600">
+                  {selectedBooking.payment_status?.replaceAll("_", " ")}
                 </p>
               </div>
-              
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Total Amount:</span>
-                  <span>₦{formatNumber(selectedBooking.total_amount)}</span>
-                </div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Cancellation Fee (10%):</span>
-                  <span className="text-red-600">₦{formatNumber(selectedBooking.total_amount * 0.1)}</span>
-                </div>
-                <div className="flex justify-between text-sm font-semibold border-t pt-2">
-                  <span>Refund Amount:</span>
-                  <span className="text-green-600">₦{formatNumber(selectedBooking.total_amount * 0.9)}</span>
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Reason for Cancellation *
-                </label>
-                <textarea
-                  value={cancellationReason}
-                  onChange={(e) => setCancellationReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                  placeholder="Please tell us why you're cancelling..."
-                />
-              </div>
-
-              {/* Bank Details Section */}
-              <div className="border-t pt-4">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Refund Bank Details</h4>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bank Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={bankName}
-                      onChange={(e) => setBankName(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="e.g., Access Bank, GTBank, First Bank"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Account Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={accountName}
-                      onChange={(e) => setAccountName(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Account holder's name as it appears on bank records"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Account Number *
-                    </label>
-                    <input
-                      type="text"
-                      value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="10-digit account number"
-                      maxLength={10}
-                    />
-                  </div>
-                </div>
-                
-                <div className="mt-4 p-3 bg-blue-50 rounded-md">
-                  <p className="text-sm text-blue-800">
-                    <strong>Refund Information:</strong> Refunds will be processed within 4 working days to the bank account provided above. 
-                    A cancellation fee may apply based on our refund policy.
+              {selectedBooking.bank_name || selectedBooking.refund_status ? (
+                <div className="rounded-[24px] bg-red-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-red-600">Refund details</p>
+                  <p className="mt-2 text-sm text-slate-700">
+                    {selectedBooking.bank_name || "Bank not supplied"} - {selectedBooking.account_name || "Account name pending"} ({selectedBooking.account_number || "Account number pending"})
+                  </p>
+                  <p className="mt-1 text-sm capitalize text-slate-600">
+                    {selectedBooking.refund_status?.replaceAll("_", " ") || "Awaiting review"}
                   </p>
                 </div>
-              </div>
-              </CardContent>
-              
-              {/* Sticky Footer */}
-              <div className="border-t bg-white p-6 flex-shrink-0">
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => {
-                      console.log('Keep Booking button clicked')
-                      setShowCancelModal(false)
-                      setSelectedBooking(null)
-                      setCancellationReason("")
-                      setBankName("")
-                      setAccountName("")
-                      setAccountNumber("")
-                    }}
-                  >
-                    Keep Booking
-                  </Button>
-                  <Button 
-                    variant="destructive" 
-                    className="flex-1"
-                    onClick={handleCancelBooking}
-                    disabled={!cancellationReason.trim() || !bankName.trim() || !accountName.trim() || !accountNumber.trim() || cancelBookingMutation.isPending}
-                  >
-                    {cancelBookingMutation.isPending ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Cancelling...
-                      </>
-                    ) : (
-                      'Cancel Booking'
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
+              ) : null}
+            </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
 
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md mx-auto">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Booking Cancelled Successfully!
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Your refund has been processed and will be credited to your bank account within 4 working days.
-                </p>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-blue-800">
-                    <strong>Refund Details:</strong><br/>
-                    • Amount will be credited to: {bankName}<br/>
-                    • Account: {accountName} ({accountNumber})<br/>
-                    • Processing time: 4 working days
-                  </p>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Thank you for choosing Jet & Keys! We appreciate your business.
-                </p>
+      {showCancel && selectedBooking ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-2xl rounded-[30px]">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Cancel booking</CardTitle>
+              <Button variant="ghost" size="icon" onClick={resetCancellationForm}>
+                <X className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                {canCancelBooking(selectedBooking.status)
+                  ? "Direct cancellation is only available before the rental starts. This request will be logged for refund review."
+                  : "This rental has already started or completed. Your request will be sent for refund review instead of direct cancellation."}
               </div>
-              <Button 
-                onClick={() => setShowSuccessModal(false)}
-                className="w-full"
-              >
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-900">Reason for cancellation</label>
+                <textarea
+                  value={cancellationReason}
+                  onChange={(event) => setCancellationReason(event.target.value)}
+                  className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-400"
+                  placeholder="Tell us why you need to cancel."
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-900">Bank name</label>
+                  <input
+                    value={bankName}
+                    onChange={(event) => setBankName(event.target.value)}
+                    className="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-slate-400"
+                    placeholder="e.g. GTBank"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-900">Account name</label>
+                  <input
+                    value={accountName}
+                    onChange={(event) => setAccountName(event.target.value)}
+                    className="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-slate-400"
+                    placeholder="Account holder name"
+                  />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <label className="text-sm font-medium text-slate-900">Account number</label>
+                  <input
+                    value={accountNumber}
+                    onChange={(event) => setAccountNumber(event.target.value)}
+                    className="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-slate-400"
+                    placeholder="10-digit account number"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button variant="outline" className="flex-1 rounded-2xl" onClick={resetCancellationForm}>
+                  Keep booking
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1 rounded-2xl bg-red-500 text-white hover:bg-red-600"
+                  onClick={handleCancelBooking}
+                  disabled={cancelBookingMutation.isPending}
+                >
+                  Submit cancellation
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
+
+      {showCancellationLoading ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-md rounded-[30px]">
+            <CardContent className="space-y-4 p-8 text-center">
+              <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-slate-200"></div>
+              <div className="space-y-2">
+                <div className="mx-auto h-4 w-40 animate-pulse rounded bg-slate-200"></div>
+                <div className="mx-auto h-3 w-52 animate-pulse rounded bg-slate-100"></div>
+                <div className="mx-auto h-3 w-36 animate-pulse rounded bg-slate-100"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
+
+      {showSuccess ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-md rounded-[30px]">
+            <CardContent className="p-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-950">Cancellation request submitted</h2>
+              <p className="mt-3 text-sm text-slate-600">
+                Your refund review is now pending. The destination account stored for this request is shown below.
+              </p>
+              <div className="mt-6 rounded-[24px] bg-blue-50 p-4 text-left text-sm text-blue-900">
+                <p><strong>Bank:</strong> {lastRefundDetails?.bankName || "Not supplied"}</p>
+                <p><strong>Account:</strong> {lastRefundDetails?.accountName || "Not supplied"} ({lastRefundDetails?.accountNumber || "Not supplied"})</p>
+                <p><strong>Processing time:</strong> 4 working days</p>
+              </div>
+              <Button className="mt-6 w-full rounded-2xl bg-slate-950 text-white hover:bg-slate-800" onClick={() => setShowSuccess(false)}>
                 Close
               </Button>
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* Booking Details Modal */}
-      {showDetailsModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-3xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-5 w-5" />
-                  Booking Details
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowDetailsModal(false)
-                    setSelectedBooking(null)
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            
-            <CardContent className="overflow-y-auto flex-1 p-6">
-              <div className="space-y-6">
-                {/* Booking Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Booking Information</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-gray-600">Booking ID:</span>
-                        <p className="font-medium">{selectedBooking.id}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-600">Status:</span>
-                        <div className="mt-1">
-                          <Badge className={getStatusColor(selectedBooking.status)}>
-                            <span className="flex items-center gap-1">
-                              {getStatusIcon(selectedBooking.status)}
-                              {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
-                            </span>
-                          </Badge>
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-600">Vehicle:</span>
-                        <p className="font-medium">{selectedBooking.cars?.name || 'Car Details Not Available'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-600">Customer:</span>
-                        <p className="font-medium">{selectedBooking.customer_name}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trip Details */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Trip Details</h3>
-                  <div className="bg-blue-50 rounded-lg p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-blue-700">Pickup Date:</span>
-                        <p className="font-medium text-blue-900">{formatDate(selectedBooking.pickup_date)}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-700">Return Date:</span>
-                        <p className="font-medium text-blue-900">{formatDate(selectedBooking.dropoff_date)}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-700">Pickup Location:</span>
-                        <p className="font-medium text-blue-900">{selectedBooking.pickup_location}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-700">Return Location:</span>
-                        <p className="font-medium text-blue-900">{selectedBooking.dropoff_location}</p>
-                      </div>
-                      {selectedBooking.pickup_time && (
-                        <div>
-                          <span className="text-sm text-blue-700">Pickup Time:</span>
-                          <p className="font-medium text-blue-900">{selectedBooking.pickup_time}</p>
-                        </div>
-                      )}
-                      {selectedBooking.dropoff_time && (
-                        <div>
-                          <span className="text-sm text-blue-700">Return Time:</span>
-                          <p className="font-medium text-blue-900">{selectedBooking.dropoff_time}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Financial Details */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Financial Details</h3>
-                  <div className="bg-green-50 rounded-lg p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-green-700">Total Amount:</span>
-                        <p className="font-bold text-green-900 text-lg">₦{formatNumber(selectedBooking.total_amount)}</p>
-                      </div>
-                      {selectedBooking.payment_status && (
-                        <div>
-                          <span className="text-sm text-green-700">Payment Status:</span>
-                          <p className="font-medium text-green-900 capitalize">{selectedBooking.payment_status}</p>
-                        </div>
-                      )}
-                      {selectedBooking.delivery_fee > 0 && (
-                        <div>
-                          <span className="text-sm text-green-700">Delivery Fee:</span>
-                          <p className="font-medium text-green-900">₦{formatNumber(selectedBooking.delivery_fee)}</p>
-                        </div>
-                      )}
-                      {selectedBooking.vat_amount > 0 && (
-                        <div>
-                          <span className="text-sm text-green-700">VAT:</span>
-                          <p className="font-medium text-green-900">₦{formatNumber(selectedBooking.vat_amount)}</p>
-                        </div>
-                      )}
-                      {selectedBooking.service_fee > 0 && (
-                        <div>
-                          <span className="text-sm text-green-700">Service Fee:</span>
-                          <p className="font-medium text-green-900">₦{formatNumber(selectedBooking.service_fee)}</p>
-                        </div>
-                      )}
-                      {selectedBooking.late_return_fee > 0 && (
-                        <div>
-                          <span className="text-sm text-red-700">Late Return Fee:</span>
-                          <p className="font-bold text-red-900">₦{formatNumber(selectedBooking.late_return_fee)}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Late Return Details (if applicable) */}
-                {selectedBooking.late_return_fee > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Late Return Details</h3>
-                    <div className="bg-orange-50 rounded-lg p-4 space-y-3">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-sm text-orange-700">Hours Late:</span>
-                          <p className="font-bold text-orange-900">{selectedBooking.late_return_hours?.toFixed(1) || 0} hours</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-orange-700">Late Return Fee:</span>
-                          <p className="font-bold text-orange-900">₦{formatNumber(selectedBooking.late_return_fee)}</p>
-                        </div>
-                        {selectedBooking.actual_dropoff_date && (
-                          <div>
-                            <span className="text-sm text-orange-700">Actual Return Date:</span>
-                            <p className="font-medium text-orange-900">{formatDate(selectedBooking.actual_dropoff_date)}</p>
-                          </div>
-                        )}
-                        {selectedBooking.late_return_reason && (
-                          <div className="md:col-span-2">
-                            <span className="text-sm text-orange-700">Reason:</span>
-                            <p className="font-medium text-orange-900">{selectedBooking.late_return_reason}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Cancellation Details (if cancelled) */}
-                {selectedBooking.status === 'cancelled' && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Cancellation Details</h3>
-                    <div className="bg-red-50 rounded-lg p-4 space-y-3">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-sm text-red-700">Cancelled Date:</span>
-                          <p className="font-medium text-red-900">{selectedBooking.cancellation_date ? formatDate(selectedBooking.cancellation_date) : 'N/A'}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-red-700">Refund Status:</span>
-                          <p className="font-medium text-red-900 capitalize">{selectedBooking.refund_status || 'Pending'}</p>
-                        </div>
-                        {selectedBooking.cancellation_reason && (
-                          <div className="md:col-span-2">
-                            <span className="text-sm text-red-700">Cancellation Reason:</span>
-                            <p className="font-medium text-red-900">{selectedBooking.cancellation_reason}</p>
-                          </div>
-                        )}
-                        {selectedBooking.refund_amount > 0 && (
-                          <div>
-                            <span className="text-sm text-red-700">Refund Amount:</span>
-                            <p className="font-bold text-red-900">₦{formatNumber(selectedBooking.refund_amount)}</p>
-                          </div>
-                        )}
-                        {selectedBooking.bank_name && (
-                          <div>
-                            <span className="text-sm text-red-700">Refund Bank:</span>
-                            <p className="font-medium text-red-900">{selectedBooking.bank_name} - {selectedBooking.account_name}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Contact Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-gray-600">Email:</span>
-                        <p className="font-medium">{selectedBooking.customer_email}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-600">Phone:</span>
-                        <p className="font-medium">{selectedBooking.customer_phone}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            
-            {/* Modal Footer */}
-            <div className="border-t bg-white p-6 flex-shrink-0">
-              <div className="flex flex-col gap-2 justify-end sm:flex-row">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowDetailsModal(false)
-                    setSelectedBooking(null)
-                  }}
-                >
-                  Close
-                </Button>
-                {canCancel(selectedBooking) && (
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      setShowDetailsModal(false)
-                      setShowCancelModal(true)
-                    }}
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Cancel Booking
-                  </Button>
-                )}
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
+      ) : null}
 
       <FooterSection />
     </AuroraBackground>

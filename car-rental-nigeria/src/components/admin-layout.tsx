@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/providers/AuthProvider"
 import { 
   Car, 
   Users, 
@@ -22,6 +24,9 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const { loading, isAuthenticated, profile, role, signOut } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const menuItems = [
@@ -30,10 +35,32 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { icon: Upload, label: "Add Car", href: "/admin/cars/add" },
     { icon: Calendar, label: "Bookings", href: "/admin/bookings" },
     { icon: Users, label: "Users", href: "/admin/users" },
+    { icon: CreditCard, label: "Reviews", href: "/admin/reviews" },
     { icon: Settings, label: "Settings", href: "/admin/settings" },
     { icon: CreditCard, label: "Checkout Config", href: "/admin/checkout" },
     { icon: Globe, label: "Website Settings", href: "/admin/website-settings" },
   ]
+
+  useEffect(() => {
+    if (loading) {
+      return
+    }
+
+    if (!isAuthenticated || role === "customer") {
+      router.replace(`/login?next=${encodeURIComponent(pathname || "/admin")}`)
+    }
+  }, [isAuthenticated, loading, pathname, role, router])
+
+  if (loading || !isAuthenticated || role === "customer") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-black"></div>
+          <p className="text-sm text-gray-600">Checking admin access...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,11 +109,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         <div className="absolute bottom-4 left-4 right-4">
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={async () => {
+              await signOut()
+              router.push("/")
+            }}
+          >
               <LogOut className="mr-2 h-4 w-4" />
               Logout
-            </Link>
           </Button>
         </div>
       </div>
@@ -105,7 +137,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome, Admin</span>
+              <span className="text-sm text-gray-600">
+                Welcome, {profile?.name || "Admin"}
+              </span>
             </div>
           </div>
         </header>

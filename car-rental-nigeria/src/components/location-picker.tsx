@@ -20,6 +20,7 @@ interface LocationPickerProps {
   placeholder?: string
   className?: string
   id?: string
+  allowedLocations?: string[]
 }
 
 const NIGERIAN_LOCATIONS = {
@@ -155,7 +156,14 @@ const NIGERIAN_LOCATIONS = {
   ]
 }
 
-export const LocationPicker = memo(function LocationPicker({ value, onChange, placeholder = "Search location", className, id }: LocationPickerProps) {
+export const LocationPicker = memo(function LocationPicker({
+  value,
+  onChange,
+  placeholder = "Search location",
+  className,
+  id,
+  allowedLocations,
+}: LocationPickerProps) {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedLocation, setSelectedLocation] = React.useState(value || "")
@@ -170,16 +178,24 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
   }, [value])
 
   // Group locations by city
+  const filteredSourceLocations = React.useMemo(() => {
+    if (!allowedLocations?.length) {
+      return locations
+    }
+
+    return locations.filter((location) => allowedLocations.includes(`${location.name}, ${location.city}`))
+  }, [allowedLocations, locations])
+
   const locationsByCity = React.useMemo(() => {
     const grouped: Record<string, string[]> = {}
-    locations.forEach(location => {
+    filteredSourceLocations.forEach(location => {
       if (!grouped[location.city]) {
         grouped[location.city] = []
       }
       grouped[location.city].push(location.name)
     })
     return grouped
-  }, [locations])
+  }, [filteredSourceLocations])
 
   const filteredLocations = React.useMemo(() => {
     if (!searchTerm) {
@@ -203,8 +219,8 @@ export const LocationPicker = memo(function LocationPicker({ value, onChange, pl
   }, [searchTerm, locationsByCity])
 
   const allLocations = React.useMemo(() => {
-    return locations.map(location => `${location.name}, ${location.city}`)
-  }, [locations])
+    return filteredSourceLocations.map(location => `${location.name}, ${location.city}`)
+  }, [filteredSourceLocations])
 
   const quickFilteredLocations = useMemo(() => {
     if (!searchTerm || searchTerm.length < 2) return []

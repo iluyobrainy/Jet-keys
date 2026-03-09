@@ -1,12 +1,22 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dtaspdqcyapnfgcsbtte.supabase.co'
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0YXNwZHFjeWFwbmZnY3NidHRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxODYzMTYsImV4cCI6MjA3Mjc2MjMxNn0.fI_8EuIq3caCNIneCS6Rkfr4lgdYKtXE6a5qCz7P4lk'
+function requireEnv(name: 'NEXT_PUBLIC_SUPABASE_URL' | 'NEXT_PUBLIC_SUPABASE_ANON_KEY' | 'SUPABASE_SERVICE_ROLE_KEY') {
+  const value = process.env[name]
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+
+  return value
+}
+
+const supabaseUrl = requireEnv('NEXT_PUBLIC_SUPABASE_URL')
+const supabaseKey = requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Service role client for admin operations
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0YXNwZHFjeWFwbmZnY3NidHRlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzE4NjMxNiwiZXhwIjoyMDcyNzYyMzE2fQ.LP4IkykiPSAovloBz4kbpzFN8y4XKMw0vOSWVQUL5Yc'
+const supabaseServiceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY')
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
 // Database Types
@@ -310,5 +320,4 @@ export interface Database {
     }
   }
 }
-
 

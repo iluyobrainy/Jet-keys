@@ -15,6 +15,9 @@ const eslintConfig = [
     ignores: [
       "node_modules/**",
       ".next/**",
+      ".netlify/**",
+      ".vercel/**",
+      "coverage/**",
       "out/**",
       "build/**",
       "next-env.d.ts",

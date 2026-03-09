@@ -1,562 +1,526 @@
-"use client"
+﻿"use client"
 
-import { useState, useMemo, useCallback, Suspense, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import Image from "next/image"
+import Link from "next/link"
+import { Suspense, useEffect, useMemo, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { ArrowRight, Loader2, MapPin, Search, SlidersHorizontal, Users } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { FooterSection } from "@/components/footer-section"
-import { CarNavMenu } from "@/components/car-nav-menu"
-import { PopularVehicleCard } from "@/components/popular-vehicle-card"
-import { OthersVehicleCard } from "@/components/others-vehicle-card"
-import { PaginationControls } from "@/components/pagination-controls"
+import { DatePickerWithTime } from "@/components/date-picker-with-time"
+import { LocationPicker } from "@/components/location-picker"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { LocationPicker } from "@/components/location-picker"
-import { DatePickerWithTime } from "@/components/date-picker-with-time"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { useCars } from "@/lib/hooks/useApi"
-import { useComponentPerformance } from "@/lib/hooks/usePerformance"
-import { 
-  ArrowRight,
-  Filter,
-  X,
-  Loader2
-} from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { useCarsCatalog } from "@/lib/hooks/useApi"
+import { formatNumber } from "@/lib/formatters"
 
-// Mock data for popular vehicles
-const popularVehicles = [
-  {
-    id: "hyundai-palisade",
-    model: "2022 - Hyundai Palisade Facelift",
-    location: "Garasi Cak Su",
-    distance: "1.6 km",
-    price: "NGN 150,000 / day",
-    imageSrc: "/Carsectionui/hyundai-palisade.jpg",
-    rating: "5.0",
-    trips: "180"
-  },
-  {
-    id: "honda-hrv",
-    model: "2022 - Honda HR-V Turbo",
-    location: "Rakabuming Suhu",
-    distance: "2.2 km",
-    price: "NGN 150,000 / day",
-    imageSrc: "/Carsectionui/honda-hrv.jpg",
-    rating: "5.0",
-    trips: "211"
-  }
-]
-
-interface CarData {
-  id: string
-  year: string
-  brand: string
-  model: string
-  location: string
-  distance: string
-  seats: string
+type SearchState = {
+  pickupLocation: string
+  dropoffLocation: string
+  pickupDate?: Date
+  dropoffDate?: Date
+  pickupTime: string | null
+  dropoffTime: string | null
+  bodyType: string
+  fuelType: string
   transmission: string
-  rating: string
-  reviews: string
-  price: string
-  imageSrc: string
-  images: string[]
-  description: string
-  features: string[]
-  owner: {
-    name: string
-    avatar: string
-    verified: boolean
-    responseRate: string
-    responseDuration: string
-    joinedDate: string
+  seats: string
+  minPrice: string
+  maxPrice: string
+}
+
+const STORAGE_KEY = "jet-keys-cars-search"
+
+const defaultSearchState: SearchState = {
+  pickupLocation: "",
+  dropoffLocation: "",
+  pickupDate: undefined,
+  dropoffDate: undefined,
+  pickupTime: "10:00",
+  dropoffTime: "10:00",
+  bodyType: "",
+  fuelType: "",
+  transmission: "",
+  seats: "",
+  minPrice: "",
+  maxPrice: "",
+}
+
+function mapSearchParams(searchParams: URLSearchParams): Partial<SearchState> {
+  return {
+    pickupLocation: searchParams.get("pickupLocation") || "",
+    dropoffLocation: searchParams.get("dropoffLocation") || "",
+    pickupDate: searchParams.get("pickupDate") ? new Date(searchParams.get("pickupDate") as string) : undefined,
+    dropoffDate: searchParams.get("dropoffDate") ? new Date(searchParams.get("dropoffDate") as string) : undefined,
+    pickupTime: searchParams.get("pickupTime") || "10:00",
+    dropoffTime: searchParams.get("dropoffTime") || "10:00",
+    bodyType: searchParams.get("bodyType") || "",
+    fuelType: searchParams.get("fuelType") || "",
+    transmission: searchParams.get("transmission") || "",
+    seats: searchParams.get("seats") || "",
+    minPrice: searchParams.get("minPrice") || "",
+    maxPrice: searchParams.get("maxPrice") || "",
   }
 }
 
-// Loading component
-function CarsLoading() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading cars...</span>
-          </div>
-        </div>
-      </div>
-      <FooterSection />
-    </div>
-  )
-}
-
-// Error component
-function CarsError({ error, retry }: { error: Error; retry: () => void }) {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="p-6 text-center">
-            <div className="text-red-600 mb-4">
-              <X className="h-12 w-12 mx-auto" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2">Failed to load cars</h2>
-            <p className="text-gray-600 mb-4">{error.message}</p>
-            <Button onClick={retry}>Try Again</Button>
-          </CardContent>
-        </Card>
-      </div>
-      <FooterSection />
-    </div>
-  )
-}
-
-// Main component
-function CarsContent() {
-  // Performance monitoring
-  useComponentPerformance('CarsContent')
-  
-  // Get search parameters from URL
+function CarsPageContent() {
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
-  
-  // Use React Query for data fetching
-  const { data: cars = [], isLoading, error, refetch } = useCars()
-  
-  // Local state for form and UI
-  const [pickupDate, setPickupDate] = useState<Date>()
-  const [dropoffDate, setDropoffDate] = useState<Date>()
-  const [pickupLocation, setPickupLocation] = useState<string>("")
-  const [dropoffLocation, setDropoffLocation] = useState<string>("")
-  const [pickupTime, setPickupTime] = useState<string | null>("10:00")
-  const [dropoffTime, setDropoffTime] = useState<string | null>("10:00")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  
-  // Initialize form data from URL parameters
+  const [hydrated, setHydrated] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [searchState, setSearchState] = useState<SearchState>(defaultSearchState)
+
   useEffect(() => {
-    if (searchParams) {
-      const urlPickupLocation = searchParams.get('pickupLocation')
-      const urlDropoffLocation = searchParams.get('dropoffLocation')
-      const urlPickupDate = searchParams.get('pickupDate')
-      const urlDropoffDate = searchParams.get('dropoffDate')
-      const urlPickupTime = searchParams.get('pickupTime')
-      const urlDropoffTime = searchParams.get('dropoffTime')
-      
-      if (urlPickupLocation) setPickupLocation(urlPickupLocation)
-      if (urlDropoffLocation) setDropoffLocation(urlDropoffLocation)
-      if (urlPickupDate) setPickupDate(new Date(urlPickupDate))
-      if (urlDropoffDate) setDropoffDate(new Date(urlDropoffDate))
-      if (urlPickupTime) setPickupTime(urlPickupTime)
-      if (urlDropoffTime) setDropoffTime(urlDropoffTime)
-    }
-  }, [searchParams])
-  
-  // Mock booked dates for demonstration
-  const bookedDates = [
-    new Date(2024, 11, 25), // Christmas
-    new Date(2024, 11, 26), // Boxing Day
-    new Date(2024, 11, 31), // New Year's Eve
-    new Date(2025, 0, 1),   // New Year's Day
-  ]
-  
-  // Pagination settings
-  const CARS_PER_PAGE = 12
+    const queryValues = mapSearchParams(new URLSearchParams(searchParams.toString()))
+    const hasQueryValues = Array.from(searchParams.keys()).length > 0
 
-  // Filter and transform cars data for display
-  const transformedCars = useMemo(() => {
-    let filteredCars = cars
-
-    // Apply location-based filtering if search criteria are provided
-    if (pickupLocation || dropoffLocation) {
-      filteredCars = cars.filter(car => {
-        // For now, we'll show all cars regardless of location
-        // In a real implementation, you would filter based on:
-        // - Car availability in the pickup location
-        // - Car availability in the dropoff location
-        // - Distance between locations
-        return true
-      })
-    }
-
-    // Apply date-based filtering if dates are provided
-    if (pickupDate && dropoffDate) {
-      filteredCars = filteredCars.filter(car => {
-        // For now, we'll show all cars regardless of dates
-        // In a real implementation, you would filter based on:
-        // - Car availability during the selected dates
-        // - Existing bookings that conflict with the dates
-        return true
-      })
-    }
-
-    return filteredCars.map(car => ({
-      id: car.id,
-      year: car.year.toString(),
-      brand: car.brand,
-      model: car.model,
-      location: car.location,
-      distance: "2.2 km from centre",
-      seats: `${car.seats} seats`,
-      transmission: car.transmission,
-      rating: "4.0",
-      reviews: "180",
-      price: `NGN ${car.price_per_day.toLocaleString()} / day`,
-      imageSrc: (() => {
-        if (car.images && car.images.length > 0) {
-          const validImage = car.images.find(img => 
-            img && 
-            !img.startsWith('/uploads/') && 
-            (img.startsWith('http') || img.startsWith('/'))
-          )
-          if (validImage) return validImage
-        }
-        return "/Carsectionui/toyota-innova.jpg"
-      })(),
-      images: car.images || [],
-      description: car.description,
-      features: car.features || [],
-      owner: {
-        name: "Rakabuming Hubner",
-        avatar: "/Carinfoui/owner-avatar.jpg",
-        verified: true,
-        responseRate: "100%",
-        responseDuration: "1 hour",
-        joinedDate: "8 months ago"
-      }
-    }))
-  }, [cars, pickupLocation, dropoffLocation, pickupDate, dropoffDate])
-  
-  // Memoized calculations
-  const totalPages = useMemo(() => {
-    return Math.ceil(transformedCars.length / CARS_PER_PAGE)
-  }, [transformedCars.length, CARS_PER_PAGE])
-  
-  const paginatedCars = useMemo(() => {
-    const startIndex = (currentPage - 1) * CARS_PER_PAGE
-    return transformedCars.slice(startIndex, startIndex + CARS_PER_PAGE)
-  }, [transformedCars, currentPage, CARS_PER_PAGE])
-  
-  // Memoized callbacks
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page)
-    // Smooth scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
-  
-  const handleSearch = useCallback(() => {
-    if (!pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
-      alert('Please fill in all search fields')
+    if (hasQueryValues) {
+      setSearchState((current) => ({ ...current, ...queryValues }))
+      setHydrated(true)
       return
     }
-    // Navigate to search results or filter cars
-    console.log('Searching with:', { pickupLocation, dropoffLocation, pickupDate, dropoffDate })
-  }, [pickupLocation, dropoffLocation, pickupDate, dropoffDate])
-  
-  // Error handling
-  if (error) {
-    return <CarsError error={error} retry={refetch} />
+
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored) as Record<string, string | undefined>
+        setSearchState({
+          ...defaultSearchState,
+          pickupLocation: parsed.pickupLocation || "",
+          dropoffLocation: parsed.dropoffLocation || "",
+          pickupDate: parsed.pickupDate ? new Date(parsed.pickupDate) : undefined,
+          dropoffDate: parsed.dropoffDate ? new Date(parsed.dropoffDate) : undefined,
+          pickupTime: parsed.pickupTime || "10:00",
+          dropoffTime: parsed.dropoffTime || "10:00",
+          bodyType: parsed.bodyType || "",
+          fuelType: parsed.fuelType || "",
+          transmission: parsed.transmission || "",
+          seats: parsed.seats || "",
+          minPrice: parsed.minPrice || "",
+          maxPrice: parsed.maxPrice || "",
+        })
+      }
+    } catch {
+      // Ignore malformed local state.
+    }
+
+    setHydrated(true)
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!hydrated) {
+      return
+    }
+
+    const payload = {
+      ...searchState,
+      pickupDate: searchState.pickupDate?.toISOString(),
+      dropoffDate: searchState.dropoffDate?.toISOString(),
+    }
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  }, [hydrated, searchState])
+
+  const queryFilters = useMemo(
+    () => ({
+      pickupLocation: searchState.pickupLocation || undefined,
+      dropoffLocation: searchState.dropoffLocation || undefined,
+      pickupDate: searchState.pickupDate?.toISOString(),
+      dropoffDate: searchState.dropoffDate?.toISOString(),
+      bodyType: searchState.bodyType || undefined,
+      fuelType: searchState.fuelType || undefined,
+      transmission: searchState.transmission || undefined,
+      seats: searchState.seats ? Number(searchState.seats) : undefined,
+      minPrice: searchState.minPrice ? Number(searchState.minPrice) : undefined,
+      maxPrice: searchState.maxPrice ? Number(searchState.maxPrice) : undefined,
+    }),
+    [searchState],
+  )
+
+  const { data, isLoading, error, refetch } = useCarsCatalog(queryFilters)
+
+  const applySearchToUrl = () => {
+    const params = new URLSearchParams()
+
+    Object.entries({
+      pickupLocation: searchState.pickupLocation,
+      dropoffLocation: searchState.dropoffLocation,
+      pickupDate: searchState.pickupDate?.toISOString(),
+      dropoffDate: searchState.dropoffDate?.toISOString(),
+      pickupTime: searchState.pickupTime,
+      dropoffTime: searchState.dropoffTime,
+      bodyType: searchState.bodyType,
+      fuelType: searchState.fuelType,
+      transmission: searchState.transmission,
+      seats: searchState.seats,
+      minPrice: searchState.minPrice,
+      maxPrice: searchState.maxPrice,
+    }).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, String(value))
+      }
+    })
+
+    router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
   }
-  
-  // Loading state
-  if (isLoading) {
-    return <CarsLoading />
+
+  const resetSearch = () => {
+    setSearchState(defaultSearchState)
+    window.localStorage.removeItem(STORAGE_KEY)
+    router.replace(pathname)
   }
+
+  const updateState = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
+    setSearchState((current) => ({ ...current, [key]: value }))
+  }
+
+  const cars = data?.cars || []
+  const popularCars = data?.popularCars || []
+  const activeFiltersCount = Object.values(queryFilters).filter(Boolean).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_36%,_#ffffff_100%)]">
       <Navigation />
-      
-      {/* Booking Form - Same as Homepage */}
-      <section className="relative py-6 sm:py-8" aria-label="Car Rental Booking Form">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden rounded-[28px] border border-white/70 bg-white/85 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl">
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-col gap-4 sm:gap-6">
-                {/* Mobile/Tablet Layout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:hidden">
-                  {/* Pick-up Location */}
-                  <div className="space-y-2">
-                    <label htmlFor="pickup-location" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Location</label>
-                    <LocationPicker
-                      value={pickupLocation}
-                      onChange={setPickupLocation}
-                      placeholder="Select pick-up location"
-                      id="pickup-location"
-                    />
-                  </div>
 
-                  {/* Pick-up Date & Time */}
-                  <div className="space-y-2">
-                    <label htmlFor="pickup-datetime" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Date & Time</label>
-                    <DatePickerWithTime
-                      value={pickupDate}
-                      timeValue={pickupTime}
-                      onChange={setPickupDate}
-                      onTimeChange={setPickupTime}
-                      disabledDates={bookedDates}
-                      placeholder="Select pick-up date & time"
-                      id="pickup-datetime"
-                    />
-                  </div>
-
-                  {/* Drop-off Location */}
-                  <div className="space-y-2">
-                    <label htmlFor="dropoff-location" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Location</label>
-                    <LocationPicker
-                      value={dropoffLocation}
-                      onChange={setDropoffLocation}
-                      placeholder="Select drop-off location"
-                      id="dropoff-location"
-                    />
-                  </div>
-
-                  {/* Drop-off Date & Time */}
-                  <div className="space-y-2">
-                    <label htmlFor="dropoff-datetime" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Date & Time</label>
-                    <DatePickerWithTime
-                      value={dropoffDate}
-                      timeValue={dropoffTime}
-                      onChange={setDropoffDate}
-                      onTimeChange={setDropoffTime}
-                      disabledDates={bookedDates}
-                      placeholder="Select drop-off date & time"
-                      id="dropoff-datetime"
-                    />
-                  </div>
+      <section className="px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <Card className="overflow-hidden rounded-[32px] border-white/70 bg-white/90 shadow-[0_25px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+            <CardContent className="p-5 sm:p-6 lg:p-8">
+              <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-600">Car discovery</p>
+                  <h1 className="mt-2 text-3xl font-bold text-slate-950 sm:text-4xl">Find the right car for the exact route and dates you need.</h1>
                 </div>
-
-                {/* Desktop Layout */}
-                <div className="hidden lg:flex flex-row gap-4 items-end">
-                  {/* Pick-up Location */}
-                  <div className="flex-1 space-y-2">
-                    <label htmlFor="pickup-location-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Location</label>
-                    <LocationPicker
-                      value={pickupLocation}
-                      onChange={setPickupLocation}
-                      placeholder="Select pick-up location"
-                      id="pickup-location-desktop"
-                    />
-                  </div>
-
-                  {/* Pick-up Date & Time */}
-                  <div className="flex-1 space-y-2">
-                    <label htmlFor="pickup-datetime-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Pick-up Date & Time</label>
-                    <DatePickerWithTime
-                      value={pickupDate}
-                      timeValue={pickupTime}
-                      onChange={setPickupDate}
-                      onTimeChange={setPickupTime}
-                      disabledDates={bookedDates}
-                      placeholder="Select pick-up date & time"
-                      id="pickup-datetime-desktop"
-                    />
-                  </div>
-
-                  {/* Drop-off Location */}
-                  <div className="flex-1 space-y-2">
-                    <label htmlFor="dropoff-location-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Location</label>
-                    <LocationPicker
-                      value={dropoffLocation}
-                      onChange={setDropoffLocation}
-                      placeholder="Select drop-off location"
-                      id="dropoff-location-desktop"
-                    />
-                  </div>
-
-                  {/* Drop-off Date & Time */}
-                  <div className="flex-1 space-y-2">
-                    <label htmlFor="dropoff-datetime-desktop" className="block text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Drop-off Date & Time</label>
-                    <DatePickerWithTime
-                      value={dropoffDate}
-                      timeValue={dropoffTime}
-                      onChange={setDropoffDate}
-                      onTimeChange={setDropoffTime}
-                      disabledDates={bookedDates}
-                      placeholder="Select drop-off date & time"
-                      id="dropoff-datetime-desktop"
-                    />
-                  </div>
-
-                  {/* Find Vehicle Button - Now on same line */}
-                  <div className="flex-shrink-0">
-                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-transparent mb-2">&nbsp;</label>
-                    <Button 
-                      className="h-14 w-full rounded-2xl bg-black px-6 text-base font-semibold text-white shadow-lg shadow-black/10 transition-all duration-200 group hover:bg-yellow-500 hover:text-white sm:min-w-[220px]"
-                      onClick={() => {
-                        if (!pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
-                          return
-                        }
-                        // Handle vehicle search here
-                        console.log('Searching for vehicles...')
-                      }}
-                      aria-label="Find available vehicles for selected dates and locations"
-                    >
-                      <span>Find a Vehicle</span>
-                      <ArrowRight className="ml-2 h-4 w-4 text-yellow-400 transition-colors duration-200 group-hover:text-white" aria-hidden="true" />
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-3 text-sm text-slate-500">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  {activeFiltersCount} active filter{activeFiltersCount === 1 ? "" : "s"}
                 </div>
+              </div>
 
-                {/* Find Vehicle Button - Mobile */}
-                <div className="flex justify-center lg:hidden pt-2 sm:pt-4">
-                  <Button 
-                    className="h-14 w-full rounded-2xl bg-black px-6 text-base font-semibold text-white shadow-lg shadow-black/10 transition-all duration-200 group hover:bg-yellow-500 hover:text-white sm:min-w-[220px]"
-                    onClick={() => {
-                      if (!pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
-                        return
-                      }
-                      // Handle vehicle search here
-                      console.log('Searching for vehicles...')
-                    }}
-                    aria-label="Find available vehicles for selected dates and locations"
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Pickup location</label>
+                  <LocationPicker
+                    value={searchState.pickupLocation}
+                    onChange={(value) => updateState("pickupLocation", value)}
+                    placeholder="Select pickup location"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Return location</label>
+                  <LocationPicker
+                    value={searchState.dropoffLocation}
+                    onChange={(value) => updateState("dropoffLocation", value)}
+                    placeholder="Select return location"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Pickup date and time</label>
+                  <DatePickerWithTime
+                    value={searchState.pickupDate}
+                    timeValue={searchState.pickupTime}
+                    onChange={(value) => updateState("pickupDate", value)}
+                    onTimeChange={(value) => updateState("pickupTime", value)}
+                    placeholder="Choose pickup slot"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Return date and time</label>
+                  <DatePickerWithTime
+                    value={searchState.dropoffDate}
+                    timeValue={searchState.dropoffTime}
+                    onChange={(value) => updateState("dropoffDate", value)}
+                    onTimeChange={(value) => updateState("dropoffTime", value)}
+                    placeholder="Choose return slot"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 border-t border-slate-100 pt-4 lg:grid-cols-[1fr_auto] lg:items-start">
+                <div className="space-y-4">
+                  <Button
+                    variant="outline"
+                    className="h-11 rounded-2xl border-slate-200 px-4 lg:hidden"
+                    onClick={() => setFiltersOpen((current) => !current)}
                   >
-                    <span>Find a Vehicle</span>
-                    <ArrowRight className="ml-2 h-4 w-4 text-yellow-400 transition-colors duration-200 group-hover:text-white" aria-hidden="true" />
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    {filtersOpen ? "Hide filters" : "More filters"}
+                  </Button>
+
+                  <div className={`${filtersOpen ? "grid" : "hidden"} gap-4 md:grid-cols-2 xl:grid xl:grid-cols-3`}>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Body type</label>
+                      <select
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none"
+                        value={searchState.bodyType}
+                        onChange={(event) => updateState("bodyType", event.target.value)}
+                      >
+                        <option value="">All body types</option>
+                        {(data?.filters.bodyTypes || []).map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Fuel type</label>
+                      <select
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none"
+                        value={searchState.fuelType}
+                        onChange={(event) => updateState("fuelType", event.target.value)}
+                      >
+                        <option value="">All fuel types</option>
+                        {(data?.filters.fuelTypes || []).map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Transmission</label>
+                      <select
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none"
+                        value={searchState.transmission}
+                        onChange={(event) => updateState("transmission", event.target.value)}
+                      >
+                        <option value="">All transmissions</option>
+                        {(data?.filters.transmissions || []).map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Minimum seats</label>
+                      <select
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none"
+                        value={searchState.seats}
+                        onChange={(event) => updateState("seats", event.target.value)}
+                      >
+                        <option value="">Any seating</option>
+                        {(data?.filters.seats || []).map((option) => (
+                          <option key={option} value={String(option)}>{option} seats</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Min price</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        className="h-12 rounded-2xl border-slate-200"
+                        value={searchState.minPrice}
+                        onChange={(event) => updateState("minPrice", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Max price</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="500000"
+                        className="h-12 rounded-2xl border-slate-200"
+                        value={searchState.maxPrice}
+                        onChange={(event) => updateState("maxPrice", event.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 lg:w-[220px]">
+                  <Button className="h-12 rounded-2xl bg-slate-950 text-white hover:bg-slate-800" onClick={applySearchToUrl}>
+                    <Search className="mr-2 h-4 w-4" />
+                    Search cars
+                  </Button>
+                  <Button variant="outline" className="h-12 rounded-2xl border-slate-200" onClick={resetSearch}>
+                    Reset filters
                   </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-600">Daily rotation</p>
+                <h2 className="mt-1 text-2xl font-bold text-slate-950">Popular vehicles</h2>
+              </div>
+              <p className="text-sm text-slate-500">Picks refresh automatically every day.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {popularCars.map((car) => (
+                <Link key={car.id} href={`/car-info/${car.id}`} className="group block">
+                  <Card className="overflow-hidden rounded-[30px] border-white/70 bg-white/95 shadow-[0_18px_50px_rgba(15,23,42,0.1)] transition-transform duration-300 group-hover:-translate-y-1">
+                    <CardContent className="grid gap-4 p-4 sm:grid-cols-[220px_1fr] sm:p-5">
+                      <div className="relative h-48 overflow-hidden rounded-[24px] bg-slate-100 sm:h-full">
+                        <Image
+                          src={car.primaryImage || car.images?.[0] || "/Carsectionui/toyota-innova.jpg"}
+                          alt={car.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-between gap-4">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Featured today</p>
+                          <h3 className="mt-2 text-xl font-bold text-slate-950">{car.year} {car.brand} {car.model}</h3>
+                          <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-600">
+                            <span className="rounded-full bg-slate-100 px-3 py-1">{car.transmission}</span>
+                            <span className="rounded-full bg-slate-100 px-3 py-1">{car.seats} seats</span>
+                            <span className="rounded-full bg-slate-100 px-3 py-1">{car.fuel_type}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2 text-sm text-slate-500">
+                              <MapPin className="h-4 w-4" />
+                              <span>{car.allowedLocations?.slice(0, 2).join(" • ") || car.location}</span>
+                            </div>
+                            <p className="mt-2 text-2xl font-bold text-amber-600">NGN {formatNumber(car.price_per_day)}<span className="text-sm font-medium text-slate-500"> / day</span></p>
+                          </div>
+                          <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                            Choose car
+                            <ArrowRight className="h-4 w-4" />
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-4 pb-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-600">Live inventory</p>
+                <h2 className="mt-1 text-2xl font-bold text-slate-950">Available cars</h2>
+              </div>
+              <p className="text-sm text-slate-500">{cars.length} result{cars.length === 1 ? "" : "s"} matched your current search.</p>
+            </div>
+
+            {isLoading && !hydrated ? (
+              <div className="flex min-h-[260px] items-center justify-center rounded-[32px] border border-white/70 bg-white/90 shadow-sm">
+                <div className="flex items-center gap-3 text-sm text-slate-600">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Loading cars...
+                </div>
+              </div>
+            ) : null}
+
+            {error ? (
+              <Card className="rounded-[30px] border-red-200 bg-red-50">
+                <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-red-900">Unable to load cars</h3>
+                    <p className="text-sm text-red-700">{error instanceof Error ? error.message : "Something went wrong."}</p>
+                  </div>
+                  <Button variant="outline" className="rounded-2xl border-red-200 bg-white" onClick={() => refetch()}>
+                    Try again
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {!isLoading && !error && cars.length === 0 ? (
+              <Card className="rounded-[30px] border-white/70 bg-white/95 shadow-sm">
+                <CardContent className="p-10 text-center">
+                  <h3 className="text-2xl font-bold text-slate-950">No cars matched this search</h3>
+                  <p className="mt-3 text-sm text-slate-600">Adjust the location, dates, or filters to expand the available fleet.</p>
+                  <Button className="mt-6 rounded-2xl bg-slate-950 text-white hover:bg-slate-800" onClick={resetSearch}>
+                    Clear filters
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : null}
+
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {cars.map((car) => (
+                <Link key={car.id} href={`/car-info/${car.id}`} className="group block">
+                  <Card className="h-full overflow-hidden rounded-[30px] border-white/70 bg-white/95 shadow-[0_18px_50px_rgba(15,23,42,0.08)] transition-transform duration-300 group-hover:-translate-y-1">
+                    <CardContent className="flex h-full flex-col p-4">
+                      <div className="relative h-56 overflow-hidden rounded-[24px] bg-slate-100">
+                        <Image
+                          src={car.primaryImage || car.images?.[0] || "/Carsectionui/toyota-innova.jpg"}
+                          alt={car.name}
+                          fill
+                          className="object-cover"
+                        />
+                        {car.body_type ? (
+                          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
+                            {car.body_type}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-4 pt-4">
+                        <div>
+                          <h3 className="text-xl font-bold text-slate-950">{car.year} {car.brand} {car.model}</h3>
+                          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                            <span className="inline-flex items-center gap-1.5"><Users className="h-4 w-4" />{car.seats} seats</span>
+                            <span>{car.transmission}</span>
+                            <span>{car.fuel_type}</span>
+                          </div>
+                        </div>
+
+                        <div className="rounded-[22px] bg-slate-50 p-4 text-sm text-slate-600">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="mt-0.5 h-4 w-4 text-slate-500" />
+                            <div className="space-y-1">
+                              {(car.allowedLocations?.length ? car.allowedLocations : [car.location]).slice(0, 3).map((location) => (
+                                <p key={`${car.id}-${location}`}>{location}</p>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+                          <div className="rounded-2xl border border-slate-200 px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Daily rate</p>
+                            <p className="mt-1 font-semibold text-slate-950">NGN {formatNumber(car.price_per_day)}</p>
+                          </div>
+                          <div className="rounded-2xl border border-slate-200 px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Availability</p>
+                            <p className="mt-1 font-semibold text-emerald-700">Ready to book</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+                          <p className="text-sm text-slate-500">Tap to view details and continue.</p>
+                          <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-950">
+                            Choose car
+                            <ArrowRight className="h-4 w-4" />
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
       </section>
-
-      {/* Main Content with Sidebar */}
-      <div className="flex">
-        {/* Sidebar Navigation Menu */}
-        <div className="hidden md:block">
-          <CarNavMenu />
-        </div>
-
-        {/* Mobile Sidebar Overlay */}
-        {isSidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <div 
-              className="fixed left-0 top-0 h-full w-80 bg-white z-50"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="text-lg font-semibold">Filters</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <CarNavMenu />
-            </div>
-          </div>
-        )}
-
-        {/* Main Content Area */}
-        <div className="flex-1">
-          {/* Mobile Filter Toggle */}
-          <div className="md:hidden bg-white border-b p-4">
-            <Button
-              variant="outline"
-              onClick={() => setIsSidebarOpen(true)}
-              className="w-full"
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              Show Filters
-            </Button>
-          </div>
-
-          {/* Car Selection Content */}
-          <div className="py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {/* Results Header */}
-              <div className="flex justify-end mb-6">
-                <p className="text-sm font-medium text-gray-600">
-                  {isLoading ? 'Loading...' : `Showing ${transformedCars.length} Vehicles available`}
-                </p>
-              </div>
-
-              {/* Popular Vehicles Section */}
-              <section className="mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Popular Vehicles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {popularVehicles.map((vehicle) => (
-                    <PopularVehicleCard
-                      key={vehicle.id}
-                      id={vehicle.id}
-                      model={vehicle.model}
-                      location={vehicle.location}
-                      distance={vehicle.distance}
-                      price={vehicle.price}
-                      imageSrc={vehicle.imageSrc}
-                      rating={vehicle.rating}
-                      trips={vehicle.trips}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              {/* Others Section */}
-              <section className="mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">
-                  All Vehicles ({transformedCars.length})
-                </h2>
-                {paginatedCars.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">No vehicles available</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {paginatedCars.map((vehicle) => (
-                    <OthersVehicleCard
-                      key={vehicle.id}
-                      id={vehicle.id}
-                      year={vehicle.year}
-                      brand={vehicle.brand}
-                      model={vehicle.model}
-                      location={vehicle.location}
-                      distance={vehicle.distance}
-                      seats={vehicle.seats}
-                      transmission={vehicle.transmission}
-                      rating={vehicle.rating}
-                      reviews={vehicle.reviews}
-                      price={vehicle.price}
-                      imageSrc={vehicle.imageSrc}
-                    />
-                  ))}
-                  </div>
-                )}
-              </section>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <PaginationControls
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={transformedCars.length}
-                  itemsPerPage={CARS_PER_PAGE}
-                  onPageChange={handlePageChange}
-                  onItemsPerPageChange={() => {}} // Not used in this implementation
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
 
       <FooterSection />
     </div>
   )
 }
 
-// Main export with error boundary
 export default function CarsPage() {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<CarsLoading />}>
-        <CarsContent />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-50">
+          <Loader2 className="h-8 w-8 animate-spin text-slate-900" />
+        </div>
+      }
+    >
+      <CarsPageContent />
+    </Suspense>
   )
 }
+

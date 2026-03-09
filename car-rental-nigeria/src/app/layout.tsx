@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { poppins } from "@/lib/fonts";
+import { AuthProvider } from "@/lib/providers/AuthProvider";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
 import "./globals.css";
@@ -33,8 +34,10 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} font-poppins antialiased`} suppressHydrationWarning>
         <QueryProvider>
-          {children}
-          <PerformanceMonitor />
+          <AuthProvider>
+            {children}
+            <PerformanceMonitor />
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>
