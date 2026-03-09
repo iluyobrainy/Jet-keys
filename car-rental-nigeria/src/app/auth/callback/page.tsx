@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useState } from "react"
+import type { EmailOtpType } from "@supabase/supabase-js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { apiFetch } from "@/lib/api-client"
 import { getBrowserSupabaseClient } from "@/lib/supabase"
@@ -18,6 +19,9 @@ function AuthCallbackContent() {
       const tokenHash = searchParams.get("token_hash")
       const type = searchParams.get("type")
       const errorDescription = searchParams.get("error_description")
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""))
+      const accessToken = hashParams.get("access_token")
+      const refreshToken = hashParams.get("refresh_token")
 
       if (errorDescription) {
         setError(errorDescription)
@@ -34,11 +38,20 @@ function AuthCallbackContent() {
         } else if (tokenHash && type) {
           const { error: verifyError } = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
-            type: type as "email" | "recovery" | "invite" | "email_change",
+            type: type as EmailOtpType,
           })
 
           if (verifyError) {
             throw verifyError
+          }
+        } else if (accessToken && refreshToken) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          })
+
+          if (sessionError) {
+            throw sessionError
           }
         }
 
@@ -54,6 +67,7 @@ function AuthCallbackContent() {
           method: "POST",
         })
 
+        window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`)
         router.replace(nextPath)
       } catch (callbackError) {
         setError(callbackError instanceof Error ? callbackError.message : "Sign-in failed. Please try again.")

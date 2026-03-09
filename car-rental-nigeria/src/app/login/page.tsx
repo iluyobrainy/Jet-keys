@@ -12,6 +12,25 @@ import { getBrowserSupabaseClient } from "@/lib/supabase"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { env } from "@/lib/env"
 
+const EMAIL_COOLDOWN_SECONDS = 60
+const EMAIL_COOLDOWN_STORAGE_KEY = "jetandkeys-email-auth-cooldown-until"
+
+function getStoredCooldown() {
+  if (typeof window === "undefined") {
+    return 0
+  }
+
+  const rawValue = window.localStorage.getItem(EMAIL_COOLDOWN_STORAGE_KEY)
+  const expiresAt = rawValue ? Number(rawValue) : 0
+
+  if (!expiresAt || Number.isNaN(expiresAt)) {
+    window.localStorage.removeItem(EMAIL_COOLDOWN_STORAGE_KEY)
+    return 0
+  }
+
+  return Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000))
+}
+
 function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -21,13 +40,42 @@ function LoginPageContent() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
   const nextPath = useMemo(() => searchParams.get("next") || "/", [searchParams])
+  const authRedirectBase = useMemo(
+    () => (typeof window !== "undefined" ? window.location.origin : env.appUrl),
+    [],
+  )
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
       router.replace(nextPath)
     }
   }, [isAuthenticated, loading, nextPath, router])
+
+  useEffect(() => {
+    setCooldownRemaining(getStoredCooldown())
+  }, [])
+
+  useEffect(() => {
+    if (cooldownRemaining <= 0) {
+      return
+    }
+
+    const interval = window.setInterval(() => {
+      setCooldownRemaining(getStoredCooldown())
+    }, 1000)
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [cooldownRemaining])
+
+  const startCooldown = () => {
+    const expiresAt = Date.now() + EMAIL_COOLDOWN_SECONDS * 1000
+    window.localStorage.setItem(EMAIL_COOLDOWN_STORAGE_KEY, String(expiresAt))
+    setCooldownRemaining(EMAIL_COOLDOWN_SECONDS)
+  }
 
   const handleEmailLogin = async () => {
     setSubmitting(true)
@@ -37,13 +85,22 @@ function LoginPageContent() {
     const { error: loginError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${env.appUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`,
+        emailRedirectTo: `${authRedirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     })
 
     if (loginError) {
+      const rateLimitError =
+        loginError.message.toLowerCase().includes("rate") ||
+        ("status" in loginError && Number(loginError.status) === 429)
+
+      if (rateLimitError) {
+        startCooldown()
+      }
+
       setError(loginError.message)
     } else {
+      startCooldown()
       setMessage("Check your email for the sign-in link.")
     }
 
@@ -57,7 +114,7 @@ function LoginPageContent() {
     const { error: loginError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${env.appUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`,
+        redirectTo: `${authRedirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     })
 
@@ -126,11 +183,17 @@ function LoginPageContent() {
               <Button
                 className="h-12 w-full rounded-2xl bg-slate-950 text-white hover:bg-slate-800"
                 onClick={handleEmailLogin}
-                disabled={submitting || !email}
+                disabled={submitting || cooldownRemaining > 0 || !email}
               >
                 {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
-                Email sign-in link
+                {cooldownRemaining > 0 ? `Request again in ${cooldownRemaining}s` : "Email sign-in link"}
               </Button>
+
+              {cooldownRemaining > 0 ? (
+                <p className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
+                  If the email does not arrive, you can request another sign-in link in {cooldownRemaining} seconds.
+                </p>
+              ) : null}
 
               <Button
                 variant="outline"
