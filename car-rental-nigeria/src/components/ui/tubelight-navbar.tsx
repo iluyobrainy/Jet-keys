@@ -50,7 +50,7 @@ export function NavBar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full border border-white/20 bg-slate-900/90 px-1 py-1 shadow-xl backdrop-blur-md pointer-events-auto">
+      <div className="flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 px-1 py-1 shadow-[0_10px_24px_rgba(15,23,42,0.12)] backdrop-blur-md pointer-events-auto">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -62,8 +62,8 @@ export function NavBar({ items, className }: NavBarProps) {
               prefetch={true}
               className={cn(
                 "relative cursor-pointer rounded-full px-3 lg:px-6 py-2 text-sm font-semibold transition-colors duration-150 whitespace-nowrap",
-                "text-slate-200/90 hover:text-white",
-                isActive && "bg-white text-slate-900",
+                "text-slate-700 hover:text-slate-900",
+                isActive && "bg-slate-900 text-white",
               )}
             >
               <span className="hidden lg:inline">{item.name}</span>
