@@ -2,6 +2,47 @@ import { NextResponse, type NextRequest } from "next/server"
 import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 import { verifyPaystackTransaction } from "@/lib/server/paystack"
 
+async function markBookingPaid(
+  adminSupabase: ReturnType<typeof getAdminSupabaseClient>,
+  bookingId: string,
+  reference: string,
+) {
+  const primaryResult = await adminSupabase
+    .from("bookings")
+    .update({
+      status: "paid_awaiting_fulfilment",
+      payment_status: "paid",
+      payment_reference: reference,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", bookingId)
+    .select(`
+      *,
+      cars(id, name, brand, model, images, primary_image_url, location)
+    `)
+    .single()
+
+  // Backward-compatible fallback for older schemas where status was varchar(20).
+  if (primaryResult.error?.message?.includes("value too long for type character varying(20)")) {
+    return adminSupabase
+      .from("bookings")
+      .update({
+        status: "approved",
+        payment_status: "paid",
+        payment_reference: reference,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+      .select(`
+        *,
+        cars(id, name, brand, model, images, primary_image_url, location)
+      `)
+      .single()
+  }
+
+  return primaryResult
+}
+
 export async function POST(request: NextRequest) {
   const { reference, bookingId } = await request.json()
 
@@ -44,20 +85,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Payment metadata does not match booking" }, { status: 400 })
   }
 
-  const { data: booking, error: bookingError } = await adminSupabase
-    .from("bookings")
-    .update({
-      status: "paid_awaiting_fulfilment",
-      payment_status: "paid",
-      payment_reference: reference,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", bookingId)
-    .select(`
-      *,
-      cars(id, name, brand, model, images, primary_image_url, location)
-    `)
-    .single()
+  const { data: booking, error: bookingError } = await markBookingPaid(adminSupabase, bookingId, reference)
 
   if (bookingError || !booking) {
     return NextResponse.json({ error: bookingError?.message || "Booking not found" }, { status: 500 })

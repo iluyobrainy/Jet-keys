@@ -47,6 +47,7 @@ type RefundRecord = {
 
 const bookingStatusLabels: Record<string, string> = {
   paid_awaiting_fulfilment: "Paid awaiting fulfilment",
+  approved: "Paid awaiting fulfilment",
   active: "In transit",
   returned: "Returned",
   completed: "Completed",
@@ -75,6 +76,11 @@ export default function AdminBookingsPage() {
     }
 
     bookings.forEach((booking) => {
+      if (booking.status === "approved") {
+        queue.paid_awaiting_fulfilment.push(booking)
+        return
+      }
+
       if (queue[booking.status]) {
         queue[booking.status].push(booking)
       }
@@ -169,7 +175,7 @@ export default function AdminBookingsPage() {
             ) : null}
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {booking.status === "paid_awaiting_fulfilment" ? (
+              {booking.status === "paid_awaiting_fulfilment" || booking.status === "approved" ? (
                 <Button className="rounded-2xl bg-slate-950 text-white hover:bg-slate-800" onClick={() => triggerBookingAction(String(booking.id), "start_rental")} disabled={updateBookingMutation.isPending}>
                   Start rental
                 </Button>

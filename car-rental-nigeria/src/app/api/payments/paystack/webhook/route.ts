@@ -4,6 +4,36 @@ import { env } from "@/lib/env"
 import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 import { verifyPaystackTransaction } from "@/lib/server/paystack"
 
+async function markBookingPaid(
+  adminSupabase: ReturnType<typeof getAdminSupabaseClient>,
+  bookingId: string,
+  reference: string,
+) {
+  const primary = await adminSupabase
+    .from("bookings")
+    .update({
+      status: "paid_awaiting_fulfilment",
+      payment_status: "paid",
+      payment_reference: reference,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", bookingId)
+
+  if (primary.error?.message?.includes("value too long for type character varying(20)")) {
+    return adminSupabase
+      .from("bookings")
+      .update({
+        status: "approved",
+        payment_status: "paid",
+        payment_reference: reference,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+  }
+
+  return primary
+}
+
 export async function POST(request: NextRequest) {
   if (!env.paystackSecretKey) {
     return NextResponse.json({ error: "Paystack is not configured" }, { status: 500 })
@@ -41,15 +71,7 @@ export async function POST(request: NextRequest) {
 
   const adminSupabase = getAdminSupabaseClient()
 
-  await adminSupabase
-    .from("bookings")
-    .update({
-      status: "paid_awaiting_fulfilment",
-      payment_status: "paid",
-      payment_reference: reference,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", bookingId)
+  await markBookingPaid(adminSupabase, bookingId, reference)
 
   await adminSupabase.from("payment_transactions").upsert(
     {
