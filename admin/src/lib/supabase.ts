@@ -1,28 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 
-function requirePublicEnv(name: 'NEXT_PUBLIC_SUPABASE_URL' | 'NEXT_PUBLIC_SUPABASE_ANON_KEY') {
-  const value = process.env[name]
+// Use static NEXT_PUBLIC lookups so values are inlined in browser bundles.
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').trim()
+const supabaseKey = (
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON ??
+  ''
+).trim()
 
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
-
-  return value
+if (!supabaseUrl) {
+  throw new Error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL')
 }
 
-const supabaseUrl = requirePublicEnv('NEXT_PUBLIC_SUPABASE_URL')
-const supabaseKey = requirePublicEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+if (!supabaseKey) {
+  throw new Error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Never require the service-role key in the browser. If this module is imported
 // by client components, fall back to the anon client to avoid hydration crashes.
 const isServer = typeof window === 'undefined'
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (isServer && !serviceRoleKey) {
-  throw new Error('Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY')
-}
+const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
 
 export const supabaseAdmin = isServer && serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey) : supabase
 
