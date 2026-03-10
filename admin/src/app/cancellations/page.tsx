@@ -1,617 +1,666 @@
-// admin/src/app/cancellations/page.tsx
-"use client"
+﻿"use client"
 
-import { useState, useEffect } from "react"
-import { AdminLayout } from "@/components/admin-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { cancellationService } from "@/lib/admin-services"
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
-  CreditCard, 
-  User, 
-  Calendar,
-  MapPin,
-  Car,
-  Search,
-  Filter,
-  RefreshCw,
+import { useCallback, useEffect, useMemo, useState } from "react"
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  Copy,
+  CreditCard,
   Eye,
-  Check,
-  Copy
+  RefreshCw,
+  Search,
+  XCircle,
 } from "lucide-react"
+import { AdminLayout } from "@/components/admin-layout"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { adminApiFetch } from "@/lib/admin-api-client"
 
-interface CancelledBooking {
+type CancellationRequest = {
   id: string
-  car_id: string
-  customer_name: string
-  customer_email: string
-  customer_phone: string
-  pickup_location: string
-  dropoff_location: string
-  pickup_date: string
-  dropoff_date: string
-  total_amount: number
-  cancellation_reason: string
-  cancellation_date: string
-  refund_amount: number
-  refund_status: 'pending' | 'processed' | 'failed'
-  bank_name: string
-  account_name: string
-  account_number: string
-  refund_processed_date?: string
-  refund_processed_by?: string
-  refund_reference?: string
-  cars?: {
-    name: string
-    brand: string
-    model: string
+  booking_id: string
+  request_type: string
+  reason: string
+  bank_name: string | null
+  account_name: string | null
+  account_number: string | null
+  amount_requested: number | null
+  status: string
+  admin_notes: string | null
+  processed_at: string | null
+  created_at: string
+  processed_by_user?: {
+    id: string
+    name: string | null
+    email: string | null
+  } | null
+  booking?: {
+    id: string
+    booking_reference?: string | null
+    status: string
+    payment_status: string | null
+    customer_name?: string | null
+    customer_email?: string | null
+    customer_phone?: string | null
+    pickup_location?: string | null
+    dropoff_location?: string | null
+    pickup_date?: string | null
+    dropoff_date?: string | null
+    total_amount?: number | null
+    refund_amount?: number | null
+    refund_status?: string | null
+    cancellation_reason?: string | null
+    cancellation_date?: string | null
+    bank_name?: string | null
+    account_name?: string | null
+    account_number?: string | null
+    refund_processed_by?: string | null
+    refund_processed_date?: string | null
+    refund_reference?: string | null
+    cars?: {
+      id: string
+      name?: string | null
+      brand?: string | null
+      model?: string | null
+      primary_image_url?: string | null
+      location?: string | null
+    } | null
+  } | null
+}
+
+type CancellationsResponse = {
+  requests: CancellationRequest[]
+  stats: {
+    pendingRequests: number
+    approvedRequests: number
+    processedRequests: number
+    rejectedRequests: number
+    totalRequestedAmount: number
   }
 }
 
-export default function CancellationsPage() {
-  const [cancelledBookings, setCancelledBookings] = useState<CancelledBooking[]>([])
-  const [stats, setStats] = useState({
-    pendingRefunds: 0,
-    processedRefunds: 0,
-    failedRefunds: 0,
-    totalRefundAmount: 0
-  })
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [selectedBooking, setSelectedBooking] = useState<CancelledBooking | null>(null)
-  const [showProcessModal, setShowProcessModal] = useState(false)
-  const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [refundReference, setRefundReference] = useState("")
-  const [processedBy, setProcessedBy] = useState("")
+type ActionType = "approved" | "processed" | "rejected"
 
-  // Fetch cancelled bookings
-  const fetchCancelledBookings = async () => {
+const initialStats = {
+  pendingRequests: 0,
+  approvedRequests: 0,
+  processedRequests: 0,
+  rejectedRequests: 0,
+  totalRequestedAmount: 0,
+}
+
+function formatDateTime(dateString?: string | null) {
+  if (!dateString) {
+    return "N/A"
+  }
+
+  return new Date(dateString).toLocaleString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
+function formatCurrency(amount?: number | null) {
+  return `NGN ${Number(amount || 0).toLocaleString()}`
+}
+
+function getStatusBadge(status: string) {
+  const normalized = status.split("_").join(" ")
+
+  if (status === "pending") {
+    return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{normalized}</Badge>
+  }
+
+  if (status === "approved") {
+    return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{normalized}</Badge>
+  }
+
+  if (status === "processed") {
+    return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{normalized}</Badge>
+  }
+
+  if (status === "rejected") {
+    return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{normalized}</Badge>
+  }
+
+  return <Badge variant="outline">{normalized}</Badge>
+}
+
+function getRequestTypeBadge(requestType: string) {
+  if (requestType === "refund_review") {
+    return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100">refund review</Badge>
+  }
+
+  return <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">cancellation</Badge>
+}
+
+export default function CancellationsPage() {
+  const [data, setData] = useState<CancellationsResponse>({ requests: [], stats: initialStats })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [typeFilter, setTypeFilter] = useState("all")
+  const [selectedRequest, setSelectedRequest] = useState<CancellationRequest | null>(null)
+  const [detailRequest, setDetailRequest] = useState<CancellationRequest | null>(null)
+  const [actionType, setActionType] = useState<ActionType | null>(null)
+  const [adminNotes, setAdminNotes] = useState("")
+  const [refundReference, setRefundReference] = useState("")
+  const [busyId, setBusyId] = useState("")
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  const fetchCancellations = useCallback(async () => {
     try {
       setLoading(true)
-      const [bookings, statistics] = await Promise.all([
-        cancellationService.getCancelledBookings(),
-        cancellationService.getCancellationStats()
-      ])
-      setCancelledBookings(bookings as any)
-      setStats(statistics)
-    } catch (error) {
-      console.error('Error fetching cancelled bookings:', error)
+      setError("")
+      const response = await adminApiFetch<CancellationsResponse>("/api/admin/cancellations")
+      setData(response)
+    } catch (fetchError) {
+      setError(fetchError instanceof Error ? fetchError.message : "Failed to load cancellation requests")
     } finally {
       setLoading(false)
     }
-  }
-
-  useEffect(() => {
-    fetchCancelledBookings()
   }, [])
 
-  // Debug modal state
   useEffect(() => {
-    console.log('Modal state changed:', { showDetailsModal, selectedBooking: selectedBooking?.id })
-  }, [showDetailsModal, selectedBooking])
+    void fetchCancellations()
+  }, [fetchCancellations])
 
-  // Process refund
-  const handleProcessRefund = async (bookingId: string) => {
-    if (!refundReference.trim() || !processedBy.trim()) {
-      alert('Please fill in refund reference and processed by fields')
+  const filteredRequests = useMemo(() => {
+    return data.requests.filter((request) => {
+      if (statusFilter !== "all" && request.status !== statusFilter) {
+        return false
+      }
+
+      if (typeFilter !== "all" && request.request_type !== typeFilter) {
+        return false
+      }
+
+      if (!searchTerm.trim()) {
+        return true
+      }
+
+      const haystack = [
+        request.booking?.booking_reference || "",
+        request.booking?.customer_name || "",
+        request.booking?.customer_email || "",
+        request.booking?.customer_phone || "",
+        request.booking?.cars?.name || "",
+        request.booking?.cars?.brand || "",
+        request.booking?.cars?.model || "",
+        request.reason,
+      ]
+        .join(" ")
+        .toLowerCase()
+
+      return haystack.includes(searchTerm.toLowerCase())
+    })
+  }, [data.requests, searchTerm, statusFilter, typeFilter])
+
+  const openActionModal = (request: CancellationRequest, nextAction: ActionType) => {
+    setSelectedRequest(request)
+    setActionType(nextAction)
+    setAdminNotes(request.admin_notes || "")
+    setRefundReference(request.booking?.refund_reference || "")
+  }
+
+  const closeActionModal = () => {
+    setSelectedRequest(null)
+    setActionType(null)
+    setAdminNotes("")
+    setRefundReference("")
+  }
+
+  const handleAction = async () => {
+    if (!selectedRequest || !actionType) {
       return
     }
 
     try {
-      await cancellationService.processRefund(bookingId, processedBy, refundReference)
-      
-      // TODO: Add email notification here
-      // await emailService.sendRefundProcessed(selectedBooking)
-      
-      setShowProcessModal(false)
-      setRefundReference("")
-      setProcessedBy("")
-      setSelectedBooking(null)
-      fetchCancelledBookings()
-      alert('✅ Refund processed successfully!\n\nCustomer will receive confirmation email.\n\nNext: Complete manual bank transfer.')
-    } catch (error) {
-      console.error('Error processing refund:', error)
-      alert('❌ Failed to process refund. Please try again.')
+      setBusyId(selectedRequest.id)
+      setFeedback(null)
+
+      const updatedRequest = await adminApiFetch<CancellationRequest>(`/api/admin/cancellations/${selectedRequest.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          status: actionType,
+          adminNotes,
+          refundReference,
+        }),
+      })
+
+      closeActionModal()
+      setFeedback({
+        type: "success",
+        text:
+          actionType === "approved"
+            ? "Cancellation approved. The booking is now queued for refund."
+            : actionType === "processed"
+              ? "Refund marked as processed successfully."
+              : "Cancellation request rejected.",
+      })
+
+      setData((current) => {
+        const nextRequests = current.requests.map((request) =>
+          request.id === updatedRequest.id ? updatedRequest : request,
+        )
+
+        return {
+          requests: nextRequests,
+          stats: nextRequests.reduce(
+            (summary, request) => {
+              if (request.status === "pending") {
+                summary.pendingRequests += 1
+              }
+              if (request.status === "approved") {
+                summary.approvedRequests += 1
+              }
+              if (request.status === "processed") {
+                summary.processedRequests += 1
+              }
+              if (request.status === "rejected") {
+                summary.rejectedRequests += 1
+              }
+              summary.totalRequestedAmount += Number(request.amount_requested || 0)
+              return summary
+            },
+            { ...initialStats },
+          ),
+        }
+      })
+    } catch (actionError) {
+      setFeedback({
+        type: "error",
+        text: actionError instanceof Error ? actionError.message : "Failed to update request",
+      })
+    } finally {
+      setBusyId("")
     }
-  }
-
-  // Filter bookings
-  const filteredBookings = cancelledBookings.filter(booking => {
-    const matchesSearch = 
-      booking.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.customer_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.cars?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.id.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesStatus = statusFilter === "all" || booking.refund_status === statusFilter
-    
-    return matchesSearch && matchesStatus
-  })
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'processed': return 'bg-green-100 text-green-800'
-      case 'failed': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />
-      case 'processed': return <CheckCircle className="h-4 w-4" />
-      case 'failed': return <AlertCircle className="h-4 w-4" />
-      default: return <Clock className="h-4 w-4" />
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    )
   }
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Cancellation Management</h1>
-          <p className="text-gray-600 mt-1">Manage cancelled bookings and process refunds</p>
-        </div>
-        <Button onClick={fetchCancelledBookings} variant="outline">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <Clock className="h-8 w-8 text-yellow-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Pending Refunds</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.pendingRefunds}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Processed Refunds</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.processedRefunds}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <AlertCircle className="h-8 w-8 text-red-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Failed Refunds</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.failedRefunds}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <CreditCard className="h-8 w-8 text-blue-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Total Refund Amount</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  ₦{stats.totalRefundAmount.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search by customer name, email, car, or booking ID..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-400" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="processed">Processed</option>
-                <option value="failed">Failed</option>
-              </select>
-            </div>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Cancellations & Refunds</h1>
+            <p className="text-gray-600">Review cancellation requests, approve them, and mark refunds as completed.</p>
           </div>
-        </CardContent>
-      </Card>
+          <Button variant="outline" onClick={() => void fetchCancellations()} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
 
-      {/* Cancelled Bookings List */}
-      <div className="space-y-4">
-        {filteredBookings.map((booking) => (
-          <Card key={booking.id}>
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {booking.cars?.name || 'Unknown Car'}
-                    </h3>
-                    <Badge className={getStatusColor(booking.refund_status)}>
-                      {getStatusIcon(booking.refund_status)}
-                      <span className="ml-1 capitalize">{booking.refund_status}</span>
-                    </Badge>
-                  </div>
+        {feedback ? (
+          <Card className={feedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"}>
+            <CardContent className={`p-4 text-sm ${feedback.type === "success" ? "text-emerald-700" : "text-red-700"}`}>
+              {feedback.text}
+            </CardContent>
+          </Card>
+        ) : null}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span>{booking.customer_name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>Cancelled: {new Date(booking.cancellation_date).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{booking.pickup_location} → {booking.dropoff_location}</span>
-                      </div>
-                    </div>
+        {error ? (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="p-4 text-sm text-red-700">{error}</CardContent>
+          </Card>
+        ) : null}
 
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        <span>Refund: ₦{booking.refund_amount?.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Car className="h-4 w-4" />
-                        <span>{booking.bank_name} - {booking.account_name} ({booking.account_number})</span>
-                      </div>
-                      <div className="text-gray-500">
-                        <span className="font-medium">Reason:</span> {booking.cancellation_reason}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 ml-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      console.log('View Details clicked for booking:', booking.id)
-                      setSelectedBooking(booking)
-                      setShowDetailsModal(true)
-                      console.log('Modal state set to true')
-                    }}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View Details
-                  </Button>
-                  
-                  {booking.refund_status === 'pending' && (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSelectedBooking(booking)
-                        setShowProcessModal(true)
-                      }}
-                    >
-                      <Check className="h-4 w-4 mr-1" />
-                      Process Refund
-                    </Button>
-                  )}
-                </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center gap-3 p-5">
+              <Clock3 className="h-8 w-8 text-amber-500" />
+              <div>
+                <p className="text-sm text-gray-500">Pending</p>
+                <p className="text-2xl font-bold text-gray-900">{data.stats.pendingRequests}</p>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      {/* Process Refund Modal */}
-      {showProcessModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle>Process Refund</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-sm text-gray-600">
-                  <strong>Customer:</strong> {selectedBooking.customer_name}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Refund Amount:</strong> ₦{selectedBooking.refund_amount?.toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Bank:</strong> {selectedBooking.bank_name} - {selectedBooking.account_name}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Account:</strong> 
-                  <span className="font-mono bg-gray-100 px-1 py-0.5 rounded text-xs ml-1">
-                    {selectedBooking.account_number}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText(selectedBooking.account_number || '')
-                      alert('Account number copied!')
-                    }}
-                    className="h-6 w-6 p-0 ml-2"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </p>
-              </div>
-
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center gap-3 p-5">
+              <AlertCircle className="h-8 w-8 text-blue-500" />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Refund Reference *
-                </label>
-                <Input
-                  value={refundReference}
-                  onChange={(e) => setRefundReference(e.target.value)}
-                  placeholder="e.g., REF-2024-001, Transaction ID"
-                />
+                <p className="text-sm text-gray-500">Approved</p>
+                <p className="text-2xl font-bold text-gray-900">{data.stats.approvedRequests}</p>
               </div>
-
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center gap-3 p-5">
+              <CheckCircle2 className="h-8 w-8 text-emerald-500" />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Processed By *
-                </label>
-                <Input
-                  value={processedBy}
-                  onChange={(e) => setProcessedBy(e.target.value)}
-                  placeholder="Admin name or ID"
-                />
+                <p className="text-sm text-gray-500">Refunded</p>
+                <p className="text-2xl font-bold text-gray-900">{data.stats.processedRequests}</p>
               </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowProcessModal(false)
-                    setSelectedBooking(null)
-                    setRefundReference("")
-                    setProcessedBy("")
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1"
-                  onClick={() => handleProcessRefund(selectedBooking.id)}
-                  disabled={!refundReference.trim() || !processedBy.trim()}
-                >
-                  Process Refund
-                </Button>
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center gap-3 p-5">
+              <XCircle className="h-8 w-8 text-red-500" />
+              <div>
+                <p className="text-sm text-gray-500">Rejected</p>
+                <p className="text-2xl font-bold text-gray-900">{data.stats.rejectedRequests}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center gap-3 p-5">
+              <CreditCard className="h-8 w-8 text-slate-700" />
+              <div>
+                <p className="text-sm text-gray-500">Amount requested</p>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.stats.totalRequestedAmount)}</p>
               </div>
             </CardContent>
           </Card>
         </div>
-      )}
 
-      {/* Booking Details Modal */}
-      {showDetailsModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                Booking Details - {selectedBooking.cars?.name || 'Unknown Car'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="overflow-y-auto flex-1 p-6">
-              <div className="space-y-6">
-                {/* Customer Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Customer Information</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Name:</span>
-                      <span className="font-medium">{selectedBooking.customer_name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
-                      <span className="font-medium">{selectedBooking.customer_email}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Phone:</span>
-                      <span className="font-medium">{selectedBooking.customer_phone}</span>
-                    </div>
+        <Card className="rounded-3xl">
+          <CardContent className="grid gap-4 p-6 md:grid-cols-[1fr_auto_auto]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search by booking ref, customer, email, phone, or car"
+                className="pl-10"
+              />
+            </div>
+            <select
+              value={typeFilter}
+              onChange={(event) => setTypeFilter(event.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            >
+              <option value="all">All request types</option>
+              <option value="cancellation">Cancellation</option>
+              <option value="refund_review">Refund review</option>
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            >
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="processed">Processed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </CardContent>
+        </Card>
+
+        {loading ? (
+          <Card className="rounded-3xl">
+            <CardContent className="flex h-48 items-center justify-center text-gray-500">
+              <RefreshCw className="mr-3 h-5 w-5 animate-spin" />
+              Loading cancellation requests...
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {!loading && filteredRequests.length === 0 ? (
+          <Card className="rounded-3xl">
+            <CardContent className="py-12 text-center text-gray-500">
+              No cancellation or refund requests matched the current filters.
+            </CardContent>
+          </Card>
+        ) : null}
+
+        <div className="space-y-4">
+          {filteredRequests.map((request) => (
+            <Card key={request.id} className="rounded-3xl">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-gray-400">
+                      {request.booking?.booking_reference || request.id}
+                    </p>
+                    <CardTitle className="mt-2 text-xl text-gray-900">
+                      {[request.booking?.cars?.brand, request.booking?.cars?.model].filter(Boolean).join(" ") ||
+                        request.booking?.cars?.name ||
+                        "Vehicle request"}
+                    </CardTitle>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {request.booking?.customer_name || "Customer"}
+                      {request.booking?.customer_email ? ` | ${request.booking.customer_email}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {getRequestTypeBadge(request.request_type)}
+                    {getStatusBadge(request.status)}
+                    {request.booking?.status ? getStatusBadge(request.booking.status) : null}
+                    {request.booking?.payment_status ? getStatusBadge(request.booking.payment_status) : null}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="grid gap-4 lg:grid-cols-3">
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Requested amount</p>
+                    <p className="mt-2 text-xl font-semibold text-slate-950">{formatCurrency(request.amount_requested)}</p>
+                    <p className="mt-2 text-sm text-slate-600">Submitted {formatDateTime(request.created_at)}</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Route</p>
+                    <p className="mt-2 text-sm font-medium text-slate-900">
+                      {request.booking?.pickup_location || "N/A"} <ArrowRight className="mx-1 inline h-3 w-3" />
+                      {request.booking?.dropoff_location || "N/A"}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      {formatDateTime(request.booking?.pickup_date)} to {formatDateTime(request.booking?.dropoff_date)}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Refund destination</p>
+                    <p className="mt-2 text-sm font-medium text-slate-900">
+                      {request.bank_name || request.booking?.bank_name || "Bank pending"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {request.account_name || request.booking?.account_name || "Account name pending"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {request.account_number || request.booking?.account_number || "Account number pending"}
+                    </p>
                   </div>
                 </div>
 
-                {/* Booking Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Booking Information</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Car:</span>
-                      <span className="font-medium">{selectedBooking.cars?.name || 'Unknown Car'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pickup Location:</span>
-                      <span className="font-medium">{selectedBooking.pickup_location}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Drop-off Location:</span>
-                      <span className="font-medium">{selectedBooking.dropoff_location}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pickup Date:</span>
-                      <span className="font-medium">{new Date(selectedBooking.pickup_date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Return Date:</span>
-                      <span className="font-medium">{new Date(selectedBooking.dropoff_date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Total Amount:</span>
-                      <span className="font-medium">₦{selectedBooking.total_amount?.toLocaleString()}</span>
-                    </div>
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Customer reason</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{request.reason}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Button variant="outline" onClick={() => setDetailRequest(request)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View details
+                  </Button>
+                  {request.status === "pending" ? (
+                    <>
+                      <Button onClick={() => openActionModal(request, "approved")} disabled={busyId === request.id}>
+                        Approve request
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => openActionModal(request, "rejected")}
+                        disabled={busyId === request.id}
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  ) : null}
+                  {request.status === "approved" ? (
+                    <Button onClick={() => openActionModal(request, "processed")} disabled={busyId === request.id}>
+                      Mark refunded
+                    </Button>
+                  ) : null}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {detailRequest ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <Card className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl">
+              <CardHeader className="border-b">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-2xl">Cancellation request details</CardTitle>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {detailRequest.booking?.booking_reference || detailRequest.id}
+                    </p>
+                  </div>
+                  <Button variant="ghost" onClick={() => setDetailRequest(null)}>
+                    Close
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 overflow-y-auto p-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Customer</p>
+                    <p className="mt-2 font-semibold text-slate-950">{detailRequest.booking?.customer_name || "Customer"}</p>
+                    <p className="mt-1 text-sm text-slate-600">{detailRequest.booking?.customer_email || "No email"}</p>
+                    <p className="mt-1 text-sm text-slate-600">{detailRequest.booking?.customer_phone || "No phone"}</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Vehicle</p>
+                    <p className="mt-2 font-semibold text-slate-950">
+                      {[detailRequest.booking?.cars?.brand, detailRequest.booking?.cars?.model].filter(Boolean).join(" ") ||
+                        detailRequest.booking?.cars?.name ||
+                        "Vehicle"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">{detailRequest.booking?.cars?.location || "Location not set"}</p>
+                    <p className="mt-1 text-sm text-slate-600">{formatCurrency(detailRequest.booking?.total_amount)}</p>
                   </div>
                 </div>
 
-                {/* Cancellation Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Cancellation Information</h3>
-                  <div className="bg-red-50 rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Cancellation Date:</span>
-                      <span className="font-medium">{selectedBooking.cancellation_date ? new Date(selectedBooking.cancellation_date).toLocaleDateString() : 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Reason:</span>
-                      <span className="font-medium">{selectedBooking.cancellation_reason || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Refund Amount:</span>
-                      <span className="font-medium text-green-600">₦{selectedBooking.refund_amount?.toLocaleString() || '0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Refund Status:</span>
-                      <Badge className={getStatusColor(selectedBooking.refund_status || 'pending')}>
-                        {getStatusIcon(selectedBooking.refund_status || 'pending')}
-                        <span className="ml-1 capitalize">{selectedBooking.refund_status || 'pending'}</span>
-                      </Badge>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Request timeline</p>
+                    <div className="mt-3 space-y-2 text-sm text-slate-700">
+                      <p>Requested: {formatDateTime(detailRequest.created_at)}</p>
+                      <p>Processed: {formatDateTime(detailRequest.processed_at)}</p>
+                      <p>Status: {detailRequest.status.split("_").join(" ")}</p>
+                      <p>Type: {detailRequest.request_type.split("_").join(" ")}</p>
                     </div>
                   </div>
-                </div>
-
-                {/* Bank Details */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Refund Bank Details</h3>
-                  <div className="bg-blue-50 rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Bank Name:</span>
-                      <span className="font-medium">{selectedBooking.bank_name || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Account Name:</span>
-                      <span className="font-medium">{selectedBooking.account_name || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Account Number:</span>
+                  <div className="rounded-2xl border border-slate-200 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Stored refund account</p>
+                    <div className="mt-3 space-y-2 text-sm text-slate-700">
+                      <p>Bank: {detailRequest.bank_name || detailRequest.booking?.bank_name || "Not supplied"}</p>
+                      <p>Account name: {detailRequest.account_name || detailRequest.booking?.account_name || "Not supplied"}</p>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium font-mono bg-gray-100 px-2 py-1 rounded text-sm">
-                          {selectedBooking.account_number || 'N/A'}
-                        </span>
-                        {selectedBooking.account_number && (
+                        <span>Account number: {detailRequest.account_number || detailRequest.booking?.account_number || "Not supplied"}</span>
+                        {(detailRequest.account_number || detailRequest.booking?.account_number) ? (
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                              navigator.clipboard.writeText(selectedBooking.account_number || '')
-                              alert('Account number copied to clipboard!')
-                            }}
-                            className="h-8 w-8 p-0"
+                            onClick={() =>
+                              void navigator.clipboard.writeText(
+                                detailRequest.account_number || detailRequest.booking?.account_number || "",
+                              )
+                            }
                           >
-                            <Copy className="h-4 w-4" />
+                            <Copy className="mr-2 h-4 w-4" />
+                            Copy
                           </Button>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Processing Information (if processed) */}
-                {selectedBooking.refund_status === 'processed' && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Processing Information</h3>
-                    <div className="bg-green-50 rounded-lg p-4 space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Processed Date:</span>
-                        <span className="font-medium">{selectedBooking.refund_processed_date ? new Date(selectedBooking.refund_processed_date).toLocaleDateString() : 'N/A'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Processed By:</span>
-                        <span className="font-medium">{selectedBooking.refund_processed_by || 'N/A'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Refund Reference:</span>
-                        <span className="font-medium">{selectedBooking.refund_reference || 'N/A'}</span>
-                      </div>
-                    </div>
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Customer reason</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{detailRequest.reason}</p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Admin processing</p>
+                  <div className="mt-3 space-y-2 text-sm text-slate-700">
+                    <p>
+                      Processed by: {detailRequest.processed_by_user?.name || detailRequest.processed_by_user?.email || detailRequest.booking?.refund_processed_by || "Not processed yet"}
+                    </p>
+                    <p>Refund reference: {detailRequest.booking?.refund_reference || "Not added yet"}</p>
+                    <p>Admin notes: {detailRequest.admin_notes || "No notes recorded yet"}</p>
                   </div>
-                )}
-              </div>
-            </CardContent>
-            
-            {/* Modal Footer */}
-            <div className="border-t bg-white p-6 flex-shrink-0">
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowDetailsModal(false)
-                    setSelectedBooking(null)
-                  }}
-                >
-                  Close
-                </Button>
-                {selectedBooking.refund_status === 'pending' && (
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
+
+        {selectedRequest && actionType ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <Card className="w-full max-w-2xl rounded-3xl">
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  {actionType === "approved"
+                    ? "Approve cancellation request"
+                    : actionType === "processed"
+                      ? "Mark refund as processed"
+                      : "Reject cancellation request"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
+                  <p><strong>Booking:</strong> {selectedRequest.booking?.booking_reference || selectedRequest.id}</p>
+                  <p><strong>Customer:</strong> {selectedRequest.booking?.customer_name || "Customer"}</p>
+                  <p><strong>Amount:</strong> {formatCurrency(selectedRequest.amount_requested)}</p>
+                  <p><strong>Destination account:</strong> {selectedRequest.account_name || selectedRequest.booking?.account_name || "Not supplied"} ({selectedRequest.account_number || selectedRequest.booking?.account_number || "Not supplied"})</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-900">Admin notes</label>
+                  <Textarea
+                    value={adminNotes}
+                    onChange={(event) => setAdminNotes(event.target.value)}
+                    placeholder="Add any internal note for this decision."
+                    className="min-h-28"
+                  />
+                </div>
+
+                {actionType === "processed" ? (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-900">Refund reference</label>
+                    <Input
+                      value={refundReference}
+                      onChange={(event) => setRefundReference(event.target.value)}
+                      placeholder="Bank transfer reference or transaction ID"
+                    />
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button variant="outline" className="flex-1" onClick={closeActionModal} disabled={busyId === selectedRequest.id}>
+                    Close
+                  </Button>
                   <Button
                     className="flex-1"
-                    onClick={() => {
-                      setShowDetailsModal(false)
-                      setShowProcessModal(true)
-                    }}
+                    variant={actionType === "rejected" ? "destructive" : "default"}
+                    onClick={() => void handleAction()}
+                    disabled={busyId === selectedRequest.id}
                   >
-                    Process Refund
+                    {busyId === selectedRequest.id ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {actionType === "approved"
+                      ? "Approve request"
+                      : actionType === "processed"
+                        ? "Mark refunded"
+                        : "Reject request"}
                   </Button>
-                )}
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
       </div>
     </AdminLayout>
   )

@@ -109,6 +109,14 @@ function LoginPageContent() {
     setMessage("")
   }
 
+  const redirectExistingAccountToLogin = (existingIdentifier: string) => {
+    setMode("login")
+    setIdentifier(existingIdentifier)
+    setConfirmPassword("")
+    setError("")
+    setMessage("An account with this email already exists. Log in instead or use password reset if needed.")
+  }
+
   const resolveLoginEmail = async (rawIdentifier: string) => {
     const response = await apiFetch<{ email: string }>("/api/auth/lookup", {
       method: "POST",
@@ -186,17 +194,27 @@ function LoginPageContent() {
       setSubmitting(true)
       clearFeedback()
 
-      const availability = await apiFetch<{ usernameAvailable: boolean }>("/api/auth/lookup", {
+      const availability = await apiFetch<{
+        usernameAvailable: boolean
+        emailAvailable: boolean
+        accountExists: boolean
+      }>("/api/auth/lookup", {
         method: "POST",
         body: JSON.stringify({
           mode: "check-signup",
           username: normalizedUsername,
+          email: normalizedEmail,
         }),
         skipAuth: true,
       })
 
       if (!availability.usernameAvailable) {
         setError("That username is already in use. Choose another one.")
+        return
+      }
+
+      if (!availability.emailAvailable || availability.accountExists) {
+        redirectExistingAccountToLogin(normalizedEmail)
         return
       }
 
@@ -231,7 +249,15 @@ function LoginPageContent() {
       setMode("login")
       setMessage("Account created. Check your email to verify it, then log in with your username or email and password.")
     } catch (signupError) {
-      setError(signupError instanceof Error ? signupError.message : "Unable to create your account right now.")
+      const messageText = signupError instanceof Error ? signupError.message : "Unable to create your account right now."
+      const normalizedMessage = messageText.toLowerCase()
+
+      if (normalizedMessage.includes("already registered") || normalizedMessage.includes("already exists")) {
+        redirectExistingAccountToLogin(normalizedEmail)
+        return
+      }
+
+      setError(messageText)
     } finally {
       setSubmitting(false)
     }
