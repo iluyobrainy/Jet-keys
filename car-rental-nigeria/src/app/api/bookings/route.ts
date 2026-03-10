@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
   const status = request.nextUrl.searchParams.get("status")
   const paymentStatus = request.nextUrl.searchParams.get("paymentStatus")
   const search = request.nextUrl.searchParams.get("search")?.toLowerCase()
-  const supabase = createServerSupabaseClient()
+  const canUseAdminQueue = adminMode && requireRole(context, ["admin", "staff"])
+  const supabase = canUseAdminQueue ? getAdminSupabaseClient() : createServerSupabaseClient()
   let query = supabase.from("bookings").select(bookingSelect).order("created_at", { ascending: false })
 
   if (status) {
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     query = query.eq("payment_status", paymentStatus)
   }
 
-  if (!adminMode || !requireRole(context, ["admin", "staff"])) {
+  if (!canUseAdminQueue) {
     if (!context.profile?.id) {
       return NextResponse.json({ bookings: [] })
     }

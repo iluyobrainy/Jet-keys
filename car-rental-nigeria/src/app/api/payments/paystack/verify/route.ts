@@ -1,26 +1,47 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { getAuthContext } from "@/lib/auth-server"
 import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 import { verifyPaystackTransaction } from "@/lib/server/paystack"
 
 export async function POST(request: NextRequest) {
-  const context = await getAuthContext(request)
-
-  if (!context) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
   const { reference, bookingId } = await request.json()
 
   if (!reference) {
     return NextResponse.json({ error: "Payment reference is required" }, { status: 400 })
   }
 
+  if (!bookingId) {
+    return NextResponse.json({ error: "Booking ID is required" }, { status: 400 })
+  }
+
   const adminSupabase = getAdminSupabaseClient()
+  const { data: existingBooking, error: existingBookingError } = await adminSupabase
+    .from("bookings")
+    .select("id, user_id, total_amount, payment_reference")
+    .eq("id", bookingId)
+    .single()
+
+  if (existingBookingError || !existingBooking) {
+    return NextResponse.json({ error: "Booking not found" }, { status: 404 })
+  }
+
+  if (existingBooking.payment_reference && existingBooking.payment_reference !== reference) {
+    return NextResponse.json({ error: "Payment reference does not match booking" }, { status: 400 })
+  }
+
   const verification = await verifyPaystackTransaction(reference)
 
   if (verification.status !== "success") {
     return NextResponse.json({ error: "Payment verification failed" }, { status: 400 })
+  }
+
+  const expectedAmount = Math.round(Number(existingBooking.total_amount) * 100)
+  if (Number(verification.amount || 0) !== expectedAmount) {
+    return NextResponse.json({ error: "Payment amount mismatch" }, { status: 400 })
+  }
+
+  const metadataBookingId = verification.metadata?.bookingId as string | undefined
+  if (metadataBookingId && metadataBookingId !== bookingId) {
+    return NextResponse.json({ error: "Payment metadata does not match booking" }, { status: 400 })
   }
 
   const { data: booking, error: bookingError } = await adminSupabase
@@ -32,7 +53,6 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", bookingId)
-    .eq("user_id", context.profile?.id || "")
     .select(`
       *,
       cars(id, name, brand, model, images, primary_image_url, location)
@@ -46,7 +66,7 @@ export async function POST(request: NextRequest) {
   await adminSupabase.from("payment_transactions").upsert(
     {
       booking_id: booking.id,
-      user_id: context.profile?.id || null,
+      user_id: booking.user_id || null,
       provider: "paystack",
       provider_reference: reference,
       amount: booking.total_amount,
