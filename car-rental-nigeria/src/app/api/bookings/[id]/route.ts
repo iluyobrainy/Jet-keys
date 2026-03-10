@@ -72,16 +72,25 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     if (action === "start_rental") {
+      if (!["approved", "paid_awaiting_fulfilment"].includes(booking.status)) {
+        return NextResponse.json({ error: "This booking cannot be started again" }, { status: 400 })
+      }
       patch.status = "active"
       patch.rental_started_at = new Date().toISOString()
     }
 
     if (action === "mark_returned") {
+      if (booking.status !== "active") {
+        return NextResponse.json({ error: "Only active rentals can be marked as returned" }, { status: 400 })
+      }
       patch.status = "returned"
       patch.rental_returned_at = new Date().toISOString()
     }
 
     if (action === "complete_booking") {
+      if (booking.status !== "returned") {
+        return NextResponse.json({ error: "Only returned rentals can be completed" }, { status: 400 })
+      }
       patch.status = "completed"
       patch.completed_at = new Date().toISOString()
     }

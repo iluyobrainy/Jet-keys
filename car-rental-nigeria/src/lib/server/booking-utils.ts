@@ -60,5 +60,5 @@ export function canUserCancelBooking(booking: BookingRow) {
 }
 
 export function canUserRequestRefund(booking: BookingRow) {
-  return booking.status === "active" || booking.status === "returned" || booking.status === "completed"
+  return false
 }

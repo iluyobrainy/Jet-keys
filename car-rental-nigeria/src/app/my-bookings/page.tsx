@@ -63,7 +63,7 @@ function canCancelBooking(status: string) {
 }
 
 function canRequestRefund(status: string) {
-  return ["active", "returned", "completed"].includes(status)
+  return false
 }
 
 export default function MyBookingsPage() {
@@ -255,7 +255,7 @@ export default function MyBookingsPage() {
                       <Eye className="mr-2 h-4 w-4" />
                       View details
                     </Button>
-                    {canCancelBooking(booking.status) || canRequestRefund(booking.status) ? (
+                    {canCancelBooking(booking.status) ? (
                       <Button
                         variant="destructive"
                         className="flex-1 rounded-2xl bg-red-500 text-white hover:bg-red-600"
@@ -265,7 +265,7 @@ export default function MyBookingsPage() {
                         }}
                       >
                         <X className="mr-2 h-4 w-4" />
-                        {canCancelBooking(booking.status) ? "Cancel booking" : "Request refund review"}
+                        Cancel booking
                       </Button>
                     ) : null}
                   </div>
@@ -347,9 +347,7 @@ export default function MyBookingsPage() {
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                {canCancelBooking(selectedBooking.status)
-                  ? "Direct cancellation is only available before the rental starts. This request will be logged for refund review."
-                  : "This rental has already started or completed. Your request will be sent for refund review instead of direct cancellation."}
+                Direct cancellation is only available before the rental starts.
               </div>
               {cancellationError ? (
                 <div className="rounded-[24px] border border-red-200 bg-red-50 p-4 text-sm text-red-700">
