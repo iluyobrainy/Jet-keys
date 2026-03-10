@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminContext, unauthorizedAdminResponse } from '@/lib/admin-auth-server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  if (!(await requireAdminContext(request))) {
+    return unauthorizedAdminResponse()
+  }
   try {
     const status = request.nextUrl.searchParams.get('status')
     const paymentStatus = request.nextUrl.searchParams.get('paymentStatus')

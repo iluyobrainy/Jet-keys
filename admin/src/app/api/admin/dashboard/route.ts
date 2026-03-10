@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
+import { requireAdminContext, unauthorizedAdminResponse } from '@/lib/admin-auth-server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
@@ -8,7 +9,10 @@ function toNumber(value: unknown) {
   return Number.isFinite(numeric) ? numeric : 0
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!(await requireAdminContext(request))) {
+    return unauthorizedAdminResponse()
+  }
   try {
     const [
       carsResult,

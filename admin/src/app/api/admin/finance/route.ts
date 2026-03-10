@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminContext, unauthorizedAdminResponse } from '@/lib/admin-auth-server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
@@ -24,6 +25,9 @@ function firstRelation<T>(value: T | T[] | null | undefined) {
 }
 
 export async function GET(request: NextRequest) {
+  if (!(await requireAdminContext(request))) {
+    return unauthorizedAdminResponse()
+  }
   try {
     const days = Math.max(1, Number(request.nextUrl.searchParams.get('days') || 30))
     const startDate = new Date()

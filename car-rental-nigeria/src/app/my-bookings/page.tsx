@@ -78,6 +78,7 @@ export default function MyBookingsPage() {
   const [showCancel, setShowCancel] = useState(false)
   const [showCancellationLoading, setShowCancellationLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [cancellationError, setCancellationError] = useState("")
   const [cancellationReason, setCancellationReason] = useState("")
   const [bankName, setBankName] = useState("")
   const [accountName, setAccountName] = useState("")
@@ -95,6 +96,7 @@ export default function MyBookingsPage() {
   }, [authLoading, isAuthenticated, router])
 
   const resetCancellationForm = () => {
+    setCancellationError("")
     setCancellationReason("")
     setBankName("")
     setAccountName("")
@@ -105,10 +107,12 @@ export default function MyBookingsPage() {
 
   const handleCancelBooking = async () => {
     if (!selectedBooking || !cancellationReason.trim() || !bankName.trim() || !accountName.trim() || !accountNumber.trim()) {
+      setCancellationError("Fill in the reason and refund account details before submitting.")
       return
     }
 
     try {
+      setCancellationError("")
       setLastRefundDetails({
         bankName,
         accountName,
@@ -134,7 +138,7 @@ export default function MyBookingsPage() {
       setShowSuccess(true)
     } catch (error) {
       setShowCancellationLoading(false)
-      alert(error instanceof Error ? error.message : "Failed to submit cancellation request.")
+      setCancellationError(error instanceof Error ? error.message : "Failed to submit cancellation request.")
     }
   }
 
@@ -347,6 +351,11 @@ export default function MyBookingsPage() {
                   ? "Direct cancellation is only available before the rental starts. This request will be logged for refund review."
                   : "This rental has already started or completed. Your request will be sent for refund review instead of direct cancellation."}
               </div>
+              {cancellationError ? (
+                <div className="rounded-[24px] border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                  {cancellationError}
+                </div>
+              ) : null}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-900">Reason for cancellation</label>
                 <textarea

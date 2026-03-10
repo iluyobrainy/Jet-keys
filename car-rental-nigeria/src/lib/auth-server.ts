@@ -46,6 +46,7 @@ export async function syncUserProfile(user: User) {
   const adminSupabase = getAdminSupabaseClient()
   const fallbackRole = getRoleFromEmail(user.email)
   const fullName =
+    user.user_metadata?.username ||
     user.user_metadata?.full_name ||
     user.user_metadata?.name ||
     user.email?.split("@")[0] ||

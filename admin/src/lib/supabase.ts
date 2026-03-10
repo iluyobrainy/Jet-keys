@@ -16,14 +16,27 @@ if (!supabaseKey) {
   throw new Error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    persistSession: true,
+  },
+})
 
 // Never require the service-role key in the browser. If this module is imported
 // by client components, fall back to the anon client to avoid hydration crashes.
 const isServer = typeof window === 'undefined'
 const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
 
-export const supabaseAdmin = isServer && serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey) : supabase
+export const supabaseAdmin = isServer && serviceRoleKey
+  ? createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
+  : supabase
 
 // Database Types
 export interface Database {

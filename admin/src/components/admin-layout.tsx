@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { 
   Car, 
@@ -20,6 +21,7 @@ import {
   MapPin,
   Star
 } from "lucide-react"
+import { useAdminAuth } from "@/lib/admin-auth-client"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -27,6 +29,16 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter()
+  const { profile, user, signOut } = useAdminAuth()
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.replace("/login")
+  }
+
+  const accountName = profile?.name || user?.email || "Admin"
+  const accountEmail = profile?.email || user?.email || ""
 
   const menuItems = [
     { icon: BarChart3, label: "Dashboard", href: "/" },
@@ -92,11 +104,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         <div className="border-t p-4">
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/">
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Link>
+          <div className="mb-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm">
+            <p className="font-semibold text-slate-950">{accountName}</p>
+            <p className="text-xs text-slate-500">{accountEmail}</p>
+          </div>
+          <Button variant="outline" className="w-full" onClick={() => void handleSignOut()}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
           </Button>
         </div>
       </div>
@@ -115,7 +129,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome, Admin</span>
+              <span className="text-sm text-gray-600">Welcome, {accountName}</span>
             </div>
           </div>
         </header>

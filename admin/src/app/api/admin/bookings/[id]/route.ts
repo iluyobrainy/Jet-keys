@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminContext, unauthorizedAdminResponse } from '@/lib/admin-auth-server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+  if (!(await requireAdminContext(request))) {
+    return unauthorizedAdminResponse()
+  }
   try {
     const body = await request.json()
     const updates = {
