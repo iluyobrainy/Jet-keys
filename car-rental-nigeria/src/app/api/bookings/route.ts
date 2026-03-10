@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getAuthContext, requireRole } from "@/lib/auth-server"
-import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 import { generateBookingReference, validateRentalWindow } from "@/lib/server/booking-utils"
 
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
   const paymentStatus = request.nextUrl.searchParams.get("paymentStatus")
   const search = request.nextUrl.searchParams.get("search")?.toLowerCase()
   const canUseAdminQueue = adminMode && requireRole(context, ["admin", "staff"])
-  const supabase = canUseAdminQueue ? getAdminSupabaseClient() : createServerSupabaseClient()
+  const supabase = getAdminSupabaseClient()
   let query = supabase.from("bookings").select(bookingSelect).order("created_at", { ascending: false })
 
   if (status) {
