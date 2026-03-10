@@ -56,7 +56,7 @@ export function validateRentalWindow(
 }
 
 export function canUserCancelBooking(booking: BookingRow) {
-  return booking.status === "paid_awaiting_fulfilment" || booking.status === "payment_pending"
+  return ["paid_awaiting_fulfilment", "payment_pending", "approved", "pending"].includes(booking.status)
 }
 
 export function canUserRequestRefund(booking: BookingRow) {
