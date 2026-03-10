@@ -32,12 +32,14 @@ export async function POST(request: NextRequest) {
   }
 
   const reference = booking.payment_reference || `PAY-${booking.booking_reference || booking.id}`
+  const callbackBase = request.nextUrl.origin || env.appUrl
+
   try {
     const paymentData = await initializePaystackTransaction({
       email: booking.customer_email,
       amount: Math.round(Number(booking.total_amount) * 100),
       reference,
-      callback_url: `${env.appUrl}/booking-complete?bookingId=${booking.id}&reference=${reference}`,
+      callback_url: `${callbackBase}/booking-complete?bookingId=${booking.id}&reference=${reference}`,
       metadata: {
         bookingId: booking.id,
         bookingReference: booking.booking_reference,
