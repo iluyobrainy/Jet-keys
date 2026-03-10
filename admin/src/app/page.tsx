@@ -1,124 +1,137 @@
 "use client"
 
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import {
+  ArrowRight,
+  Calendar,
+  Car,
+  CheckCircle,
+  CreditCard,
+  Eye,
+  Plane,
+  RefreshCw,
+  Users,
+} from "lucide-react"
 import { AdminLayout } from "@/components/admin-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { 
-  Car, 
-  Users, 
-  Calendar, 
-  TrendingUp, 
-  TrendingDown,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Plane,
-  Eye,
-  ArrowRight
-} from "lucide-react"
-import { useEffect, useState } from "react"
-import { analyticsService } from "@/lib/admin-services"
-import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { adminApiFetch } from "@/lib/admin-api-client"
 
-interface DashboardStats {
+type DashboardStats = {
   totalCars: number
   totalJets: number
-  totalBookings: number
   totalUsers: number
+  totalBookings: number
+  readyBookings: number
   activeBookings: number
   completedBookings: number
-  totalRevenue: number
   failedPayments: number
+  totalRevenue: number
+  successfulPayments: number
 }
 
-interface RecentBooking {
+type RecentBooking = {
   id: string
+  booking_reference?: string | null
   customer_name: string
   customer_email: string
-  booking_type: 'car' | 'jet'
+  booking_type: "car" | "jet"
   pickup_date: string
   dropoff_date: string
   total_amount: number
   status: string
   payment_status: string
-  cars?: { name: string; brand: string; model: string }
-  jets?: { name: string; manufacturer: string; model: string }
+  cars?: { name?: string; brand?: string; model?: string }
+  jets?: { name?: string; manufacturer?: string; model?: string }
+}
+
+type RecentPayment = {
+  id: string
+  booking_id: string
+  provider_reference: string
+  amount: number
+  status: string
+  channel?: string | null
+  created_at: string
+  booking?: {
+    booking_reference?: string | null
+    customer_name?: string | null
+  } | null
+}
+
+type DashboardResponse = {
+  stats: DashboardStats
+  recentBookings: RecentBooking[]
+  recentPayments: RecentPayment[]
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+}
+
+function getStatusBadge(status: string) {
+  const normalized = status.split("_").join(" ")
+
+  if (status === "approved" || status === "paid_awaiting_fulfilment") {
+    return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">{normalized}</Badge>
+  }
+
+  if (status === "active") {
+    return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">{normalized}</Badge>
+  }
+
+  if (status === "completed") {
+    return <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">{normalized}</Badge>
+  }
+
+  if (status === "payment_pending") {
+    return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">{normalized}</Badge>
+  }
+
+  return <Badge variant="outline">{normalized}</Badge>
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([])
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchDashboard = async () => {
       try {
-        const [statsData, bookingsData] = await Promise.all([
-          analyticsService.getDashboardStats(),
-          analyticsService.getRecentBookings(5)
-        ])
-        
-        setStats(statsData)
-        setRecentBookings(bookingsData)
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
+        const data = await adminApiFetch<DashboardResponse>("/api/admin/dashboard")
+        setDashboard(data)
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : "Failed to load dashboard")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchDashboardData()
+    void fetchDashboard()
   }, [])
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pending</Badge>
-      case "approved":
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Approved</Badge>
-      case "active":
-        return <Badge className="bg-blue-500"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>
-      case "completed":
-        return <Badge className="bg-purple-500"><CheckCircle className="h-3 w-3 mr-1" />Completed</Badge>
-      case "cancelled":
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Cancelled</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
-
-  const getPaymentStatusBadge = (status: string) => {
-    switch (status) {
-      case "paid":
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Paid</Badge>
-      case "pending":
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pending</Badge>
-      case "failed":
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>
-      case "refunded":
-        return <Badge className="bg-yellow-500"><ArrowRight className="h-3 w-3 mr-1" />Refunded</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount)
-  }
 
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
+        <div className="flex h-64 items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-600" />
             <p className="text-gray-600">Loading dashboard...</p>
           </div>
         </div>
@@ -126,226 +139,185 @@ export default function AdminDashboard() {
     )
   }
 
-  const statsCards = stats ? [
+  if (error || !dashboard) {
+    return (
+      <AdminLayout>
+        <Card className="rounded-3xl border-red-200 bg-red-50">
+          <CardContent className="p-6 text-sm text-red-700">{error || "Failed to load dashboard"}</CardContent>
+        </Card>
+      </AdminLayout>
+    )
+  }
+
+  const { stats, recentBookings, recentPayments } = dashboard
+  const statCards = [
     {
-      title: "Total Cars",
-      value: stats.totalCars.toString(),
-      change: "+2",
-      changeType: "positive",
+      title: "Cars",
+      value: stats.totalCars,
+      subtitle: "Fleet listed on the platform",
       icon: Car,
-      color: "text-blue-600"
+      color: "text-blue-600",
     },
     {
-      title: "Total Jets",
-      value: stats.totalJets.toString(),
-      change: "+1",
-      changeType: "positive",
-      icon: Plane,
-      color: "text-purple-600"
+      title: "Users",
+      value: stats.totalUsers,
+      subtitle: "Registered customer accounts",
+      icon: Users,
+      color: "text-indigo-600",
     },
     {
-      title: "Total Bookings",
-      value: stats.totalBookings.toString(),
-      change: "+8",
-      changeType: "positive",
-      icon: Calendar,
-      color: "text-green-600"
+      title: "Paid Bookings",
+      value: stats.successfulPayments,
+      subtitle: `${stats.readyBookings} ready for fulfilment`,
+      icon: CheckCircle,
+      color: "text-emerald-600",
     },
     {
-      title: "Total Revenue",
+      title: "Revenue",
       value: formatCurrency(stats.totalRevenue),
-      change: "+15%",
-      changeType: "positive",
-      icon: () => <div className="w-6 h-6 flex items-center justify-center text-xl font-bold">₦</div>,
-      color: "text-orange-600"
+      subtitle: "Verified payment total from Paystack",
+      icon: CreditCard,
+      color: "text-orange-600",
     },
     {
       title: "Active Rentals",
-      value: stats.activeBookings.toString(),
-      change: "+3",
-      changeType: "positive",
-      icon: CheckCircle,
-      color: "text-emerald-600"
+      value: stats.activeBookings,
+      subtitle: `${stats.completedBookings} completed so far`,
+      icon: Calendar,
+      color: "text-sky-600",
     },
     {
-      title: "Total Users",
-      value: stats.totalUsers.toString(),
-      change: "+12",
-      changeType: "positive",
-      icon: Users,
-      color: "text-indigo-600"
-    }
-  ] : []
+      title: "Jets",
+      value: stats.totalJets,
+      subtitle: `${stats.failedPayments} failed payments to review`,
+      icon: Plane,
+      color: "text-purple-600",
+    },
+  ]
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600">Overview of your Jet & Keys business</p>
+            <p className="text-gray-600">Live fleet, customer, booking, and Paystack payment activity.</p>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex gap-3">
             <Button asChild>
               <Link href="/cars/add">
-                <Car className="h-4 w-4 mr-2" />
+                <Car className="mr-2 h-4 w-4" />
                 Add Car
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/bookings">
-                <Eye className="h-4 w-4 mr-2" />
-                View All Bookings
+                <Eye className="mr-2 h-4 w-4" />
+                View Bookings
               </Link>
             </Button>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-          {statsCards.map((stat) => (
-            <Card key={stat.title}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {statCards.map((card) => (
+            <Card key={card.title} className="rounded-3xl">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
+                <card.icon className={`h-5 w-5 ${card.color}`} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="flex items-center text-xs text-gray-600">
-                  {stat.changeType === "positive" ? (
-                    <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                  ) : (
-                    <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
-                  )}
-                  {stat.change} from last month
-                </div>
+                <div className="text-2xl font-bold text-gray-900">{card.value}</div>
+                <p className="mt-2 text-sm text-gray-500">{card.subtitle}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Recent Bookings */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Bookings</CardTitle>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/bookings">
-                View All
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentBookings.length > 0 ? (
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Card className="rounded-3xl">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Recent Bookings</CardTitle>
+              <Button asChild size="sm" variant="outline">
+                <Link href="/bookings">
+                  View all
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {recentBookings.length === 0 ? (
+                <p className="py-8 text-center text-sm text-gray-500">No live bookings available yet.</p>
+              ) : (
                 recentBookings.map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
+                  <div key={booking.id} className="rounded-2xl border p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <p className="font-medium">{booking.customer_name}</p>
-                        <p className="text-sm text-gray-600">{booking.customer_email}</p>
-                        <p className="text-sm text-gray-500">
-                          {booking.booking_type === 'car' 
-                            ? `${booking.cars?.brand} ${booking.cars?.model}` 
-                            : `${booking.jets?.manufacturer} ${booking.jets?.model}`
-                          }
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                          {booking.booking_reference || booking.id}
                         </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">
-                          {new Date(booking.pickup_date).toLocaleDateString()}
+                        <p className="mt-2 font-semibold text-gray-900">
+                          {booking.booking_type === "car"
+                            ? [booking.cars?.brand, booking.cars?.model].filter(Boolean).join(" ") || booking.cars?.name
+                            : [booking.jets?.manufacturer, booking.jets?.model].filter(Boolean).join(" ") || booking.jets?.name}
                         </p>
-                        <p className="font-medium">{formatCurrency(booking.total_amount)}</p>
+                        <p className="text-sm text-gray-600">{booking.customer_name}</p>
+                        <p className="text-sm text-gray-500">{booking.customer_email}</p>
                       </div>
-                      <div className="flex flex-col space-y-2">
-                        {getStatusBadge(booking.status)}
-                        {getPaymentStatusBadge(booking.payment_status)}
+                      <div className="space-y-2 text-right">
+                        <p className="font-semibold text-gray-900">{formatCurrency(Number(booking.total_amount || 0))}</p>
+                        <p className="text-sm text-gray-500">{formatDate(booking.pickup_date)}</p>
+                        <div className="flex flex-wrap justify-end gap-2">
+                          {getStatusBadge(booking.status)}
+                          {getStatusBadge(booking.payment_status)}
+                        </div>
                       </div>
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No recent bookings found
-                </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions & System Alerts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button asChild className="w-full justify-start">
-                <Link href="/cars/add">
-                  <Car className="h-5 w-5 mr-3 text-blue-600" />
-                  Add New Car
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-start">
-                <Link href="/jets/add">
-                  <Plane className="h-5 w-5 mr-3 text-purple-600" />
-                  Add New Jet
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-start">
-                <Link href="/bookings">
-                  <Calendar className="h-5 w-5 mr-3 text-green-600" />
-                  View All Bookings
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-start">
-                <Link href="/users">
-                  <Users className="h-5 w-5 mr-3 text-purple-600" />
-                  Manage Users
-                </Link>
-              </Button>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>System Alerts</CardTitle>
+          <Card className="rounded-3xl">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Recent Paystack Payments</CardTitle>
+              <Button asChild size="sm" variant="outline">
+                <Link href="/finance">
+                  Open finance
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {stats && stats.failedPayments > 0 && (
-                <div className="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-red-600" />
-                  <div>
-                    <p className="text-sm font-medium">{stats.failedPayments} failed payments</p>
-                    <p className="text-xs text-red-600">Review payment issues</p>
+            <CardContent className="space-y-4">
+              {recentPayments.length === 0 ? (
+                <p className="py-8 text-center text-sm text-gray-500">No payment activity has been recorded yet.</p>
+              ) : (
+                recentPayments.map((payment) => (
+                  <div key={payment.id} className="rounded-2xl border p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                          {payment.booking?.booking_reference || payment.provider_reference}
+                        </p>
+                        <p className="mt-2 font-semibold text-gray-900">
+                          {payment.booking?.customer_name || "Linked booking"}
+                        </p>
+                        <p className="text-sm text-gray-500">{payment.channel || "Paystack"}</p>
+                      </div>
+                      <div className="space-y-2 text-right">
+                        <p className="font-semibold text-gray-900">{formatCurrency(Number(payment.amount || 0))}</p>
+                        <p className="text-sm text-gray-500">{formatDate(payment.created_at)}</p>
+                        {getStatusBadge(payment.status)}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))
               )}
-              {stats && stats.activeBookings > 0 && (
-                <div className="flex items-center space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-sm font-medium">{stats.activeBookings} active rentals</p>
-                    <p className="text-xs text-blue-600">Monitor ongoing rentals</p>
-                  </div>
-                </div>
-              )}
-              <div className="flex items-center space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium">System running smoothly</p>
-                  <p className="text-xs text-green-600">All services operational</p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
-    </div>
+      </div>
     </AdminLayout>
   )
 }

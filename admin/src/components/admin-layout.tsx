@@ -7,7 +7,6 @@ import {
   Car, 
   Users, 
   Calendar, 
-  Settings, 
   BarChart3, 
   Upload,
   LogOut,
@@ -18,7 +17,8 @@ import {
   Plane,
   AlertCircle,
   Clock,
-  MapPin
+  MapPin,
+  Star
 } from "lucide-react"
 
 interface AdminLayoutProps {
@@ -39,6 +39,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { icon: AlertCircle, label: "Cancellations", href: "/cancellations" },
     { icon: Clock, label: "Late Returns", href: "/late-returns" },
     { icon: BarChart3, label: "Finance", href: "/finance" },
+    { icon: Star, label: "Reviews", href: "/reviews" },
     { icon: Users, label: "Users", href: "/users" },
     { icon: CreditCard, label: "Checkout Config", href: "/checkout-config" },
     { icon: Globe, label: "Website Settings", href: "/website-settings" },
@@ -55,7 +56,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out md:translate-x-0 ${
+      <div className={`fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col overflow-hidden bg-white shadow-lg transform transition-transform duration-200 ease-in-out md:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex items-center justify-between p-4 border-b">
@@ -73,7 +74,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </Button>
         </div>
 
-        <nav className="p-4">
+        <nav className="flex-1 overflow-y-auto p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.href}>
@@ -90,7 +91,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </ul>
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="border-t p-4">
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">
               <LogOut className="mr-2 h-4 w-4" />

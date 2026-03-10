@@ -1,99 +1,89 @@
 "use client"
 
+import { useEffect, useMemo, useState } from "react"
+import { Calendar, Mail, Phone, Search, ShieldCheck, UserCheck, Users } from "lucide-react"
 import { AdminLayout } from "@/components/admin-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { 
-  Users,
-  Search,
-  Mail,
-  Phone,
-  Calendar,
-  UserCheck,
-  UserX,
-  MoreHorizontal,
-  Filter,
-  Download
-} from "lucide-react"
-import { useEffect, useState } from "react"
-import { userService } from "@/lib/admin-services"
+import { adminApiFetch } from "@/lib/admin-api-client"
 
-interface User {
+type AdminUser = {
   id: string
   email: string
-  phone?: string
-  first_name?: string
-  last_name?: string
+  name: string
+  phone?: string | null
+  role: "customer" | "admin" | "staff"
+  is_active: boolean
   created_at: string
   updated_at: string
-  is_active?: boolean
-  last_login?: string
+  booking_count: number
+  paid_booking_count: number
+  total_spend: number
+  last_booking_at?: string | null
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
+function formatDate(dateString?: string | null) {
+  if (!dateString) {
+    return "No activity yet"
+  }
+
+  return new Date(dateString).toLocaleDateString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all")
+  const [filterRole, setFilterRole] = useState<"all" | "customer" | "admin" | "staff">("all")
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await userService.getAllUsers()
+        const data = await adminApiFetch<AdminUser[]>("/api/admin/users")
         setUsers(data)
-      } catch (error) {
-        console.error('Error fetching users:', error)
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : "Failed to load users")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchUsers()
+    void fetchUsers()
   }, [])
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone?.includes(searchTerm)
+  const filteredUsers = useMemo(
+    () =>
+      users.filter((user) => {
+        const matchesSearch = [user.name, user.email, user.phone || ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
 
-    const matchesFilter = 
-      filterStatus === "all" || 
-      (filterStatus === "active" && user.is_active !== false) ||
-      (filterStatus === "inactive" && user.is_active === false)
-
-    return matchesSearch && matchesFilter
-  })
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const getStatusBadge = (user: User) => {
-    if (user.is_active === false) {
-      return <Badge variant="destructive">Inactive</Badge>
-    }
-    return <Badge variant="default">Active</Badge>
-  }
+        const matchesRole = filterRole === "all" || user.role === filterRole
+        return matchesSearch && matchesRole
+      }),
+    [filterRole, searchTerm, users],
+  )
 
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading users...</p>
-          </div>
-        </div>
+        <div className="flex h-64 items-center justify-center text-gray-600">Loading users...</div>
       </AdminLayout>
     )
   }
@@ -101,200 +91,133 @@ export default function UsersPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Users</h1>
-            <p className="text-gray-600">Manage user accounts and permissions</p>
-          </div>
-          <div className="flex space-x-4">
-            <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Export Users
-            </Button>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+          <p className="text-gray-600">Live customer accounts synced from the website booking flow.</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-3xl font-bold text-gray-900">{users.length}</p>
-                </div>
-                <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
+        {error ? (
+          <Card className="rounded-3xl border-red-200 bg-red-50">
+            <CardContent className="p-6 text-sm text-red-700">{error}</CardContent>
+          </Card>
+        ) : null}
+
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <p className="text-sm text-gray-500">Total Users</p>
+                <p className="text-3xl font-bold text-gray-900">{users.length}</p>
               </div>
+              <Users className="h-8 w-8 text-blue-600" />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Users</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {users.filter(user => user.is_active !== false).length}
-                  </p>
-                </div>
-                <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <UserCheck className="h-6 w-6 text-green-600" />
-                </div>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <p className="text-sm text-gray-500">Customers</p>
+                <p className="text-3xl font-bold text-gray-900">{users.filter((user) => user.role === "customer").length}</p>
               </div>
+              <UserCheck className="h-8 w-8 text-emerald-600" />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Inactive Users</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {users.filter(user => user.is_active === false).length}
-                  </p>
-                </div>
-                <div className="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <UserX className="h-6 w-6 text-red-600" />
-                </div>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <p className="text-sm text-gray-500">Staff + Admin</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {users.filter((user) => user.role === "staff" || user.role === "admin").length}
+                </p>
               </div>
+              <ShieldCheck className="h-8 w-8 text-purple-600" />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">New This Month</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {users.filter(user => {
-                      const userDate = new Date(user.created_at)
-                      const thisMonth = new Date()
-                      thisMonth.setDate(1)
-                      return userDate >= thisMonth
-                    }).length}
-                  </p>
-                </div>
-                <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-purple-600" />
-                </div>
+          <Card className="rounded-3xl">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <p className="text-sm text-gray-500">Customer Spend</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(users.reduce((sum, user) => sum + Number(user.total_spend || 0), 0))}
+                </p>
               </div>
+              <Calendar className="h-8 w-8 text-orange-600" />
             </CardContent>
           </Card>
         </div>
 
-        {/* Filters and Search */}
-        <Card>
+        <Card className="rounded-3xl">
           <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search users by email, name, or phone..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+            <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search by name, email, or phone"
+                  className="pl-10"
+                />
               </div>
-              <div className="flex space-x-2">
-                <Button
-                  variant={filterStatus === "all" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("all")}
-                >
-                  All
-                </Button>
-                <Button
-                  variant={filterStatus === "active" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("active")}
-                >
-                  Active
-                </Button>
-                <Button
-                  variant={filterStatus === "inactive" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("inactive")}
-                >
-                  Inactive
-                </Button>
-              </div>
+              <select
+                value={filterRole}
+                onChange={(event) => setFilterRole(event.target.value as "all" | "customer" | "admin" | "staff")}
+                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+              >
+                <option value="all">All roles</option>
+                <option value="customer">Customers</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admins</option>
+              </select>
             </div>
           </CardContent>
         </Card>
 
-        {/* Users Table */}
-        <Card>
+        <Card className="rounded-3xl">
           <CardHeader>
             <CardTitle>User List</CardTitle>
           </CardHeader>
           <CardContent>
             {filteredUsers.length === 0 ? (
-              <div className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-                <p className="text-gray-600">
-                  {searchTerm || filterStatus !== "all" 
-                    ? "Try adjusting your search or filter criteria"
-                    : "No users have been registered yet"
-                  }
-                </p>
-              </div>
+              <div className="py-12 text-center text-gray-500">No users matched the current filters.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[920px]">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">User</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Contact</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Joined</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Last Login</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
+                    <tr className="border-b text-left text-sm text-gray-500">
+                      <th className="px-4 py-3 font-medium">User</th>
+                      <th className="px-4 py-3 font-medium">Contact</th>
+                      <th className="px-4 py-3 font-medium">Role</th>
+                      <th className="px-4 py-3 font-medium">Bookings</th>
+                      <th className="px-4 py-3 font-medium">Paid Trips</th>
+                      <th className="px-4 py-3 font-medium">Total Spend</th>
+                      <th className="px-4 py-3 font-medium">Last Activity</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b hover:bg-gray-50">
-                        <td className="py-4 px-4">
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {user.first_name && user.last_name 
-                                ? `${user.first_name} ${user.last_name}`
-                                : 'No name provided'
-                              }
-                            </div>
-                            <div className="text-sm text-gray-500">ID: {user.id.slice(0, 8)}...</div>
+                      <tr key={user.id} className="border-b align-top">
+                        <td className="px-4 py-4">
+                          <p className="font-semibold text-gray-900">{user.name || "Unnamed user"}</p>
+                          <p className="mt-1 text-xs text-gray-500">{user.id}</p>
+                        </td>
+                        <td className="space-y-2 px-4 py-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-gray-400" />
+                            <span>{user.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-gray-400" />
+                            <span>{user.phone || "No phone"}</span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm">
-                              <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                              {user.email}
-                            </div>
-                            {user.phone && (
-                              <div className="flex items-center text-sm text-gray-500">
-                                <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                                {user.phone}
-                              </div>
-                            )}
-                          </div>
+                        <td className="px-4 py-4">
+                          <Badge variant={user.role === "customer" ? "secondary" : "default"}>{user.role}</Badge>
                         </td>
-                        <td className="py-4 px-4">
-                          {getStatusBadge(user)}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-gray-600">
-                          {formatDate(user.created_at)}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-gray-600">
-                          {user.last_login ? formatDate(user.last_login) : 'Never'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-900">{user.booking_count}</td>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-900">{user.paid_booking_count}</td>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-900">{formatCurrency(Number(user.total_spend || 0))}</td>
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          <p>{formatDate(user.last_booking_at || user.updated_at)}</p>
+                          <p className="mt-1 text-xs text-gray-400">Joined {formatDate(user.created_at)}</p>
                         </td>
                       </tr>
                     ))}
@@ -308,7 +231,3 @@ export default function UsersPage() {
     </AdminLayout>
   )
 }
-
-
-
-
