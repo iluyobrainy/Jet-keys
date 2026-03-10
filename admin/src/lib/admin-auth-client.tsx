@@ -1,8 +1,13 @@
-"use client"
+﻿"use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+
+type AdminUser = {
+  id: string
+  email?: string | null
+}
 
 type AdminProfile = {
   id: string
@@ -14,10 +19,17 @@ type AdminProfile = {
   is_active?: boolean | null
 }
 
+type ProfilePayload = {
+  profile: AdminProfile | null
+  role?: string | null
+  provider?: 'supabase' | 'simple'
+  user?: AdminUser | null
+}
+
 type AdminAuthContextValue = {
   loading: boolean
   session: Session | null
-  user: User | null
+  user: AdminUser | null
   profile: AdminProfile | null
   isAuthenticated: boolean
   isAdmin: boolean
@@ -30,10 +42,10 @@ const SESSION_STARTED_AT_STORAGE_KEY = 'jetandkeys-admin-session-started-at'
 
 const AdminAuthContext = createContext<AdminAuthContextValue | undefined>(undefined)
 
-function inferAdmin(user: User | null, profile: AdminProfile | null) {
+function inferAdmin(user: AdminUser | null, profile: AdminProfile | null) {
   const profileRole = String(profile?.role || '').toLowerCase()
   const email = String(user?.email || '').toLowerCase()
-  return profileRole === 'admin' || profileRole === 'staff' || email === 'admin@jetandkeys.com'
+  return profileRole === 'admin' || profileRole === 'staff' || email === 'admin@com'
 }
 
 function getFallbackSessionStart(session: Session | null) {
@@ -80,32 +92,57 @@ function clearStoredSessionStart() {
   window.localStorage.removeItem(SESSION_STARTED_AT_STORAGE_KEY)
 }
 
-async function fetchProfile(accessToken: string) {
+async function fetchProfile(accessToken?: string) {
+  const headers = new Headers()
+
+  if (accessToken) {
+    headers.set('authorization', `Bearer ${accessToken}`)
+  }
+
   const response = await fetch('/api/auth/profile', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${accessToken}`,
-    },
+    method: 'GET',
+    headers,
+    cache: 'no-store',
   })
 
   if (!response.ok) {
     throw new Error((await response.json())?.error || 'Admin authentication required')
   }
 
-  const payload = await response.json()
-  return (payload?.profile as AdminProfile | null) ?? null
+  return (await response.json()) as ProfilePayload
 }
 
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
+  const [user, setUser] = useState<AdminUser | null>(null)
   const [profile, setProfile] = useState<AdminProfile | null>(null)
+
+  const applyPayload = (payload: ProfilePayload | null, activeSession: Session | null) => {
+    setSession(payload?.provider === 'supabase' ? activeSession : null)
+    setProfile(payload?.profile ?? null)
+    setUser(
+      payload?.user ??
+        (activeSession?.user
+          ? {
+              id: activeSession.user.id,
+              email: activeSession.user.email ?? null,
+            }
+          : payload?.profile
+            ? {
+                id: payload.profile.auth_user_id || payload.profile.id,
+                email: payload.profile.email,
+              }
+            : null),
+    )
+  }
 
   const signOutAndClear = async () => {
     clearStoredSessionStart()
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null)
     await supabase.auth.signOut()
     setSession(null)
+    setUser(null)
     setProfile(null)
   }
 
@@ -114,14 +151,20 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       data: { session: activeSession },
     } = await supabase.auth.getSession()
 
-    if (!activeSession?.access_token) {
+    try {
+      const payload = await fetchProfile(activeSession?.access_token)
+      applyPayload(payload, activeSession ?? null)
+      return payload.profile ?? null
+    } catch (_error) {
+      if (activeSession?.access_token) {
+        setSession(activeSession)
+      } else {
+        setSession(null)
+      }
+      setUser(null)
       setProfile(null)
       return null
     }
-
-    const nextProfile = await fetchProfile(activeSession.access_token)
-    setProfile(nextProfile)
-    return nextProfile
   }
 
   const sessionExpired = (activeSession: Session | null) => {
@@ -150,17 +193,27 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
 
         if (sessionExpired(currentSession)) {
           await signOutAndClear()
-        } else {
-          setSession(currentSession)
-          try {
-            await refreshProfile()
-          } catch (_error) {
-            await signOutAndClear()
+          if (mounted) {
+            setLoading(false)
           }
+          return
         }
-      } else {
-        setSession(null)
-        setProfile(null)
+      }
+
+      try {
+        const payload = await fetchProfile(currentSession?.access_token)
+        if (!mounted) {
+          return
+        }
+        applyPayload(payload, currentSession ?? null)
+      } catch (_error) {
+        if (currentSession?.user) {
+          await supabase.auth.signOut()
+        }
+        if (!mounted) {
+          return
+        }
+        applyPayload(null, null)
       }
 
       if (mounted) {
@@ -178,27 +231,19 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           setStoredSessionStart(getFallbackSessionStart(nextSession))
         }
 
-        if (!nextSession?.user) {
-          clearStoredSessionStart()
-          setSession(null)
-          setProfile(null)
-          setLoading(false)
-          return
-        }
-
-        if (sessionExpired(nextSession)) {
+        if (nextSession?.user && sessionExpired(nextSession)) {
           await signOutAndClear()
           setLoading(false)
           return
         }
-
-        setSession(nextSession)
 
         try {
-          const nextProfile = await fetchProfile(nextSession.access_token)
-          setProfile(nextProfile)
+          const payload = await fetchProfile(nextSession?.access_token)
+          applyPayload(payload, nextSession ?? null)
         } catch (_error) {
-          await signOutAndClear()
+          if (!nextSession?.user) {
+            applyPayload(null, null)
+          }
         }
 
         setLoading(false)
@@ -230,13 +275,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<AdminAuthContextValue>(() => ({
     loading,
     session,
-    user: session?.user ?? null,
+    user,
     profile,
-    isAuthenticated: Boolean(session?.user),
-    isAdmin: inferAdmin(session?.user ?? null, profile),
+    isAuthenticated: Boolean(profile || user),
+    isAdmin: inferAdmin(user, profile),
     refreshProfile,
     signOut: signOutAndClear,
-  }), [loading, profile, session])
+  }), [loading, profile, session, user])
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>
 }
