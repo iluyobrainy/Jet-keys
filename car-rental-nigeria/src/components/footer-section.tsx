@@ -43,13 +43,6 @@ export function FooterSection() {
     { text: "Refund Policy", href: "/refund" }
   ]
 
-  const partnerLinks = [
-    { text: "Our Partners", href: "/partners" },
-    { text: "Community", href: "/community" },
-    { text: "Customers", href: "/customers" },
-    { text: "Investors", href: "/investors" }
-  ]
-
   const socialMediaIcons = [
     { icon: Twitter, href: "#", label: "Twitter" },
     { icon: Youtube, href: "#", label: "YouTube" },
@@ -101,7 +94,7 @@ export function FooterSection() {
         </div>
 
         {/* Main Content */}
-        <div className="mb-12 grid grid-cols-2 gap-6 text-left lg:grid-cols-5">
+        <div className="mb-12 grid grid-cols-2 gap-6 text-left lg:grid-cols-4">
           {/* Brand Info */}
           <div className="col-span-2 lg:col-span-1">
             <div className="mb-4 flex items-center justify-start">
@@ -135,23 +128,6 @@ export function FooterSection() {
             <h3 className="text-lg font-bold text-white mb-4">Support Us</h3>
             <ul className="space-y-2">
               {supportLinks.map((link) => (
-                <li key={link.text}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
-                  >
-                    {link.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Partner */}
-          <div>
-            <h3 className="text-lg font-bold text-white mb-4">Partner</h3>
-            <ul className="space-y-2">
-              {partnerLinks.map((link) => (
                 <li key={link.text}>
                   <a
                     href={link.href}
