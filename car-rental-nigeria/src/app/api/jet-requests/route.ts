@@ -5,6 +5,7 @@ import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 export const dynamic = "force-dynamic"
 
 const WHATSAPP_NUMBER = "2349075103413"
+const WHATSAPP_API_VERSION = "v20.0"
 
 function normalizeText(value: unknown) {
   return String(value || "").trim()
@@ -32,11 +33,11 @@ function buildWhatsAppMessage(payload: {
   specialRequests?: string | null
 }) {
   const lines = [
-    "Hello Jet & Keys, I just submitted a private jet charter request.",
+    "New Jet & Keys private jet charter request.",
     "",
     `Request ID: ${payload.reference}`,
     `Name: ${payload.customerName}`,
-    `Phone: ${payload.customerPhone}`,
+    `Customer phone: ${payload.customerPhone}`,
     `Jet: ${payload.jetName}`,
     `Route: ${payload.departureLocation} to ${payload.destination}`,
     `Departure: ${payload.departureDate}${payload.departureTime ? ` at ${payload.departureTime}` : ""}`,
@@ -50,6 +51,61 @@ function buildWhatsAppMessage(payload: {
   }
 
   return lines.join("\n")
+}
+
+async function sendWhatsAppNotification(message: string) {
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN?.trim()
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID?.trim()
+  const adminPhone = (process.env.WHATSAPP_ADMIN_PHONE || WHATSAPP_NUMBER).replace(/\D/g, "")
+
+  if (!accessToken || !phoneNumberId || !adminPhone) {
+    return {
+      enabled: false,
+      sent: false,
+      error: "WhatsApp Business API environment variables are not configured.",
+    }
+  }
+
+  try {
+    const response = await fetch(`https://graph.facebook.com/${WHATSAPP_API_VERSION}/${phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: adminPhone,
+        type: "text",
+        text: {
+          preview_url: false,
+          body: message,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      const errorPayload = await response.text()
+      return {
+        enabled: true,
+        sent: false,
+        error: errorPayload,
+      }
+    }
+
+    return {
+      enabled: true,
+      sent: true,
+      error: null,
+    }
+  } catch (error) {
+    return {
+      enabled: true,
+      sent: false,
+      error: error instanceof Error ? error.message : "Unable to send WhatsApp notification.",
+    }
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -160,10 +216,18 @@ export async function POST(request: NextRequest) {
     tripType,
     specialRequests,
   })
+  const whatsappNotification = await sendWhatsAppNotification(whatsappMessage)
+
+  if (whatsappNotification.enabled && !whatsappNotification.sent) {
+    console.error("Jet request WhatsApp notification failed:", whatsappNotification.error)
+  }
 
   return NextResponse.json({
     jetRequest,
-    whatsappMessage,
-    whatsappUrl: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`,
+    notification: {
+      admin: "whatsapp",
+      sent: whatsappNotification.sent,
+      configured: whatsappNotification.enabled,
+    },
   }, { status: 201 })
 }

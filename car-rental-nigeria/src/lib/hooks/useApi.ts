@@ -160,7 +160,7 @@ export function useCreateJetRequest() {
 
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
-      apiFetch<{ jetRequest: JetRequest; whatsappMessage: string; whatsappUrl: string }>("/api/jet-requests", {
+      apiFetch<{ jetRequest: JetRequest; notification?: { admin: string; sent: boolean; configured: boolean } }>("/api/jet-requests", {
         method: "POST",
         body: JSON.stringify(payload),
       }),

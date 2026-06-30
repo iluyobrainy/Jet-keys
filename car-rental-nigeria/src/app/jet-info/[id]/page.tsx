@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
-import { ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Gauge, Loader2, MapPin, MessageCircle, Plane, ShieldCheck, Users } from "lucide-react"
+import { ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Gauge, Loader2, MapPin, Plane, ShieldCheck, Users } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { FooterSection } from "@/components/footer-section"
 import { Button } from "@/components/ui/button"
@@ -37,7 +37,7 @@ export default function JetInfoPage() {
   const createRequest = useCreateJetRequest()
   const [form, setForm] = useState(initialForm)
   const [formError, setFormError] = useState("")
-  const [success, setSuccess] = useState<{ reference: string; whatsappUrl: string } | null>(null)
+  const [confirmation, setConfirmation] = useState<{ reference: string; loading: boolean } | null>(null)
 
   const jet = data?.jet
   const gallery = useMemo(() => {
@@ -75,12 +75,14 @@ export default function JetInfoPage() {
         specialRequests: form.specialRequests.trim() || undefined,
       })
 
-      setSuccess({
+      setConfirmation({
         reference: response.jetRequest.request_reference,
-        whatsappUrl: response.whatsappUrl,
+        loading: true,
       })
-
-      window.open(response.whatsappUrl, "_blank", "noopener,noreferrer")
+      setForm(initialForm)
+      window.setTimeout(() => {
+        setConfirmation((current) => current ? { ...current, loading: false } : current)
+      }, 1000)
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "Unable to submit this charter request. Please check the form and try again."
       setFormError(message)
@@ -169,21 +171,10 @@ export default function JetInfoPage() {
                 </div>
 
                 <div className="rounded-[2rem] border border-zinc-200 bg-white p-5 sm:p-7">
-                  {success ? (
-                    <div className="flex min-h-[500px] flex-col justify-center text-center">
-                      <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
-                      <h2 className="mt-4 text-2xl font-medium tracking-tight text-zinc-950">Request received</h2>
-                      <p className="mx-auto mt-3 max-w-lg text-zinc-600">Your charter reference is <span className="font-semibold text-zinc-950">{success.reference}</span>. Continue on WhatsApp so operations can follow up immediately.</p>
-                      <a href={success.whatsappUrl} target="_blank" rel="noreferrer" className="mx-auto mt-6 inline-flex h-11 items-center justify-center rounded-2xl bg-emerald-600 px-5 text-sm font-medium text-white transition hover:bg-emerald-700 active:scale-[0.98]">
-                        <MessageCircle className="mr-2 h-4 w-4" /> Continue on WhatsApp
-                      </a>
-                      <Button variant="outline" className="mx-auto mt-3 rounded-2xl" onClick={() => setSuccess(null)}>Send another request</Button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-5">
                       <div className="border-b border-zinc-200 pb-5">
                         <h2 className="text-2xl font-medium tracking-tight text-zinc-950">Request this charter</h2>
-                        <p className="mt-2 text-sm leading-6 text-zinc-500">No payment is taken for jets. Your request is stored in admin and handed off to WhatsApp.</p>
+                        <p className="mt-2 text-sm leading-6 text-zinc-500">No payment is taken for jets. Your request goes to operations and the team will contact you.</p>
                       </div>
 
                       {formError ? <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{formError}</div> : null}
@@ -217,8 +208,7 @@ export default function JetInfoPage() {
                         {createRequest.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CalendarDays className="mr-2 h-4 w-4" />}
                         Submit charter request
                       </Button>
-                    </form>
-                  )}
+                  </form>
                 </div>
               </section>
 
@@ -248,6 +238,38 @@ export default function JetInfoPage() {
           ) : null}
         </div>
       </main>
+
+      {confirmation ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-zinc-950/45 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[2rem] border border-zinc-200 bg-white p-6 text-center shadow-[0_30px_90px_-45px_rgba(24,24,27,0.7)]">
+            {confirmation.loading ? (
+              <>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100">
+                  <Loader2 className="h-6 w-6 animate-spin text-zinc-700" />
+                </div>
+                <h2 className="mt-5 text-xl font-medium tracking-tight text-zinc-950">Submitting your request</h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">Please hold on while we send your details to the Jet & Keys team.</p>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
+                  <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+                </div>
+                <h2 className="mt-5 text-2xl font-medium tracking-tight text-zinc-950">Request received</h2>
+                <p className="mt-3 text-sm leading-6 text-zinc-600">
+                  Thank you. Your charter details have been submitted and the Jet & Keys team will contact you shortly.
+                </p>
+                <p className="mt-3 rounded-2xl bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-800">
+                  Reference: {confirmation.reference}
+                </p>
+                <Button className="mt-5 h-11 rounded-2xl bg-zinc-950 px-6 font-medium text-white hover:bg-zinc-800" onClick={() => setConfirmation(null)}>
+                  Close
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <FooterSection />
     </div>
