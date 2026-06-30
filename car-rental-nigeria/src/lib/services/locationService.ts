@@ -1,5 +1,4 @@
 // lib/services/locationService.ts
-import { supabase } from '../supabase'
 
 export interface Location {
   id: string
@@ -22,21 +21,30 @@ export interface SearchCriteria {
 }
 
 class LocationService {
-  // Get all active locations
-  async getActiveLocations(): Promise<Location[]> {
-    const { data, error } = await supabase
-      .from('locations')
-      .select('*')
-      .eq('is_active', true)
-      .order('name', { ascending: true })
+  private async fetchLocations(): Promise<Location[]> {
+    const response = await fetch('/api/locations', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+      cache: 'no-store',
+    })
 
-    if (error) {
-      console.error('Error fetching locations:', error)
+    if (!response.ok) {
+      console.error('Error fetching locations:', response.status, response.statusText)
       throw new Error('Failed to fetch locations')
     }
 
+    const payload = (await response.json()) as { locations?: Location[] }
+    return payload.locations || []
+  }
+
+  // Get all active locations
+  async getActiveLocations(): Promise<Location[]> {
+    const data = await this.fetchLocations()
+
     // Custom sorting: Lagos first, then others alphabetically
-    const sortedData = (data || []).sort((a, b) => {
+    const sortedData = data.sort((a, b) => {
       // Lagos locations first
       if (a.city === 'Lagos' && b.city !== 'Lagos') return -1
       if (b.city === 'Lagos' && a.city !== 'Lagos') return 1
@@ -55,36 +63,18 @@ class LocationService {
 
   // Get locations by city
   async getLocationsByCity(city: string): Promise<Location[]> {
-    const { data, error } = await supabase
-      .from('locations')
-      .select('*')
-      .eq('is_active', true)
-      .eq('city', city)
-      .order('name')
-
-    if (error) {
-      console.error('Error fetching locations by city:', error)
-      throw new Error('Failed to fetch locations')
-    }
-
-    return data || []
+    const data = await this.fetchLocations()
+    return data
+      .filter((location) => location.city === city)
+      .sort((a, b) => a.name.localeCompare(b.name))
   }
 
   // Get all unique cities
   async getCities(): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('locations')
-      .select('city')
-      .eq('is_active', true)
-      .order('city')
-
-    if (error) {
-      console.error('Error fetching cities:', error)
-      throw new Error('Failed to fetch cities')
-    }
+    const data = await this.fetchLocations()
 
     // Extract unique cities and prioritize Lagos
-    const cities = [...new Set(data?.map(item => item.city) || [])]
+    const cities = [...new Set(data.map(item => item.city))]
     const sortedCities = cities.sort((a, b) => {
       if (a === 'Lagos' && b !== 'Lagos') return -1
       if (b === 'Lagos' && a !== 'Lagos') return 1
@@ -142,19 +132,8 @@ class LocationService {
 
   // Get location by ID
   async getLocationById(id: string): Promise<Location | null> {
-    const { data, error } = await supabase
-      .from('locations')
-      .select('*')
-      .eq('id', id)
-      .eq('is_active', true)
-      .single()
-
-    if (error) {
-      console.error('Error fetching location:', error)
-      return null
-    }
-
-    return data
+    const data = await this.fetchLocations()
+    return data.find((location) => location.id === id) || null
   }
 }
 

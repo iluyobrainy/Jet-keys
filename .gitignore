@@ -46,3 +46,6 @@ next-env.d.ts
 # Misc
 *.pem
 .turbo
+
+# Local database migration backups (may contain customer/auth data)
+.migration-backups/

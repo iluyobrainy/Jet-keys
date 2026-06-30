@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { apiFetch } from "@/lib/api-client"
-import { apiService, type CheckoutSettings, type Car, type Booking } from "@/lib/services/apiService"
+import { apiService, type CheckoutSettings, type Car, type Booking, type Jet, type JetRequest } from "@/lib/services/apiService"
 
 interface CarsCatalogFilters {
   pickupLocation?: string
@@ -15,6 +15,14 @@ interface CarsCatalogFilters {
   maxPrice?: number
 }
 
+export interface RentalOptionsResponse {
+  states: Array<Record<string, unknown>>
+  zones: Array<Record<string, unknown>>
+  coverage: Array<Record<string, unknown>>
+  rates: Array<Record<string, unknown>>
+  timingPackages: Array<{ value: "12h" | "24h"; label: string }>
+}
+
 interface CarsCatalogResponse {
   cars: Array<Car & { primaryImage?: string; allowedLocations?: string[] }>
   popularCars: Array<Car & { primaryImage?: string; allowedLocations?: string[] }>
@@ -24,6 +32,25 @@ interface CarsCatalogResponse {
     transmissions: string[]
     seats: number[]
   }
+}
+
+interface JetsCatalogFilters {
+  search?: string
+  passengers?: number
+}
+
+interface JetsCatalogResponse {
+  jets: Array<Jet & { primaryImage?: string | null }>
+  filters: {
+    manufacturers: string[]
+    locations: string[]
+    capacities: number[]
+  }
+}
+
+interface JetDetailsResponse {
+  jet: Jet & { primaryImage?: string | null }
+  relatedJets: Array<Jet & { primaryImage?: string | null }>
 }
 
 interface CarDetailsResponse {
@@ -40,12 +67,18 @@ export const queryKeys = {
   adminCars: (search: string) => ["adminCars", search] as const,
   car: (id: string) => ["cars", id] as const,
   carDetails: (id: string) => ["carDetails", id] as const,
+  jetsCatalog: (filters: JetsCatalogFilters) => ["jetsCatalog", filters] as const,
+  jetDetails: (id: string) => ["jetDetails", id] as const,
+  jetRequests: (scope: string) => ["jetRequests", scope] as const,
   bookings: (scope: string) => ["bookings", scope] as const,
   booking: (id: string) => ["booking", id] as const,
   refundRequests: (scope: string) => ["refundRequests", scope] as const,
   reviews: (carId?: string, scope?: string) => ["reviews", carId || "all", scope || "public"] as const,
   adminUsers: ["adminUsers"] as const,
   locations: ["locations"] as const,
+  rentalOptions: (carId?: string, rentalMode?: string) => ["rentalOptions", carId || "", rentalMode || "within_state"] as const,
+  rentalPricing: (payload: Record<string, unknown>) => ["rentalPricing", payload] as const,
+  quoteRequests: (scope: string) => ["quoteRequests", scope] as const,
 }
 
 export function useCheckoutSettings() {
@@ -90,6 +123,50 @@ export function useCars() {
       return response.cars
     },
     staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useJetsCatalog(filters: JetsCatalogFilters) {
+  return useQuery({
+    queryKey: queryKeys.jetsCatalog(filters),
+    queryFn: async () => {
+      const params = new URLSearchParams()
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          params.set(key, String(value))
+        }
+      })
+
+      return apiFetch<JetsCatalogResponse>(`/api/jets?${params.toString()}`, {
+        skipAuth: true,
+      })
+    },
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useJetDetails(id: string) {
+  return useQuery({
+    queryKey: queryKeys.jetDetails(id),
+    queryFn: () => apiFetch<JetDetailsResponse>(`/api/jets/${id}`, { skipAuth: true }),
+    enabled: Boolean(id),
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useCreateJetRequest() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      apiFetch<{ jetRequest: JetRequest; whatsappMessage: string; whatsappUrl: string }>("/api/jet-requests", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.jetRequests("admin") })
+    },
   })
 }
 
@@ -286,6 +363,62 @@ export function useLocations() {
   })
 }
 
+export function useRentalOptions(carId?: string, rentalMode = "within_state") {
+  return useQuery({
+    queryKey: queryKeys.rentalOptions(carId, rentalMode),
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (carId) params.set("carId", carId)
+      if (rentalMode) params.set("rentalMode", rentalMode)
+      return apiFetch<RentalOptionsResponse>(`/api/rental-options?${params.toString()}`, { skipAuth: true })
+    },
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useRentalPricing(payload: Record<string, unknown>, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.rentalPricing(payload),
+    queryFn: async () =>
+      apiFetch<{ pricing: Record<string, unknown> }>("/api/rental-pricing", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        skipAuth: true,
+      }),
+    enabled,
+    staleTime: 15 * 1000,
+  })
+}
+
+export function useCreateQuoteRequest() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      apiFetch<{ quoteRequest: Record<string, unknown> }>("/api/quote-requests", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.quoteRequests("user") })
+      queryClient.invalidateQueries({ queryKey: queryKeys.quoteRequests("admin") })
+    },
+  })
+}
+
+export function useQuoteRequests(scope: "user" | "admin" = "user") {
+  return useQuery({
+    queryKey: queryKeys.quoteRequests(scope),
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (scope === "admin") params.set("admin", "true")
+      const response = await apiFetch<{ quoteRequests: Array<Record<string, unknown>> }>(`/api/quote-requests?${params.toString()}`)
+      return response.quoteRequests
+    },
+    staleTime: 30 * 1000,
+  })
+}
+
 export function useCreateCar() {
   const queryClient = useQueryClient()
 
@@ -297,6 +430,7 @@ export function useCreateCar() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminCars"] })
+      queryClient.invalidateQueries({ queryKey: ["carsCatalog"] })
       queryClient.invalidateQueries({ queryKey: queryKeys.cars })
     },
   })
@@ -313,6 +447,7 @@ export function useUpdateCar() {
       }),
     onSuccess: (_response, variables) => {
       queryClient.invalidateQueries({ queryKey: ["adminCars"] })
+      queryClient.invalidateQueries({ queryKey: ["carsCatalog"] })
       queryClient.invalidateQueries({ queryKey: queryKeys.car(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.carDetails(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.cars })

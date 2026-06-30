@@ -1,3 +1,4 @@
+import { adminApiFetch } from './admin-api-client'
 import { supabase, supabaseAdmin } from './supabase'
 import { Database } from './supabase'
 
@@ -8,6 +9,10 @@ type CarUpdate = Database['public']['Tables']['cars']['Update']
 type Jet = Database['public']['Tables']['jets']['Row']
 type JetInsert = Database['public']['Tables']['jets']['Insert']
 type JetUpdate = Database['public']['Tables']['jets']['Update']
+type JetRequest = Database['public']['Tables']['jet_requests']['Row'] & {
+  jets?: Pick<Jet, 'name' | 'manufacturer' | 'model' | 'images'> | null
+}
+type JetRequestUpdate = Database['public']['Tables']['jet_requests']['Update']
 
 type Booking = Database['public']['Tables']['bookings']['Row']
 type BookingInsert = Database['public']['Tables']['bookings']['Insert']
@@ -21,85 +26,47 @@ type CheckoutSetting = Database['public']['Tables']['checkout_settings']['Row']
 export const carService = {
   // Get all cars
   async getAllCars(): Promise<Car[]> {
-    const { data, error } = await supabase
-      .from('cars')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data || []
+    return adminApiFetch<Car[]>('/api/admin/cars')
   },
 
   // Get car by ID
   async getCarById(id: string): Promise<Car | null> {
-    const { data, error } = await supabase
-      .from('cars')
-      .select('*')
-      .eq('id', id)
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Car>(`/api/admin/cars/${id}`)
   },
 
   // Create new car
   async createCar(car: CarInsert): Promise<Car> {
-    const { data, error } = await supabase
-      .from('cars')
-      .insert(car)
-      .select()
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Car>('/api/admin/cars', {
+      method: 'POST',
+      body: JSON.stringify(car),
+    })
   },
 
   // Update car
   async updateCar(id: string, updates: CarUpdate): Promise<Car> {
-    const { data, error } = await supabase
-      .from('cars')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Car>(`/api/admin/cars/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    })
   },
 
   // Delete car
   async deleteCar(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('cars')
-      .delete()
-      .eq('id', id)
-    
-    if (error) throw error
+    await adminApiFetch(`/api/admin/cars/${id}`, {
+      method: 'DELETE',
+    })
   },
 
   // Get cars by status
   async getCarsByStatus(status: 'active' | 'maintenance' | 'inactive'): Promise<Car[]> {
-    const { data, error } = await supabase
-      .from('cars')
-      .select('*')
-      .eq('status', status)
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data || []
+    const cars = await adminApiFetch<Car[]>('/api/admin/cars')
+    return cars.filter((car) => car.status === status)
   },
 
   // Get available cars
   async getAvailableCars(): Promise<Car[]> {
-    const { data, error } = await supabase
-      .from('cars')
-      .select('*')
-      .eq('is_available', true)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data || []
+    const cars = await adminApiFetch<Car[]>('/api/admin/cars')
+    return cars.filter((car) => car.is_available && car.status === 'active')
   }
 }
 
@@ -107,74 +74,56 @@ export const carService = {
 export const jetService = {
   // Get all jets
   async getAllJets(): Promise<Jet[]> {
-    const { data, error } = await supabase
-      .from('jets')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data || []
+    return adminApiFetch<Jet[]>('/api/admin/jets')
   },
 
   // Get jet by ID
   async getJetById(id: string): Promise<Jet | null> {
-    const { data, error } = await supabase
-      .from('jets')
-      .select('*')
-      .eq('id', id)
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Jet>(`/api/admin/jets/${id}`)
   },
 
   // Create new jet
   async createJet(jet: JetInsert): Promise<Jet> {
-    const { data, error } = await supabase
-      .from('jets')
-      .insert(jet)
-      .select()
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Jet>('/api/admin/jets', {
+      method: 'POST',
+      body: JSON.stringify(jet),
+    })
   },
 
   // Update jet
   async updateJet(id: string, updates: JetUpdate): Promise<Jet> {
-    const { data, error } = await supabase
-      .from('jets')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single()
-    
-    if (error) throw error
-    return data
+    return adminApiFetch<Jet>(`/api/admin/jets/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    })
   },
 
   // Delete jet
   async deleteJet(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('jets')
-      .delete()
-      .eq('id', id)
-    
-    if (error) throw error
+    await adminApiFetch(`/api/admin/jets/${id}`, {
+      method: 'DELETE',
+    })
   },
 
   // Get available jets
   async getAvailableJets(): Promise<Jet[]> {
-    const { data, error } = await supabase
-      .from('jets')
-      .select('*')
-      .eq('is_available', true)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data || []
+    const jets = await adminApiFetch<Jet[]>('/api/admin/jets')
+    return jets.filter((jet) => jet.is_available && jet.status === 'active')
   }
+}
+
+// Jet Charter Request Services
+export const jetRequestService = {
+  async getAllJetRequests(): Promise<JetRequest[]> {
+    return adminApiFetch<JetRequest[]>('/api/admin/jet-requests')
+  },
+
+  async updateJetRequest(id: string, updates: Pick<JetRequestUpdate, 'status' | 'admin_notes'>): Promise<JetRequest> {
+    return adminApiFetch<JetRequest>(`/api/admin/jet-requests/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    })
+  },
 }
 
 // Booking Management Services
@@ -343,66 +292,17 @@ export const userService = {
 export const websiteService = {
   // Get website settings as a single object
   async getWebsiteSettings(): Promise<any> {
-    try {
-      const { data, error } = await supabase
-        .from('website_settings')
-        .select('*')
-        .order('key')
-      
-      if (error) throw error
-      
-      // Convert array of key-value pairs to object
-      const settings: any = {}
-      if (data) {
-        data.forEach(setting => {
-          settings[setting.key] = setting.value
-        })
-      }
-      
-      return settings
-    } catch (error) {
-      console.error('Error fetching website settings:', error)
-      // Return default settings if database error
-      return {
-        site_name: "Jet & Keys",
-        site_description: "Premium car rental and private jet services",
-        site_keywords: "car rental, jet charter, luxury transportation, nigeria",
-        hero_title: "Premium Car Rental & Private Jet Services",
-        hero_subtitle: "Experience luxury transportation with unmatched quality and reliability",
-        hero_image: "",
-        about_title: "About Jet & Keys",
-        about_description: "We provide premium car rental and private jet services with unmatched quality and reliability.",
-        about_image: "",
-        contact_email: "info@jetandkeys.com",
-        contact_phone: "+234 800 000 0000",
-        contact_address: "Lagos, Nigeria",
-        social_facebook: "",
-        social_twitter: "",
-        social_instagram: "",
-        social_linkedin: "",
-        primary_color: "#000000",
-        secondary_color: "#f97316",
-        accent_color: "#fbbf24",
-        logo_url: "",
-        favicon_url: "",
-        maintenance_mode: false,
-        maintenance_message: "We're currently performing maintenance. Please check back later.",
-        google_analytics_id: "",
-        google_maps_api_key: "",
-        payment_gateway_public_key: "",
-        payment_gateway_secret_key: "",
-        email_smtp_host: "",
-        email_smtp_port: 587,
-        email_smtp_username: "",
-        email_smtp_password: "",
-        email_from_address: "",
-        email_from_name: ""
-      }
-    }
+    return adminApiFetch('/api/admin/website-settings')
   },
 
   // Update website settings
   async updateWebsiteSettings(settings: any): Promise<void> {
+    await adminApiFetch('/api/admin/website-settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    })
+    return
+
     try {
       // Convert object to array of key-value pairs
       // Use 'string' as the default type value
@@ -492,13 +392,15 @@ export const settingsService = {
 export const checkoutService = {
   // Get checkout configuration
   async getCheckoutConfig() {
+    return adminApiFetch('/api/admin/checkout-config')
+
     const { data, error } = await supabase
       .from('checkout_settings')
       .select('*')
       .single()
 
     if (error) {
-      console.warn('Checkout settings not found, using defaults:', error.message)
+      console.warn('Checkout settings not found, using defaults:', error?.message ?? 'Unknown error')
       return {
         vat_rate: 7.5,
         service_fee_rate: 2.5,
@@ -525,17 +427,25 @@ export const checkoutService = {
 
   // Update checkout configuration
   async updateCheckoutConfig(config: any) {
+    return adminApiFetch('/api/admin/checkout-config', {
+      method: 'PUT',
+      body: JSON.stringify(config),
+    })
+
     // First, try to update existing record
     const { data: existingData, error: fetchError } = await supabase
       .from('checkout_settings')
       .select('id')
       .single()
 
-    if (fetchError && fetchError.code !== 'PGRST116') {
+    const fetchErrorCode = fetchError?.code
+    if (fetchErrorCode && fetchErrorCode !== 'PGRST116') {
       throw fetchError
     }
 
-    if (existingData) {
+    const existingId = existingData?.id
+
+    if (existingId) {
       // Update existing record
       const { data, error } = await supabase
         .from('checkout_settings')
@@ -543,7 +453,7 @@ export const checkoutService = {
           ...config,
           updated_at: new Date().toISOString()
         })
-        .eq('id', existingData.id)
+        .eq('id', existingId)
         .select()
         .single()
 
@@ -822,6 +732,8 @@ export const cancellationService = {
 export const lateReturnService = {
   // Get all bookings with late return fees
   async getLateReturnBookings(): Promise<Booking[]> {
+    return adminApiFetch<Booking[]>('/api/admin/late-returns')
+
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -843,6 +755,16 @@ export const lateReturnService = {
     actualDropoffTime?: string,
     reason?: string
   ): Promise<Booking> {
+    return adminApiFetch<Booking>(`/api/admin/late-returns/${bookingId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        action: 'record-dropoff',
+        actualDropoffDate,
+        actualDropoffTime,
+        reason,
+      }),
+    })
+
     // Get the booking to access scheduled dropoff date
     const { data: booking, error: fetchError } = await supabase
       .from('bookings')
@@ -861,7 +783,7 @@ export const lateReturnService = {
     const lateFeePerDay = checkoutSettings?.late_return_fee || 25000
     
     // Calculate late return fee
-    const scheduled = new Date(booking.dropoff_date)
+    const scheduled = new Date(booking?.dropoff_date || actualDropoffDate)
     const actual = new Date(actualDropoffDate)
     const hoursLate = Math.max(0, (actual.getTime() - scheduled.getTime()) / (1000 * 60 * 60))
     const daysLate = Math.ceil(hoursLate / 24)
@@ -897,6 +819,15 @@ export const lateReturnService = {
     processedBy: string,
     processedAmount?: number
   ): Promise<Booking> {
+    return adminApiFetch<Booking>(`/api/admin/late-returns/${bookingId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        action: 'process-fee',
+        processedBy,
+        processedAmount,
+      }),
+    })
+
     const updateData: any = {
       late_return_processed_date: new Date().toISOString(),
       late_return_processed_by: processedBy,
@@ -924,6 +855,13 @@ export const lateReturnService = {
 
   // Mark late return notification as sent
   async markNotificationSent(bookingId: string): Promise<Booking> {
+    return adminApiFetch<Booking>(`/api/admin/late-returns/${bookingId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        action: 'mark-notification-sent',
+      }),
+    })
+
     const { data, error } = await supabase
       .from('bookings')
       .update({
@@ -950,6 +888,8 @@ export const lateReturnService = {
     totalLateReturnFees: number
     averageLateReturnFee: number
   }> {
+    return adminApiFetch('/api/admin/late-returns/stats')
+
     const [
       { count: totalLateReturns },
       { count: pendingNotifications },
@@ -961,14 +901,14 @@ export const lateReturnService = {
     ])
 
     const totalLateReturnFees = lateReturnFees?.reduce((sum, booking) => sum + (booking.late_return_fee || 0), 0) || 0
-    const averageLateReturnFee = totalLateReturns ? totalLateReturnFees / totalLateReturns : 0
+    const totalLateReturnCount = totalLateReturns || 0
+    const averageLateReturnFee = totalLateReturnCount ? totalLateReturnFees / totalLateReturnCount : 0
 
     return {
-      totalLateReturns: totalLateReturns || 0,
+      totalLateReturns: totalLateReturnCount,
       pendingNotifications: pendingNotifications || 0,
       totalLateReturnFees,
       averageLateReturnFee
     }
   }
 }
-

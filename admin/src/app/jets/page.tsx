@@ -1,326 +1,180 @@
-"use client"
+﻿"use client"
 
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useMemo, useState } from "react"
+import { Edit, Eye, Gauge, MapPin, Plane, Plus, Search, Trash2, Users } from "lucide-react"
 import { AdminLayout } from "@/components/admin-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { 
-  Plane, 
-  Search, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye,
-  MapPin,
-  Users,
-  Gauge
-} from "lucide-react"
-import { useEffect, useState } from "react"
 import { jetService } from "@/lib/admin-services"
-import Link from "next/link"
-import Image from "next/image"
+import type { Database } from "@/lib/supabase"
 
-interface JetData {
-  id: string
-  name: string
-  manufacturer: string
-  model: string
-  year: number
-  price_per_hour: number
-  price_per_day: number
-  capacity: number
-  range: number
-  max_speed: number
-  description: string
-  features: string[]
-  images: string[]
-  is_available: boolean
-  location: string
-  status: string
-  created_at: string
-}
+type JetData = Database["public"]["Tables"]["jets"]["Row"]
+
+const fallbackImage = "/placeholder.jpg"
 
 export default function JetsPage() {
   const [jets, setJets] = useState<JetData[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [jetToDelete, setJetToDelete] = useState<JetData | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  const fetchJets = async () => {
+    setLoading(true)
+    try {
+      setJets(await jetService.getAllJets())
+    } catch (error) {
+      console.error("Error fetching jets:", error)
+      setMessage({ type: "error", text: "Could not load jets. Please refresh and try again." })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchJets = async () => {
-      try {
-        const data = await jetService.getAllJets()
-        setJets(data)
-      } catch (error) {
-        console.error('Error fetching jets:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchJets()
+    void fetchJets()
   }, [])
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return <Badge className="bg-green-500">Active</Badge>
-      case "maintenance":
-        return <Badge className="bg-yellow-500">Maintenance</Badge>
-      case "inactive":
-        return <Badge variant="destructive">Inactive</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
+  const filteredJets = useMemo(() => {
+    const search = searchTerm.toLowerCase()
+    return jets.filter((jet) => {
+      const matchesSearch = [jet.name, jet.manufacturer, jet.model, jet.location].join(" ").toLowerCase().includes(search)
+      const matchesStatus = statusFilter === "all" || jet.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+  }, [jets, searchTerm, statusFilter])
+
+  const handleDeleteJet = async () => {
+    if (!jetToDelete) return
+    setDeleting(true)
+    setMessage(null)
+
+    try {
+      await jetService.deleteJet(jetToDelete.id)
+      setJets((current) => current.filter((jet) => jet.id !== jetToDelete.id))
+      setMessage({ type: "success", text: `${jetToDelete.name} was deleted safely.` })
+      setJetToDelete(null)
+    } catch (error) {
+      console.error("Error deleting jet:", error)
+      setMessage({ type: "error", text: "Failed to delete jet. Please try again." })
+    } finally {
+      setDeleting(false)
     }
-  }
-
-  const formatCurrency = (amount: number) => {
-    return `₦${amount.toLocaleString('en-NG', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })}`
-  }
-
-  const filteredJets = jets.filter(jet => {
-    const matchesSearch = jet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         jet.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         jet.model.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesStatus = statusFilter === "all" || jet.status === statusFilter
-    
-    return matchesSearch && matchesStatus
-  })
-
-  const handleDeleteJet = async (jetId: string) => {
-    if (confirm('Are you sure you want to delete this jet?')) {
-      try {
-        await jetService.deleteJet(jetId)
-        setJets(jets.filter(jet => jet.id !== jetId))
-      } catch (error) {
-        console.error('Error deleting jet:', error)
-        alert('Failed to delete jet')
-      }
-    }
-  }
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading jets...</p>
-          </div>
-        </div>
-      </AdminLayout>
-    )
   }
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Jet Management</h1>
-            <p className="text-gray-600">Manage your private jet fleet</p>
+            <p className="text-gray-600">Manage the live private jet fleet shown on the website.</p>
           </div>
           <Button asChild>
-            <Link href="/jets/add">
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Jet
-            </Link>
+            <Link href="/jets/add"><Plus className="mr-2 h-4 w-4" /> Add New Jet</Link>
           </Button>
         </div>
 
-        {/* Filters */}
+        {message ? (
+          <div className={`rounded-2xl border px-4 py-3 text-sm ${message.type === "success" ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-800"}`}>
+            {message.text}
+          </div>
+        ) : null}
+
         <Card>
           <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search jets by name, manufacturer, or model..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input placeholder="Search jets by name, manufacturer, model, or base..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
-              <div className="sm:w-48">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-52">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="inactive">Inactive</option>
+                <option value="out_of_service">Out of Service</option>
+                <option value="reserved">Reserved</option>
+              </select>
             </div>
           </CardContent>
         </Card>
 
-        {/* Jets Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredJets.map((jet) => (
-            <Card key={jet.id} className="overflow-hidden">
-              <div className="relative">
-                {jet.images && jet.images.length > 0 ? (
-                  <Image
-                    src={jet.images[0]}
-                    alt={jet.name}
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <Plane className="h-12 w-12 text-gray-400" />
-                  </div>
-                )}
-                <div className="absolute top-2 right-2">
-                  {getStatusBadge(jet.status)}
+        {loading ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {[0, 1, 2].map((item) => <div key={item} className="h-96 animate-pulse rounded-2xl bg-white shadow" />)}
+          </div>
+        ) : null}
+
+        {!loading && filteredJets.length ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filteredJets.map((jet) => (
+              <Card key={jet.id} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-100">
+                  {jet.images?.[0] ? <Image src={jet.images[0]} alt={jet.name} fill className="object-cover" /> : <Plane className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 text-gray-400" />}
+                  <div className="absolute right-3 top-3"><StatusBadge status={jet.status} /></div>
                 </div>
-              </div>
-              
-              <CardContent className="p-4">
-                <div className="space-y-3">
+                <CardContent className="space-y-4 p-5">
                   <div>
-                    <h3 className="font-semibold text-lg">{jet.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-950">{jet.name}</h3>
                     <p className="text-sm text-gray-600">{jet.manufacturer} {jet.model} ({jet.year})</p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {jet.location}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="text-lg font-bold mr-2">₦</span>
-                      {formatCurrency(jet.price_per_hour)}/hour
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className="h-4 w-4 mr-2" />
-                      {jet.capacity} passengers
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Gauge className="h-4 w-4 mr-2" />
-                      {jet.max_speed} km/h • {jet.range} km range
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                    <span className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {jet.location}</span>
+                    <span className="flex items-center gap-2"><Users className="h-4 w-4" /> {jet.capacity} pax</span>
+                    <span className="flex items-center gap-2"><Gauge className="h-4 w-4" /> {jet.range} km</span>
+                    <span className="font-semibold text-gray-950">NGN {Number(jet.price_per_hour || 0).toLocaleString()}/hr</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t pt-4">
+                    <Badge variant={jet.is_available ? "default" : "outline"}>{jet.is_available ? "Available" : "Unavailable"}</Badge>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" asChild><Link href={`/jets/${jet.id}`}><Eye className="h-4 w-4" /></Link></Button>
+                      <Button size="sm" variant="outline" asChild><Link href={`/jets/${jet.id}/edit`}><Edit className="h-4 w-4" /></Link></Button>
+                      <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700" onClick={() => setJetToDelete(jet)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
-                  
-                  <div className="flex justify-between items-center pt-2">
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" asChild>
-                        <Link href={`/jets/${jet.id}`}>
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button size="sm" variant="outline" asChild>
-                        <Link href={`/jets/${jet.id}/edit`}>
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleDeleteJet(jet.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : null}
 
-        {filteredJets.length === 0 && (
+        {!loading && filteredJets.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
-              <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No jets found</h3>
-              <p className="text-gray-600 mb-4">
-                {searchTerm || statusFilter !== "all" 
-                  ? "Try adjusting your search criteria" 
-                  : "Get started by adding your first jet"
-                }
-              </p>
-              <Button asChild>
-                <Link href="/jets/add">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add New Jet
-                </Link>
-              </Button>
+              <Plane className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900">No jets found</h3>
+              <p className="mb-4 text-gray-600">{searchTerm || statusFilter !== "all" ? "Try adjusting your search criteria." : "Add your first jet to publish the fleet catalog."}</p>
+              <Button asChild><Link href="/jets/add"><Plus className="mr-2 h-4 w-4" /> Add New Jet</Link></Button>
             </CardContent>
           </Card>
-        )}
+        ) : null}
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Jets</p>
-                  <p className="text-2xl font-bold">{jets.length}</p>
-                </div>
-                <Plane className="h-8 w-8 text-purple-600" />
+        {jetToDelete ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+              <h2 className="text-xl font-bold text-gray-950">Delete this jet?</h2>
+              <p className="mt-2 text-sm text-gray-600">This will remove <span className="font-semibold">{jetToDelete.name}</span> from admin and the public catalog. This action cannot be undone.</p>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setJetToDelete(null)} disabled={deleting}>Cancel</Button>
+                <Button className="bg-red-600 text-white hover:bg-red-700" onClick={() => void handleDeleteJet()} disabled={deleting}>{deleting ? "Deleting..." : "Delete jet"}</Button>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active</p>
-                  <p className="text-2xl font-bold">{jets.filter(j => j.status === 'active').length}</p>
-                </div>
-                <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center">
-                  <div className="h-4 w-4 bg-white rounded-full"></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Maintenance</p>
-                  <p className="text-2xl font-bold">{jets.filter(j => j.status === 'maintenance').length}</p>
-                </div>
-                <div className="h-8 w-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <div className="h-4 w-4 bg-white rounded-full"></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Inactive</p>
-                  <p className="text-2xl font-bold">{jets.filter(j => j.status === 'inactive').length}</p>
-                </div>
-                <div className="h-8 w-8 bg-red-500 rounded-full flex items-center justify-center">
-                  <div className="h-4 w-4 bg-white rounded-full"></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </AdminLayout>
   )
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const className = status === "active" ? "bg-green-600" : status === "maintenance" ? "bg-yellow-500" : status === "reserved" ? "bg-blue-600" : "bg-gray-600"
+  return <Badge className={className}>{status.split("_").join(" ")}</Badge>
 }
 

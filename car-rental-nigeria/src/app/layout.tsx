@@ -31,6 +31,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://dtaspdqcyapnfgcsbtte.supabase.co" />
+        <link rel="dns-prefetch" href="https://homflkohccdxpnarxwyp.supabase.co" />
       </head>
       <body className={`${poppins.variable} font-poppins antialiased`} suppressHydrationWarning>
         <QueryProvider>

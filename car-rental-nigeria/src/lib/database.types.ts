@@ -94,6 +94,32 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["jets"]["Row"]>
         Update: Partial<Database["public"]["Tables"]["jets"]["Row"]>
       }
+      jet_requests: {
+        Row: {
+          id: string
+          request_reference: string
+          user_id: string | null
+          jet_id: string | null
+          customer_name: string
+          customer_email: string
+          customer_phone: string
+          departure_location: string
+          destination: string
+          departure_date: Timestamp
+          departure_time: string | null
+          return_date: Timestamp | null
+          return_time: string | null
+          passengers: number
+          trip_type: string
+          special_requests: string | null
+          status: string
+          admin_notes: string | null
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["jet_requests"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["jet_requests"]["Row"]>
+      }
       locations: {
         Row: {
           id: string
@@ -166,6 +192,19 @@ export interface Database {
           rental_started_at: Timestamp | null
           rental_returned_at: Timestamp | null
           completed_at: Timestamp | null
+          rental_mode: string | null
+          service_state_id: string | null
+          origin_state_id: string | null
+          destination_state_id: string | null
+          service_zone_id: string | null
+          service_area_id: string | null
+          pickup_address: string | null
+          dropoff_address: string | null
+          area_of_use: string | null
+          timing_package: string | null
+          billable_units: number | null
+          location_surcharge: number | null
+          pricing_breakdown: Json | null
           created_at: Timestamp
           updated_at: Timestamp
         }
@@ -285,6 +324,111 @@ export interface Database {
         }
         Insert: Partial<Database["public"]["Tables"]["reviews"]["Row"]>
         Update: Partial<Database["public"]["Tables"]["reviews"]["Row"]>
+      }
+      service_states: {
+        Row: {
+          id: string
+          name: string
+          code: string
+          is_auto_priced: boolean
+          is_active: boolean
+          sort_order: number
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["service_states"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["service_states"]["Row"]>
+      }
+      service_zones: {
+        Row: {
+          id: string
+          state_id: string
+          name: string
+          code: string
+          description: string | null
+          is_extension: boolean
+          is_active: boolean
+          sort_order: number
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["service_zones"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["service_zones"]["Row"]>
+      }
+      service_areas: {
+        Row: {
+          id: string
+          zone_id: string
+          name: string
+          code: string
+          surcharge_amount: number
+          is_active: boolean
+          sort_order: number
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["service_areas"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["service_areas"]["Row"]>
+      }
+      car_service_coverage: {
+        Row: {
+          id: string
+          car_id: string
+          state_id: string
+          rental_mode: string
+          is_active: boolean
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["car_service_coverage"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["car_service_coverage"]["Row"]>
+      }
+      car_pricing_rates: {
+        Row: {
+          id: string
+          car_id: string
+          state_id: string
+          zone_id: string | null
+          timing_package: string
+          base_price: number
+          is_active: boolean
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["car_pricing_rates"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["car_pricing_rates"]["Row"]>
+      }
+      quote_requests: {
+        Row: {
+          id: string
+          quote_reference: string
+          user_id: string | null
+          car_id: string | null
+          rental_mode: string
+          origin_state_id: string | null
+          destination_state_id: string | null
+          service_state_id: string | null
+          timing_package: string | null
+          pickup_date: Timestamp
+          dropoff_date: Timestamp
+          pickup_time: string | null
+          dropoff_time: string | null
+          pickup_address: string
+          dropoff_address: string
+          area_of_use: string | null
+          trip_type: string | null
+          customer_name: string
+          customer_email: string
+          customer_phone: string
+          special_requests: string | null
+          status: string
+          quoted_amount: number | null
+          admin_notes: string | null
+          created_at: Timestamp
+          updated_at: Timestamp
+        }
+        Insert: Partial<Database["public"]["Tables"]["quote_requests"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["quote_requests"]["Row"]>
       }
     }
   }

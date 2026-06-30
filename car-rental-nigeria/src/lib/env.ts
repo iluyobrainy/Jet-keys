@@ -1,14 +1,10 @@
-const fallbackSupabaseUrl = "https://dtaspdqcyapnfgcsbtte.supabase.co"
-const fallbackSupabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0YXNwZHFjeWFwbmZnY3NidHRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxODYzMTYsImV4cCI6MjA3Mjc2MjMxNn0.fI_8EuIq3caCNIneCS6Rkfr4lgdYKtXE6a5qCz7P4lk"
-
 function trimValue(value: string | undefined, fallback = "") {
   return (value || fallback).trim()
 }
 
 export const env = {
-  supabaseUrl: trimValue(process.env.NEXT_PUBLIC_SUPABASE_URL, fallbackSupabaseUrl),
-  supabaseAnonKey: trimValue(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, fallbackSupabaseAnonKey),
+  supabaseUrl: trimValue(process.env.NEXT_PUBLIC_SUPABASE_URL),
+  supabaseAnonKey: trimValue(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
   supabaseServiceRoleKey: trimValue(process.env.SUPABASE_SERVICE_ROLE_KEY),
   paystackPublicKey: trimValue(process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY),
   paystackSecretKey: trimValue(process.env.PAYSTACK_SECRET_KEY),

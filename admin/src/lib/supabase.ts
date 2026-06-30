@@ -178,6 +178,74 @@ export interface Database {
           updated_at?: string
         }
       }
+      jet_requests: {
+        Row: {
+          id: string
+          request_reference: string
+          user_id: string | null
+          jet_id: string | null
+          customer_name: string
+          customer_email: string
+          customer_phone: string
+          departure_location: string
+          destination: string
+          departure_date: string
+          departure_time: string | null
+          return_date: string | null
+          return_time: string | null
+          passengers: number
+          trip_type: 'one_way' | 'round_trip' | 'multi_city'
+          special_requests: string | null
+          status: 'new' | 'contacted' | 'quoted' | 'confirmed' | 'closed'
+          admin_notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          request_reference: string
+          user_id?: string | null
+          jet_id?: string | null
+          customer_name: string
+          customer_email: string
+          customer_phone: string
+          departure_location: string
+          destination: string
+          departure_date: string
+          departure_time?: string | null
+          return_date?: string | null
+          return_time?: string | null
+          passengers: number
+          trip_type?: 'one_way' | 'round_trip' | 'multi_city'
+          special_requests?: string | null
+          status?: 'new' | 'contacted' | 'quoted' | 'confirmed' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          request_reference?: string
+          user_id?: string | null
+          jet_id?: string | null
+          customer_name?: string
+          customer_email?: string
+          customer_phone?: string
+          departure_location?: string
+          destination?: string
+          departure_date?: string
+          departure_time?: string | null
+          return_date?: string | null
+          return_time?: string | null
+          passengers?: number
+          trip_type?: 'one_way' | 'round_trip' | 'multi_city'
+          special_requests?: string | null
+          status?: 'new' | 'contacted' | 'quoted' | 'confirmed' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       bookings: {
         Row: {
           id: string

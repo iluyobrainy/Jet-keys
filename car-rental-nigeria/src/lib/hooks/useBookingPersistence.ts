@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react'
 interface BookingFormData {
   pickupLocation: string
   dropoffLocation: string
+  rentalMode: 'within_state' | 'interstate'
+  serviceStateId: string
+  originStateId: string
+  destinationStateId: string
+  zoneId: string
+  areaId: string
+  timingPackage: '12h' | '24h'
+  pickupAddress: string
+  dropoffAddress: string
+  areaOfUse: string
+  tripType: string
   pickupDate: Date | undefined
   dropoffDate: Date | undefined
   pickupTime: string | null
@@ -16,6 +27,17 @@ export function useBookingPersistence(carId: string) {
   const [formData, setFormData] = useState<BookingFormData>({
     pickupLocation: '',
     dropoffLocation: '',
+    rentalMode: 'within_state',
+    serviceStateId: '',
+    originStateId: '',
+    destinationStateId: '',
+    zoneId: '',
+    areaId: '',
+    timingPackage: '24h',
+    pickupAddress: '',
+    dropoffAddress: '',
+    areaOfUse: '',
+    tripType: 'drop_off',
     pickupDate: undefined,
     dropoffDate: undefined,
     pickupTime: '10:00',
@@ -30,10 +52,25 @@ export function useBookingPersistence(carId: string) {
         const parsed = JSON.parse(savedData)
         // Convert date strings back to Date objects
         const restoredData = {
+          pickupLocation: '',
+          dropoffLocation: '',
+          rentalMode: 'within_state',
+          serviceStateId: '',
+          originStateId: '',
+          destinationStateId: '',
+          zoneId: '',
+          areaId: '',
+          timingPackage: '24h',
+          pickupAddress: '',
+          dropoffAddress: '',
+          areaOfUse: '',
+          tripType: 'drop_off',
+          pickupTime: '10:00',
+          dropoffTime: '10:00',
           ...parsed,
           pickupDate: parsed.pickupDate ? new Date(parsed.pickupDate) : undefined,
           dropoffDate: parsed.dropoffDate ? new Date(parsed.dropoffDate) : undefined
-        }
+        } as BookingFormData
         setFormData(restoredData)
         console.log('📱 Restored booking form data:', restoredData)
       }
@@ -73,6 +110,17 @@ export function useBookingPersistence(carId: string) {
       setFormData({
         pickupLocation: '',
         dropoffLocation: '',
+        rentalMode: 'within_state',
+        serviceStateId: '',
+        originStateId: '',
+        destinationStateId: '',
+        zoneId: '',
+        areaId: '',
+        timingPackage: '24h',
+        pickupAddress: '',
+        dropoffAddress: '',
+        areaOfUse: '',
+        tripType: 'drop_off',
         pickupDate: undefined,
         dropoffDate: undefined,
         pickupTime: '10:00',
@@ -88,6 +136,9 @@ export function useBookingPersistence(carId: string) {
   const hasData = () => {
     return formData.pickupLocation || 
            formData.dropoffLocation || 
+           formData.serviceStateId ||
+           formData.originStateId ||
+           formData.pickupAddress ||
            formData.pickupDate || 
            formData.dropoffDate
   }

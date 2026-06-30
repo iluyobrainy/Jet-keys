@@ -5,6 +5,8 @@ import { getAdminSupabaseClient } from "@/lib/supabase-admin"
 import { getCarPrimaryImage, pickDailyCars } from "@/lib/server/car-utils"
 import type { Database } from "@/lib/database.types"
 
+export const dynamic = "force-dynamic"
+
 type CarRow = Database["public"]["Tables"]["cars"]["Row"]
 type BookingRow = Database["public"]["Tables"]["bookings"]["Row"]
 

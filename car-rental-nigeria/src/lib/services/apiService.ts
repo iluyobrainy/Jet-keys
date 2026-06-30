@@ -103,10 +103,70 @@ export interface Car {
   updated_at: string
 }
 
+export interface Jet {
+  id: string
+  name: string
+  manufacturer: string
+  model: string
+  year: number
+  price_per_hour: number
+  price_per_day: number
+  capacity: number
+  range: number
+  max_speed: number
+  description: string
+  features: string[]
+  images: string[]
+  is_available: boolean
+  location: string
+  status: string
+  created_at: string
+  updated_at: string
+  primaryImage?: string | null
+}
+
+export interface JetRequest {
+  id: string
+  request_reference: string
+  user_id: string | null
+  jet_id: string | null
+  customer_name: string
+  customer_email: string
+  customer_phone: string
+  departure_location: string
+  destination: string
+  departure_date: string
+  departure_time: string | null
+  return_date: string | null
+  return_time: string | null
+  passengers: number
+  trip_type: string
+  special_requests: string | null
+  status: string
+  admin_notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 class ApiService {
   // Checkout Settings
   async getCheckoutSettings(): Promise<CheckoutSettings> {
     try {
+      const response = await fetch('/api/checkout-settings', {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+        },
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch checkout settings: ${response.status}`)
+      }
+
+      return (await response.json()) as CheckoutSettings
+      /*
+
       const { data, error } = await supabase
         .from('checkout_settings')
         .select('*')
@@ -160,6 +220,7 @@ class ApiService {
 
       console.log('✅ Processed checkout settings:', settings)
       return settings
+      */
     } catch (error) {
       console.warn('Error fetching checkout settings, using defaults:', error)
       return {

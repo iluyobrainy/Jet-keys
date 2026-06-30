@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { apiFetch } from "@/lib/api-client"
 import { formatDate, formatNumber } from "@/lib/formatters"
-import { useCreateBooking, useCar, useCheckoutSettings, usePricing } from "@/lib/hooks/useApi"
+import { useCreateBooking, useCar, useCheckoutSettings, useRentalPricing } from "@/lib/hooks/useApi"
 import { useBookingPersistence } from "@/lib/hooks/useBookingPersistence"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
@@ -67,18 +67,53 @@ function CheckoutContent() {
   }, [formData.dropoffDate, formData.dropoffTime, formData.pickupDate, formData.pickupTime])
 
   const billableDays = Math.max(1, Math.ceil(rentalHours / 24))
-  const { data: pricing } = usePricing(car || null, billableDays)
+  const pricingPayload = useMemo(
+    () => ({
+      carId,
+      rentalMode: formData.rentalMode,
+      serviceStateId: formData.serviceStateId,
+      originStateId: formData.originStateId,
+      destinationStateId: formData.destinationStateId,
+      zoneId: formData.zoneId,
+      areaId: formData.areaId,
+      timingPackage: formData.timingPackage,
+      pickupDate: formData.pickupDate?.toISOString(),
+      dropoffDate: formData.dropoffDate?.toISOString(),
+      pickupTime: formData.pickupTime,
+      dropoffTime: formData.dropoffTime,
+    }),
+    [
+      carId,
+      formData.areaId,
+      formData.destinationStateId,
+      formData.dropoffDate,
+      formData.dropoffTime,
+      formData.originStateId,
+      formData.pickupDate,
+      formData.pickupTime,
+      formData.rentalMode,
+      formData.serviceStateId,
+      formData.timingPackage,
+      formData.zoneId,
+    ],
+  )
+  const { data: pricingResponse } = useRentalPricing(
+    pricingPayload,
+    Boolean(formData.pickupDate && formData.dropoffDate && formData.timingPackage),
+  )
+  const pricing = pricingResponse?.pricing as Record<string, any> | undefined
 
   const canCheckout =
     Boolean(carId) &&
-    Boolean(formData.pickupLocation) &&
-    Boolean(formData.dropoffLocation) &&
+    Boolean(formData.pickupAddress) &&
+    Boolean(formData.dropoffAddress) &&
     Boolean(formData.pickupDate) &&
     Boolean(formData.dropoffDate) &&
     Boolean(fullName.trim()) &&
     Boolean(email.trim()) &&
     Boolean(phoneNumber.trim()) &&
     Boolean(pricing) &&
+    pricing?.canAutoPrice === true &&
     agreedToTerms
 
   const handlePayment = async () => {
@@ -97,8 +132,18 @@ function CheckoutContent() {
         dropoffDate: formData.dropoffDate.toISOString(),
         pickupTime: formData.pickupTime,
         dropoffTime: formData.dropoffTime,
-        pickupLocation: formData.pickupLocation,
-        dropoffLocation: formData.dropoffLocation,
+        pickupLocation: String(pricing.area?.name || pricing.zone?.name || "Controlled pickup"),
+        dropoffLocation: String(pricing.area?.name || pricing.zone?.name || "Controlled dropoff"),
+        rentalMode: formData.rentalMode,
+        serviceStateId: formData.serviceStateId,
+        originStateId: formData.originStateId,
+        destinationStateId: formData.destinationStateId,
+        zoneId: formData.zoneId,
+        areaId: formData.areaId,
+        timingPackage: formData.timingPackage,
+        pickupAddress: formData.pickupAddress,
+        dropoffAddress: formData.dropoffAddress,
+        areaOfUse: formData.areaOfUse,
         totalAmount: pricing.grandTotal,
         deliveryFee: pricing.deliveryFee,
         vatAmount: pricing.vatAmount,
@@ -212,14 +257,14 @@ function CheckoutContent() {
                       <MapPin className="mt-0.5 h-4 w-4 text-slate-500" />
                       <div>
                         <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Pickup</p>
-                        <p className="text-sm font-medium text-slate-900">{formData.pickupLocation}</p>
+                        <p className="text-sm font-medium text-slate-900">{formData.pickupAddress}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <MapPin className="mt-0.5 h-4 w-4 text-slate-500" />
                       <div>
                         <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Return</p>
-                        <p className="text-sm font-medium text-slate-900">{formData.dropoffLocation}</p>
+                        <p className="text-sm font-medium text-slate-900">{formData.dropoffAddress}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -260,7 +305,13 @@ function CheckoutContent() {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500">Billable duration</span>
-                    <span className="font-medium text-slate-950">{billableDays} day(s)</span>
+                    <span className="font-medium text-slate-950">{String(pricing?.billableUnits || billableDays)} x {formData.timingPackage}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Location surcharge</span>
+                    <span className="font-medium text-slate-950">
+                      NGN {formatNumber(Number(pricing?.locationSurcharge || 0))}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500">Base price</span>

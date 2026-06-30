@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useCarsCatalog } from "@/lib/hooks/useApi"
+import { useRealtimeInvalidation } from "@/lib/hooks/useRealtimeInvalidation"
 import { formatNumber } from "@/lib/formatters"
 
 type SearchState = {
@@ -140,6 +141,8 @@ function CarsPageContent() {
   )
 
   const { data, isLoading, error, refetch } = useCarsCatalog(queryFilters)
+
+  useRealtimeInvalidation("cars-catalog-live", ["cars", "car_locations"], [["carsCatalog"], ["cars"]])
 
   const applySearchToUrl = () => {
     const params = new URLSearchParams()
