@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { poppins } from "@/lib/fonts";
+﻿import type { Metadata } from "next";
+import { inter, poppins } from "@/lib/fonts";
 import { AuthProvider } from "@/lib/providers/AuthProvider";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
@@ -33,7 +33,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://dtaspdqcyapnfgcsbtte.supabase.co" />
         <link rel="dns-prefetch" href="https://homflkohccdxpnarxwyp.supabase.co" />
       </head>
-      <body className={`${poppins.variable} font-poppins antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`} suppressHydrationWarning>
         <QueryProvider>
           <AuthProvider>
             {children}
@@ -44,3 +44,4 @@ export default function RootLayout({
     </html>
   );
 }
+
