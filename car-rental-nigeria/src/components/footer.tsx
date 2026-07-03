@@ -1,4 +1,4 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import Image from "next/image"
 import { Phone, Mail, MapPin } from "lucide-react"
 
@@ -15,7 +15,7 @@ export function Footer() {
                 alt="Jet & Keys"
                 width={128}
                 height={128}
-                className="h-20 w-20 object-contain"
+                className="h-[104px] w-[104px] object-contain"
               />
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
@@ -84,10 +84,11 @@ export function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400">
-            © 2024 Jet & Keys. All rights reserved.
+            Â© 2024 Jet & Keys. All rights reserved.
           </p>
         </div>
       </div>
     </footer>
   )
 }
+

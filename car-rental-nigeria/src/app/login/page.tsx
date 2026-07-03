@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
@@ -355,7 +355,7 @@ function LoginPageContent() {
                   alt="Jet & Keys"
                   width={72}
                   height={72}
-                  className="h-12 w-12 object-contain"
+                  className="h-[62px] w-[62px] object-contain"
                 />
               </div>
               <div>
@@ -396,7 +396,7 @@ function LoginPageContent() {
                   alt="Jet & Keys"
                   width={76}
                   height={76}
-                  className="h-12 w-12 object-contain"
+                  className="h-[62px] w-[62px] object-contain"
                 />
               </Link>
               <div>
@@ -573,3 +573,4 @@ export default function LoginPage() {
     </Suspense>
   )
 }
+

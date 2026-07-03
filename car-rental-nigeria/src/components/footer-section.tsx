@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import Image from "next/image"
@@ -104,7 +104,7 @@ export function FooterSection() {
                 alt="Jet & Keys"
                 width={128}
                 height={128}
-                className="h-20 w-20 object-contain"
+                className="h-[104px] w-[104px] object-contain"
               />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -179,7 +179,7 @@ export function FooterSection() {
         {/* Bottom Section */}
         <div className="flex flex-col items-start gap-4 border-t border-gray-800 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-gray-400">
-            © 2025 Jet&Keys, All Rights Reserved.
+            Â© 2025 Jet&Keys, All Rights Reserved.
           </p>
           
           <div className="flex gap-4" aria-label="Social media links">
@@ -199,3 +199,4 @@ export function FooterSection() {
     </footer>
   )
 }
+

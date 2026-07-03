@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import Link from "next/link"
 import Image from "next/image"
@@ -76,7 +76,7 @@ export function Navigation() {
                 width={92}
                 height={92}
                 priority
-                className="h-12 w-12 object-contain"
+                className="h-[62px] w-[62px] object-contain"
               />
             </Link>
 
@@ -182,7 +182,7 @@ export function Navigation() {
             width={104}
             height={104}
             priority
-            className="h-14 w-14 object-contain"
+            className="h-[73px] w-[73px] object-contain"
           />
         </Link>
       </div>
@@ -240,3 +240,4 @@ export function Navigation() {
     </>
   )
 }
+

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -84,7 +84,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               alt="Jet & Keys Admin"
               width={84}
               height={84}
-              className="h-12 w-12 object-contain"
+              className="h-[62px] w-[62px] object-contain"
             />
             <span className="text-xl font-bold text-gray-900">Admin Panel</span>
           </div>
@@ -159,3 +159,4 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     </div>
   )
 }
+
