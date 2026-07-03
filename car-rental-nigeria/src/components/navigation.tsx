@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Car, Home, Car as CarIcon, Plane, User, Phone, Calendar, LogOut, Menu } from "lucide-react"
+import { Home, Car as CarIcon, Plane, User, Phone, Calendar, LogOut, Menu } from "lucide-react"
 import { NavBar } from "@/components/ui/tubelight-navbar"
 import { usePathname, useRouter } from "next/navigation"
 import {
@@ -68,9 +69,15 @@ export function Navigation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/" prefetch={true} className="flex items-center space-x-2">
-              <Car className="h-8 w-8 text-blue-600" />
-              <span className="text-lg sm:text-xl font-bold text-gray-900">Jet & Keys</span>
+            <Link href="/" prefetch={true} className="flex items-center">
+              <Image
+                src="/jetandkeys-logo.png"
+                alt="Jet & Keys"
+                width={92}
+                height={92}
+                priority
+                className="h-12 w-12 object-contain"
+              />
             </Link>
 
             {/* Mobile Menu */}
@@ -167,10 +174,16 @@ export function Navigation() {
       </nav>
 
       {/* Desktop Logo (no card wrapper) */}
-      <div className="pointer-events-none fixed left-6 top-5 z-40 hidden md:block">
-        <Link href="/" prefetch={true} className="pointer-events-auto flex items-center space-x-2">
-          <Car className="h-8 w-8 text-blue-600" />
-          <span className="text-lg font-bold text-slate-900">Jet & Keys</span>
+      <div className="pointer-events-none fixed left-6 top-4 z-40 hidden md:block">
+        <Link href="/" prefetch={true} className="pointer-events-auto flex items-center">
+          <Image
+            src="/jetandkeys-logo.png"
+            alt="Jet & Keys"
+            width={104}
+            height={104}
+            priority
+            className="h-14 w-14 object-contain"
+          />
         </Link>
       </div>
 

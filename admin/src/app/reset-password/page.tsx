@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Car, CheckCircle2, Loader2, LockKeyhole } from "lucide-react"
+import { CheckCircle2, Loader2, LockKeyhole } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -72,8 +73,14 @@ export default function AdminResetPasswordPage() {
         <Card className="w-full max-w-xl rounded-[32px] border border-white/70 bg-white/92 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur">
           <CardHeader className="space-y-3 px-8 pt-8">
             <Link href="/login" className="flex items-center gap-3 text-slate-900">
-              <Car className="h-7 w-7 text-blue-600" />
-              <span className="text-xl font-bold">Jet & Keys Admin</span>
+              <Image
+                src="/jetandkeys-logo.png"
+                alt="Jet & Keys Admin"
+                width={76}
+                height={76}
+                className="h-12 w-12 object-contain"
+              />
+              <span className="text-xl font-bold">Admin</span>
             </Link>
             <div>
               <CardTitle className="text-3xl font-bold text-slate-950">Set a new admin password</CardTitle>

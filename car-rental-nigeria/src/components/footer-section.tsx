@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { User, Mail, ArrowRight, Settings, Twitter, Youtube, Facebook, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { User, Mail, ArrowRight, Twitter, Youtube, Facebook, Phone, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useBusinessInfo } from "@/lib/hooks/useBusinessInfo"
 
@@ -98,8 +99,13 @@ export function FooterSection() {
           {/* Brand Info */}
           <div className="col-span-2 lg:col-span-1">
             <div className="mb-4 flex items-center justify-start">
-              <Settings className="w-8 h-8 text-orange-500 mr-2" />
-              <span className="text-2xl font-bold text-white">Jet&Keys</span>
+              <Image
+                src="/jetandkeys-logo.png"
+                alt="Jet & Keys"
+                width={128}
+                height={128}
+                className="h-20 w-20 object-contain"
+              />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
               We provide premium transportation solutions including luxury cars, SUVs, electric vehicles, and private jets that suit your personal and business travel needs.

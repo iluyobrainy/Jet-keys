@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Car, Loader2, LockKeyhole, ShieldCheck } from "lucide-react"
+import { Loader2, LockKeyhole, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -70,8 +71,14 @@ export default function AdminLoginPage() {
         <div className="grid w-full gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="hidden rounded-[36px] bg-slate-950 p-10 text-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] lg:block">
             <div className="mb-16 flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-3">
-                <Car className="h-7 w-7 text-blue-300" />
+              <div className="rounded-2xl bg-white/10 p-2">
+                <Image
+                  src="/jetandkeys-logo.png"
+                  alt="Jet & Keys"
+                  width={72}
+                  height={72}
+                  className="h-12 w-12 object-contain"
+                />
               </div>
               <div>
                 <p className="text-sm uppercase tracking-[0.4em] text-white/60">Jet & Keys</p>
@@ -98,8 +105,14 @@ export default function AdminLoginPage() {
           <Card className="rounded-[32px] border border-white/70 bg-white/92 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur">
             <CardHeader className="space-y-3 px-8 pt-8">
               <Link href="/" className="flex items-center gap-3 text-slate-900">
-                <Car className="h-7 w-7 text-blue-600" />
-                <span className="text-xl font-bold">Jet & Keys Admin</span>
+                <Image
+                  src="/jetandkeys-logo.png"
+                  alt="Jet & Keys Admin"
+                  width={76}
+                  height={76}
+                  className="h-12 w-12 object-contain"
+                />
+                <span className="text-xl font-bold">Admin</span>
               </Link>
               <div>
                 <CardTitle className="text-3xl font-bold text-slate-950">Admin login</CardTitle>

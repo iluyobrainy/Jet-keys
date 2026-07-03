@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Car, Phone, Mail, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Phone, Mail, MapPin } from "lucide-react"
 
 export function Footer() {
   return (
@@ -9,8 +10,13 @@ export function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <Car className="h-8 w-8 text-blue-400" />
-              <span className="text-xl font-bold">Jet & Keys</span>
+              <Image
+                src="/jetandkeys-logo.png"
+                alt="Jet & Keys"
+                width={128}
+                height={128}
+                className="h-20 w-20 object-contain"
+              />
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
               Premium car rental services across Nigeria. We provide reliable, 

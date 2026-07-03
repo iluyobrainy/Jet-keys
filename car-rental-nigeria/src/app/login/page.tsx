@@ -2,8 +2,9 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Car, KeyRound, Loader2, Mail, ShieldCheck, UserRound, LockKeyhole } from "lucide-react"
+import { KeyRound, Loader2, Mail, ShieldCheck, UserRound, LockKeyhole } from "lucide-react"
 import { apiFetch } from "@/lib/api-client"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { getBrowserSupabaseClient } from "@/lib/supabase"
@@ -348,8 +349,14 @@ function LoginPageContent() {
         <div className="grid w-full gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="hidden rounded-[36px] bg-slate-950 p-10 text-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] lg:block">
             <div className="mb-16 flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-3">
-                <Car className="h-7 w-7 text-amber-300" />
+              <div className="rounded-2xl bg-white/10 p-2">
+                <Image
+                  src="/jetandkeys-logo.png"
+                  alt="Jet & Keys"
+                  width={72}
+                  height={72}
+                  className="h-12 w-12 object-contain"
+                />
               </div>
               <div>
                 <p className="text-sm uppercase tracking-[0.4em] text-white/60">Jet & Keys</p>
@@ -384,8 +391,13 @@ function LoginPageContent() {
           <Card className="rounded-[32px] border border-white/70 bg-white/90 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur">
             <CardHeader className="space-y-3 px-8 pt-8">
               <Link href="/" className="flex items-center gap-3 text-slate-900">
-                <Car className="h-7 w-7 text-blue-600" />
-                <span className="text-xl font-bold">Jet & Keys</span>
+                <Image
+                  src="/jetandkeys-logo.png"
+                  alt="Jet & Keys"
+                  width={76}
+                  height={76}
+                  className="h-12 w-12 object-contain"
+                />
               </Link>
               <div>
                 <CardTitle className="text-3xl font-bold text-slate-950">Login or create account</CardTitle>

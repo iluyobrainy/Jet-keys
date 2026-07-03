@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { 
@@ -76,8 +77,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       }`}>
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center space-x-2">
-            <Car className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">Jet & Keys Admin</span>
+            <Image
+              src="/jetandkeys-logo.png"
+              alt="Jet & Keys Admin"
+              width={84}
+              height={84}
+              className="h-12 w-12 object-contain"
+            />
+            <span className="text-lg font-bold text-gray-900">Admin</span>
           </div>
           <Button
             variant="ghost"
